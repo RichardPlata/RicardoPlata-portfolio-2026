@@ -586,6 +586,13 @@ video {
   background: #afaba2;
 }
 
+.about-earth-bg,
+.about-earth-light,
+.about-earth-vignette {
+  position: absolute;
+  inset: 0;
+}
+
 .about-earth-bg {
   z-index: 0;
   background:
@@ -609,6 +616,25 @@ video {
   background:
     radial-gradient(circle at center, transparent 48%, rgba(0, 0, 0, 0.24) 100%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 40%, rgba(0, 0, 0, 0.22));
+}
+
+/* Estado inicial para evitar salto al cargar */
+
+.about-text-panel,
+.about-photo-wrapper,
+.about-mountain-img,
+.about-rock-wrapper {
+  transition:
+    opacity 650ms ease,
+    transform 650ms ease,
+    filter 650ms ease;
+}
+
+.about-section:not(.about-ready) .about-text-panel,
+.about-section:not(.about-ready) .about-photo-wrapper,
+.about-section:not(.about-ready) .about-mountain-img,
+.about-section:not(.about-ready) .about-rock-wrapper {
+  opacity: 0 !important;
 }
 
 /* Montaña */

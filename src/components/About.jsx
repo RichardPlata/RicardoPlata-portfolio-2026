@@ -7,7 +7,7 @@ import rock2 from "../assets/images/rock2.webp";
 import rock3 from "../assets/images/rock3.webp";
 
 import aboutPicture from "../assets/images/About-Picture.png";
-// Si todavía no convertiste esta imagen, usa:
+// Si tu imagen todavía es PNG, usa esto:
 // import aboutPicture from "../assets/images/About-Picture.png";
 
 import resumeFile from "../assets/files/Resume-RicardoPlata.pdf";
@@ -15,6 +15,8 @@ import resumeFile from "../assets/files/Resume-RicardoPlata.pdf";
 export default function About() {
   const sectionRef = useRef(null);
   const ticking = useRef(false);
+
+  const [isReady, setIsReady] = useState(false);
 
   const [progress, setProgress] = useState({
     enter: 0,
@@ -34,8 +36,6 @@ export default function About() {
         1
       );
 
-      // Antes desaparecía muy pronto.
-      // Ahora empieza a salir cuando la sección ya avanzó bastante.
       const exitStart = sectionHeight * 0.45;
       const exitDistance = sectionHeight * 0.55;
 
@@ -45,6 +45,8 @@ export default function About() {
       );
 
       setProgress({ enter, exit });
+      setIsReady(true);
+
       ticking.current = false;
     };
 
@@ -55,12 +57,13 @@ export default function About() {
       }
     };
 
-    updateProgress();
+    const start = window.requestAnimationFrame(updateProgress);
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", updateProgress);
 
     return () => {
+      window.cancelAnimationFrame(start);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", updateProgress);
     };
@@ -84,19 +87,55 @@ export default function About() {
   const photoY = 65 - contentOpacity * 65 + exit * 35;
 
   const rocks = [
-    { src: rock1, className: "about-rock-1", rotate: -18, exitX: -80, exitY: -90 },
-    { src: rock2, className: "about-rock-2", rotate: 22, exitX: 80, exitY: -90 },
-    { src: rock3, className: "about-rock-3", rotate: -32, exitX: 90, exitY: 100 },
-    { src: rock1, className: "about-rock-4", rotate: 34, exitX: -70, exitY: 80 },
-    { src: rock2, className: "about-rock-5", rotate: -42, exitX: -90, exitY: 110 },
-    { src: rock3, className: "about-rock-6", rotate: 28, exitX: 70, exitY: -80 },
+    {
+      src: rock1,
+      className: "about-rock-1",
+      rotate: -18,
+      exitX: -80,
+      exitY: -90,
+    },
+    {
+      src: rock2,
+      className: "about-rock-2",
+      rotate: 22,
+      exitX: 80,
+      exitY: -90,
+    },
+    {
+      src: rock3,
+      className: "about-rock-3",
+      rotate: -32,
+      exitX: 90,
+      exitY: 100,
+    },
+    {
+      src: rock1,
+      className: "about-rock-4",
+      rotate: 34,
+      exitX: -70,
+      exitY: 80,
+    },
+    {
+      src: rock2,
+      className: "about-rock-5",
+      rotate: -42,
+      exitX: -90,
+      exitY: 110,
+    },
+    {
+      src: rock3,
+      className: "about-rock-6",
+      rotate: 28,
+      exitX: 70,
+      exitY: -80,
+    },
   ];
 
   return (
     <section
       id="about"
       ref={sectionRef}
-      className="about-section relative overflow-hidden text-white"
+      className={`about-section ${isReady ? "about-ready" : ""}`}
     >
       <div className="absolute inset-0 about-earth-bg" />
       <div className="absolute inset-0 about-earth-light" />
@@ -108,6 +147,7 @@ export default function About() {
         className="about-mountain-img"
         draggable="false"
         loading="lazy"
+        decoding="async"
         style={{
           opacity: mountainOpacity,
           transform: `translateX(-50%) translateY(${mountainY}px) scale(${mountainScale})`,
@@ -132,11 +172,12 @@ export default function About() {
             className="about-rock-img"
             draggable="false"
             loading="lazy"
+            decoding="async"
           />
         </div>
       ))}
 
-      <div className="about-content relative z-20">
+      <div className="about-content">
         <div
           className="about-text-panel"
           style={{
@@ -156,7 +197,8 @@ export default function About() {
           <p className="about-copy">
             With a background in game design and interactive media, I combine
             structured UX thinking with a cinematic and motion-driven approach,
-            creating interfaces that feel intuitive, atmospheric, and intentional.
+            creating interfaces that feel intuitive, atmospheric, and
+            intentional.
           </p>
 
           <p className="about-copy">
@@ -191,7 +233,8 @@ export default function About() {
               src={aboutPicture}
               alt="Ricardo Plata"
               draggable="false"
-              loading="lazy"
+              loading="eager"
+              decoding="async"
               className="about-photo-img"
             />
           </div>
