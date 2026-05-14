@@ -10,7 +10,7 @@ import aboutPicture from "../assets/images/About-Picture.png";
 // Si tu imagen todavía es PNG, usa esto:
 // import aboutPicture from "../assets/images/About-Picture.png";
 
-import resumeFile from "../assets/files/Resume-RicardoPlata.pdf";
+import resumeFile from "../assets/files/Resume-RicardoPlata-2026.pdf";
 
 export default function About() {
   const sectionRef = useRef(null);
