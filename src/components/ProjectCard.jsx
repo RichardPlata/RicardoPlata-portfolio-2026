@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import cenizasVideo from "../assets/videos/flames.mp4";
+import cenizasVideo from "../assets/videos/Flames.mp4";
 
 import digitalVaultVideo from "../assets/videos/DigitalVaultCardVideo.mp4";
 import kokoroVideo from "../assets/videos/KokoroCardVideo.mp4";
