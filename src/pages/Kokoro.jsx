@@ -15,7 +15,7 @@ import kokoroChooseFlavor from "../assets/images/KokoroChooseFlavor.png";
 import kokoroSelectSize from "../assets/images/KokoroSelectSize.png";
 import kokoroFillingsToppings from "../assets/images/Kokoro-Fillings-&-Toppings.png";
 import kokoroDecorate from "../assets/images/KokoroDecorateIt.png";
-import kokoroScheduleDelivery from "../assets/images/KokoroSheduleDelivery.png";
+import kokoroScheduleDelivery from "../assets/images/KokoroScheduleDelivery.png";
 
 import kokoroCart from "../assets/images/KokoroCart.png";
 import kokoroSpecifications from "../assets/images/KokoroSpecifications.png";
