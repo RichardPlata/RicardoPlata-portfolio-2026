@@ -5,7 +5,7 @@ import { FiEye, FiMonitor, FiVideo } from "react-icons/fi";
 import btsVideo from "../assets/videos/BtsVideoCard.mp4";
 import beyondTrailerVideo from "../assets/videos/BeyondTheShadowsVideo.mp4";
 
-import littleNightmaresReference from "../assets/images/little-nightmares.png";
+import littleNightmaresReference from "../assets/images/little-nightmares.webp";
 import aliceReference from "../assets/images/alice-reference.jpg";
 import limboReference from "../assets/images/limbo-reference.jpg";
 

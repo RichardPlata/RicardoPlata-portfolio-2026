@@ -9,7 +9,7 @@ import kokoroSecondVideo from "../assets/videos/KokoroSecondVideo.mp4";
 import kokoroHome from "../assets/images/KokoroHome.png";
 import kokoroCakes from "../assets/images/KokoroCakes.png";
 import kokoroDesserts from "../assets/images/KokoroDesserts.png";
-import kokoroFavorites from "../assets/images/KokoroFavorites.png";
+import kokoroFavorites from "../assets/images/KokoroFavorites.webp";
 
 import kokoroChooseFlavor from "../assets/images/KokoroChooseFlavor.png";
 import kokoroSelectSize from "../assets/images/KokoroSelectSize.png";

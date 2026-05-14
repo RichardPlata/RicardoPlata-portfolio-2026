@@ -578,6 +578,11 @@ video {
 /* 🌱 ABOUT / EARTH SECTION */
 
 .about-section {
+  position: relative;
+  min-height: 115vh;
+  padding: 8rem 2.5rem;
+  overflow: hidden;
+  color: white;
   background: #afaba2;
 }
 
@@ -625,40 +630,49 @@ video {
     saturate(0.98)
     sepia(0.04)
     drop-shadow(0 38px 70px rgba(0, 0, 0, 0.24));
-  opacity: 0.9;
   will-change: transform, opacity;
+}
+
+/* Layout */
+
+.about-content {
+  position: relative;
+  z-index: 20;
+  min-height: 82vh;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: center;
+  gap: 2.5rem;
 }
 
 /* Panel de lectura */
 
 .about-text-panel {
+  grid-column: span 6;
   position: relative;
   padding: 2rem 2.2rem;
   border-radius: 34px;
   isolation: isolate;
+  will-change: transform, opacity;
 }
 
 .about-text-panel::before {
   content: "";
   position: absolute;
-
   top: -8rem;
   left: -8rem;
   right: -10rem;
   bottom: -8rem;
-
   z-index: -1;
   pointer-events: none;
-
   background:
     radial-gradient(
       ellipse at 18% 45%,
       rgba(58, 60, 50, 0.42) 0%,
       rgba(58, 60, 50, 0.24) 28%,
-      rgba(58, 60, 50, 0.10) 52%,
+      rgba(58, 60, 50, 0.1) 52%,
       transparent 72%
     ),
-
     linear-gradient(
       90deg,
       rgba(48, 50, 42, 0.34) 0%,
@@ -666,25 +680,44 @@ video {
       rgba(48, 50, 42, 0.04) 58%,
       transparent 82%
     );
-
   filter: blur(28px);
-
   opacity: 0.95;
 }
 
+.about-title {
+  margin-bottom: 2rem;
+  font-size: clamp(3.2rem, 7vw, 6.5rem);
+  line-height: 0.9;
+}
+
 .about-copy {
+  max-width: 36rem;
+  margin-top: 1.5rem;
   color: rgba(255, 252, 242, 0.94);
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  line-height: 1.75;
   text-shadow:
     0 2px 8px rgba(28, 30, 24, 0.55),
     0 0 16px rgba(28, 30, 24, 0.28);
 }
+
+.about-copy:first-of-type {
+  margin-top: 0;
+}
+
 /* Botón */
 
 .about-button {
+  display: inline-flex;
+  margin-top: 2.5rem;
+  border-radius: 999px;
+  padding: 0.85rem 1.75rem;
   color: #fff4bf;
   border: 1px solid rgba(255, 226, 130, 0.78);
   background: rgba(92, 88, 62, 0.26);
   backdrop-filter: blur(8px);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
   box-shadow:
     0 14px 35px rgba(0, 0, 0, 0.22),
     inset 0 0 18px rgba(255, 226, 130, 0.06);
@@ -705,6 +738,7 @@ video {
     0 18px 42px rgba(0, 0, 0, 0.28),
     0 0 28px rgba(255, 226, 130, 0.35);
 }
+
 /* Rocas flotantes */
 
 .about-rock-wrapper {
@@ -771,7 +805,6 @@ video {
   transform-origin: 65% 45%;
 }
 
-/* Roca movida al punto azul */
 .about-rock-4 {
   width: 78px;
   top: 45%;
@@ -809,10 +842,16 @@ video {
   transform-origin: 35% 65%;
 }
 
-/* Tarjeta foto */
+/* Foto */
+
+.about-photo-wrapper {
+  grid-column: 8 / span 5;
+  will-change: transform, opacity;
+}
 
 .about-photo-card {
   position: relative;
+  overflow: hidden;
   border-radius: 42px;
   padding: 1px;
   background:
@@ -839,71 +878,152 @@ video {
   );
 }
 
-.about-photo-placeholder {
-  height: 560px;
+.about-photo-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
   border-radius: 41px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255, 238, 183, 0.18), transparent 30%),
-    linear-gradient(180deg, rgba(132, 130, 96, 0.5), rgba(70, 67, 48, 0.46));
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.8rem;
-  letter-spacing: 0.35em;
-  backdrop-filter: blur(6px);
 }
 
-@media (max-width: 768px) {
+/* Tablet */
+
+@media (max-width: 1024px) {
+  .about-section {
+    min-height: auto;
+    padding: 7rem 2rem;
+  }
+
+  .about-content {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+
+  .about-text-panel,
+  .about-photo-wrapper {
+    grid-column: 1;
+  }
+
+  .about-text-panel {
+    max-width: 680px;
+  }
+
+  .about-photo-wrapper {
+    max-width: 520px;
+    justify-self: center;
+  }
+
   .about-mountain-img {
-    width: 145vw;
-    bottom: -2vh;
+    width: 135vw;
+    bottom: -4vh;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+  .about-section {
+    padding: 6rem 1.25rem;
+  }
+
+  .about-content {
+    gap: 3rem;
+  }
+
+  .about-text-panel {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .about-text-panel::before {
+    top: -4rem;
+    left: -3rem;
+    right: -3rem;
+    bottom: -4rem;
+    filter: blur(22px);
+  }
+
+  .about-title {
+    font-size: clamp(3rem, 15vw, 4.8rem);
+  }
+
+  .about-copy {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .about-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem 1.25rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+  }
+
+  .about-photo-wrapper {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .about-photo-card {
+    border-radius: 30px;
+  }
+
+  .about-photo-img {
+    border-radius: 29px;
+    aspect-ratio: 4 / 5;
+  }
+
+  .about-mountain-img {
+    width: 170vw;
+    bottom: -1vh;
+  }
+
+  .about-rock-wrapper {
+    opacity: 0.45 !important;
+  }
+}
+
+/* Mobile pequeño */
+
+@media (max-width: 480px) {
+  .about-section {
+    padding: 5rem 1rem;
+  }
+
+  .about-rock-2,
+  .about-rock-4,
+  .about-rock-6 {
+    display: none;
   }
 
   .about-rock-1 {
-    width: 105px;
-    top: 13%;
-    left: -4%;
-  }
-
-  .about-rock-2 {
-    width: 70px;
-    top: 18%;
-    left: 42%;
+    width: 82px;
+    top: 10%;
+    left: -8%;
   }
 
   .about-rock-3 {
-    width: 115px;
-    top: 16%;
-    right: -12%;
-  }
-
-  .about-rock-4 {
-    width: 64px;
-    top: 45%;
-    left: 58%;
+    width: 88px;
+    top: 14%;
+    right: -14%;
   }
 
   .about-rock-5 {
-    width: 90px;
-    top: 10%;
-    left: 58%;
-  }
-
-  .about-rock-6 {
-    width: 82px;
-    top: 43%;
-    right: -4%;
-  }
-
-  .about-photo-placeholder {
-    height: 420px;
+    width: 78px;
+    top: 7%;
+    left: 65%;
   }
 }
 
 /* 🌊 CONTACT / WATER SECTION */
 
 .contact-section {
+  position: relative;
+  min-height: 115vh;
+  padding: 8rem 2.5rem;
+  overflow: hidden;
+  color: white;
   background:
     radial-gradient(circle at 45% 35%, #193c5f 0%, transparent 42%),
     linear-gradient(180deg, #061527 0%, #0a2038 48%, #020814 100%);
@@ -924,6 +1044,13 @@ video {
   mix-blend-mode: screen;
   pointer-events: none;
   will-change: transform, opacity;
+}
+
+.contact-water-bg,
+.contact-water-light,
+.contact-water-vignette {
+  position: absolute;
+  inset: 0;
 }
 
 .contact-water-bg {
@@ -965,16 +1092,70 @@ video {
     );
 }
 
+/* Layout */
+
+.contact-content {
+  position: relative;
+  z-index: 20;
+  min-height: 82vh;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.contact-info {
+  grid-column: span 5;
+  will-change: transform, opacity;
+}
+
+.contact-form-wrapper {
+  grid-column: 7 / span 6;
+  will-change: transform, opacity;
+}
+
+/* Text */
+
 .contact-title {
+  margin-bottom: 2rem;
   color: #f2fcff;
+  font-size: clamp(3.2rem, 7vw, 6.5rem);
+  line-height: 0.9;
   text-shadow:
     0 4px 28px rgba(0, 0, 0, 0.7),
     0 0 28px rgba(120, 220, 255, 0.24);
 }
 
 .contact-copy {
+  max-width: 34rem;
   color: rgba(235, 250, 255, 0.88);
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  line-height: 1.75;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.65);
+}
+
+.contact-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+
+.contact-social {
+  color: rgba(235, 250, 255, 0.78);
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition:
+    color 250ms ease,
+    text-shadow 250ms ease,
+    transform 250ms ease;
+}
+
+.contact-social:hover {
+  color: #b9f3ff;
+  text-shadow: 0 0 22px rgba(142, 232, 255, 0.35);
+  transform: translateY(-2px);
 }
 
 .contact-link {
@@ -984,14 +1165,10 @@ video {
   letter-spacing: 0.08em;
 }
 
-.contact-social {
-  color: rgba(235, 250, 255, 0.78);
-  font-size: 0.85rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
+/* Form */
 
 .contact-form {
+  width: 100%;
   border-radius: 36px;
   padding: 2rem;
   border: 1px solid rgba(142, 232, 255, 0.35);
@@ -1001,6 +1178,12 @@ video {
   box-shadow:
     0 35px 90px rgba(0, 0, 0, 0.28),
     inset 0 0 40px rgba(120, 220, 255, 0.08);
+}
+
+.contact-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
 }
 
 .contact-form input,
@@ -1015,6 +1198,7 @@ video {
   padding: 1rem 1.1rem;
   outline: none;
   resize: none;
+  font-size: 1rem;
 }
 
 .contact-form select {
@@ -1042,6 +1226,10 @@ video {
   box-shadow: 0 0 22px rgba(142, 232, 255, 0.16);
 }
 
+.contact-form textarea {
+  min-height: 180px;
+}
+
 .contact-form button {
   width: 100%;
   border-radius: 999px;
@@ -1051,47 +1239,17 @@ video {
   background: rgba(58, 180, 220, 0.16);
   letter-spacing: 0.25em;
   font-size: 0.8rem;
-  transition: 250ms ease;
+  transition:
+    transform 250ms ease,
+    background 250ms ease,
+    box-shadow 250ms ease,
+    opacity 250ms ease;
 }
 
 .contact-form button:hover {
   transform: translateY(-2px);
   background: rgba(90, 210, 255, 0.24);
   box-shadow: 0 0 28px rgba(142, 232, 255, 0.25);
-}
-
-.hidden {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .contact-section {
-    padding: 7rem 1.5rem;
-  }
-
-  .contact-section .grid {
-    display: block;
-  }
-
-  .contact-form {
-    margin-top: 3rem;
-  }
-
-  .contact-form .grid {
-    display: block;
-  }
-
-  .contact-title {
-    font-size: 3.4rem;
-  }
-}
-
-.contact-status {
-  margin-top: 1rem;
-  color: rgba(185, 243, 255, 0.9);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  text-align: center;
 }
 
 .contact-form button:disabled {
@@ -1107,6 +1265,136 @@ video {
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Tablet */
+
+@media (max-width: 1024px) {
+  .contact-section {
+    min-height: auto;
+    padding: 7rem 2rem;
+  }
+
+  .contact-content {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+
+  .contact-info,
+  .contact-form-wrapper {
+    grid-column: 1;
+  }
+
+  .contact-info {
+    max-width: 680px;
+  }
+
+  .contact-form-wrapper {
+    width: 100%;
+    max-width: 680px;
+    justify-self: center;
+  }
+
+  .contact-water-video {
+    object-position: center;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 6rem 1.25rem;
+  }
+
+  .contact-content {
+    gap: 3rem;
+  }
+
+  .contact-title {
+    font-size: clamp(3rem, 15vw, 4.8rem);
+  }
+
+  .contact-copy {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .contact-socials {
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .contact-social {
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+  }
+
+  .contact-form {
+    border-radius: 28px;
+    padding: 1.4rem;
+  }
+
+  .contact-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .contact-form input,
+  .contact-form textarea,
+  .contact-form select {
+    margin-bottom: 1rem;
+    border-radius: 16px;
+    padding: 0.95rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .contact-form textarea {
+    min-height: 160px;
+  }
+
+  .contact-form button {
+    padding: 0.95rem 1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+  }
+
+  .contact-water-video {
+    opacity: 0.55;
+  }
+}
+
+/* Mobile pequeño */
+
+@media (max-width: 480px) {
+  .contact-section {
+    padding: 5rem 1rem;
+  }
+
+  .contact-title {
+    font-size: clamp(2.8rem, 16vw, 4.1rem);
+  }
+
+  .contact-form {
+    padding: 1.15rem;
+    border-radius: 24px;
+  }
+
+  .contact-socials {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contact-form input,
+  .contact-form textarea,
+  .contact-form select {
+    font-size: 0.9rem;
+  }
 }
 
 /* 🟣 DIGITAL VAULT CASE STUDY */
@@ -2392,5 +2680,211 @@ video {
 
   .kokoro-phone-frame {
     max-width: 240px;
+  }
+}
+
+/* 🧭 GLOBAL NAVBAR */
+
+.main-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  width: 100%;
+  padding: 1.35rem 2.5rem;
+  pointer-events: none;
+}
+
+.main-navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.42) 0%,
+      rgba(0, 0, 0, 0.22) 42%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  opacity: 0.85;
+}
+
+.main-navbar-inner {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: auto;
+}
+
+.main-navbar-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(0, 0, 0, 0.18) 45%,
+      rgba(0, 0, 0, 0.42) 100%
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.navbar-logo,
+.navbar-links button {
+  color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  font-size: 0.78rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.7),
+    0 0 18px rgba(0, 0, 0, 0.35);
+  transition:
+    color 250ms ease,
+    opacity 250ms ease,
+    transform 250ms ease,
+    text-shadow 250ms ease;
+}
+
+.navbar-logo:hover,
+.navbar-links button:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+  text-shadow:
+    0 0 12px rgba(255, 255, 255, 0.42),
+    0 4px 18px rgba(0, 0, 0, 0.72);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.navbar-menu-button {
+  display: none;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(10px);
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+
+/* Evita que la regla antigua de Kokoro vuelva oscuro el navbar */
+.kokoro-navbar-dark nav button,
+.kokoro-navbar-dark nav a {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.kokoro-navbar-dark nav button:hover,
+.kokoro-navbar-dark nav a:hover {
+  color: #ffffff !important;
+}
+
+/* 📱 NAVBAR RESPONSIVE */
+
+@media (max-width: 768px) {
+  .main-navbar {
+    padding: 1rem;
+  }
+
+  .main-navbar-inner {
+    padding: 0.75rem 0.85rem;
+  }
+
+.main-navbar-inner::before {
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(0, 0, 0, 0.22) 48%,
+      rgba(0, 0, 0, 0.52) 100%
+    );
+}
+
+  .navbar-logo {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+  }
+
+  .navbar-menu-button {
+    display: inline-flex;
+  }
+
+  .navbar-links {
+    position: absolute;
+    top: calc(100% + 0.8rem);
+    left: 0;
+    right: 0;
+    display: grid;
+    gap: 0.35rem;
+    padding: 1rem;
+    border-radius: 26px;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.72),
+        rgba(0, 0, 0, 0.42)
+      );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+    opacity: 0;
+    transform: translateY(-12px);
+    pointer-events: none;
+    transition:
+      opacity 250ms ease,
+      transform 250ms ease;
+  }
+
+  .navbar-links-open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .navbar-links li {
+    width: 100%;
+  }
+
+  .navbar-links button {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 18px;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+  }
+
+  .navbar-links button:hover {
+    background: rgba(255, 255, 255, 0.08);
   }
 }

@@ -12,15 +12,15 @@ import steamImage from "../assets/images/SteamImage.jpg";
 import amazonReference from "../assets/images/AmazonReference.png";
 import googleShoppingReference from "../assets/images/GoogleShoppingReference.png";
 
-import productListingStructure from "../assets/images/Product Listing Structure.png";
-import focusedPurchaseHierarchy from "../assets/images/Focused Purchase Hierarchy.png";
-import membershipSubscriptionSystem from "../assets/images/Membership & Subscription System.png";
-import centralizedUserManagement from "../assets/images/Centralized User Management.png";
+import productListingStructure from "../assets/images/Product Listing Structure.webp";
+import focusedPurchaseHierarchy from "../assets/images/Focused Purchase Hierarchy.webp";
+import membershipSubscriptionSystem from "../assets/images/Membership & Subscription System.webp";
+import centralizedUserManagement from "../assets/images/Centralized User Management.webp";
 
 import typographyDigitalVault from "../assets/images/TypographyDigitalVault.png";
 import iconographyDigitalVault from "../assets/images/IconographyDigitalVault.png";
 
-import cartScreen from "../assets/images/CartScreen.png";
+import cartScreen from "../assets/images/CartScreen.webp";
 import thankYouScreen from "../assets/images/ThankYouScreen.png";
 
 const fadeUp = {

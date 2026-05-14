@@ -1,9 +1,14 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiMenu, FiX } from "react-icons/fi";
 
 export default function NavBar() {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
 
   const goToSection = (sectionId) => {
+    setIsOpen(false);
+
     navigate("/", {
       state: {
         scrollTo: sectionId,
@@ -12,46 +17,43 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 z-[999] w-full px-10 py-6">
-      <div className="mx-auto flex max-w-7xl items-center justify-between">
-
+    <nav className="main-navbar">
+      <div className="main-navbar-inner">
         <button
           type="button"
           onClick={() => goToSection("home")}
-          className="text-sm uppercase tracking-[0.25em] text-white"
+          className="navbar-logo"
         >
           Ricardo Plata
         </button>
 
-        <ul className="flex items-center gap-12 text-sm uppercase tracking-[0.25em] text-white/90">
+        <button
+          type="button"
+          className="navbar-menu-button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          aria-label="Toggle navigation menu"
+        >
+          {isOpen ? <FiX /> : <FiMenu />}
+        </button>
 
+        <ul className={`navbar-links ${isOpen ? "navbar-links-open" : ""}`}>
           <li>
-            <button
-              type="button"
-              onClick={() => goToSection("projects")}
-            >
+            <button type="button" onClick={() => goToSection("projects")}>
               Projects
             </button>
           </li>
 
           <li>
-            <button
-              type="button"
-              onClick={() => goToSection("about")}
-            >
+            <button type="button" onClick={() => goToSection("about")}>
               About
             </button>
           </li>
 
           <li>
-            <button
-              type="button"
-              onClick={() => goToSection("contact")}
-            >
+            <button type="button" onClick={() => goToSection("contact")}>
               Contact
             </button>
           </li>
-
         </ul>
       </div>
     </nav>
