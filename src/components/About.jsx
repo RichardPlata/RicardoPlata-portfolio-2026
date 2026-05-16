@@ -190,21 +190,19 @@ export default function About() {
 
           <p className="about-copy">
             I’m Ricardo Plata, a UX/UI designer focused on crafting immersive
-            digital experiences through visual storytelling, interaction, and
-            thoughtful design systems.
+            digital experiences through interaction, motion, and visual storytelling.
           </p>
 
           <p className="about-copy">
-            With a background in game design and interactive media, I combine
-            structured UX thinking with a cinematic and motion-driven approach,
-            creating interfaces that feel intuitive, atmospheric, and
-            intentional.
+             With a background in game design and interactive media, I combine
+             structured UX thinking with cinematic visuals and atmosphere-driven
+             interfaces that aim to feel intuitive, intentional, and emotionally engaging.
           </p>
 
           <p className="about-copy">
-            I’m currently exploring the intersection between product design,
-            motion, and interactive systems, while continuing to pursue
-            opportunities within gaming and creative technology.
+            My work explores the intersection of product design, motion, and
+            interactive systems, with a growing interest in gaming, creative
+            technology, and immersive digital experiences.
           </p>
 
           <a

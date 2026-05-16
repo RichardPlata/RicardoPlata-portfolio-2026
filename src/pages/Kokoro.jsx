@@ -113,8 +113,9 @@ export default function Kokoro() {
           <h1>Kokoro</h1>
 
           <p>
-            A warm bakery mobile app designed to help users browse desserts,
-            customize cakes, and complete orders through a simple guided flow.
+            A warm bakery mobile app designed to make dessert discovery,
+            cake customization, and ordering feel playful, simple, and personal.
+
           </p>
 
           <button
@@ -136,18 +137,16 @@ export default function Kokoro() {
         <div className="kokoro-overview-grid">
           <Reveal>
             <h2>
-              Designing a softer mobile ordering experience for custom bakery
-              products.
+              Designing a softer and more playful bakery ordering experience.
             </h2>
           </Reveal>
 
           <Reveal>
             <p>
-              Kokoro is a mobile app concept for a bakery experience focused on
-              product discovery, custom cake personalization, cart review, and
-              checkout. The app uses a warm visual identity and a step-by-step
-              structure to make customization feel clear, emotional, and easy to
-              complete.
+              Kokoro is a bakery mobile app concept focused on product discovery,
+              cake customization, cart review, and checkout. The experience uses
+              a warm visual identity and guided interactions to make ordering feel
+              approachable, emotional, and easy to navigate.
             </p>
           </Reveal>
         </div>
@@ -182,9 +181,9 @@ export default function Kokoro() {
             <h3>The Problem</h3>
 
             <p>
-              Ordering a custom cake can become confusing when users need to
-              choose product type, flavor, size, fillings, toppings, messages,
-              and delivery details across multiple decisions.
+              Ordering a custom cake can quickly become overwhelming when people
+              need to make multiple decisions around flavors, sizes, fillings,
+              decorations, messages, and delivery details.
             </p>
           </Reveal>
 
@@ -192,9 +191,8 @@ export default function Kokoro() {
             <h3>The Objective</h3>
 
             <p>
-              To design a guided mobile flow that makes browsing and
-              customization feel simple, while keeping the experience warm,
-              visual, and easy to understand.
+              To design a guided mobile experience that simplifies customization
+              while preserving a warm, visual, and emotionally inviting tone.
             </p>
           </Reveal>
         </div>
@@ -256,9 +254,9 @@ export default function Kokoro() {
           <h2 className="kokoro-centered-title">Browsing the bakery catalog</h2>
 
           <p className="kokoro-section-intro">
-            The main experience focuses on visual discovery through product
-            categories, featured items, favorites, and a simple bottom
-            navigation system.
+            The browsing experience focuses on visual discovery through curated
+            categories, featured products, saved items, and lightweight mobile
+            navigation.
           </p>
         </Reveal>
 
@@ -311,9 +309,9 @@ export default function Kokoro() {
           </h2>
 
           <p className="kokoro-section-intro">
-            The strongest part of Kokoro is the guided customization flow. Each
-            step focuses on one decision at a time to reduce complexity and keep
-            the process playful.
+            The customization flow was designed to guide users through one
+            decision at a time, reducing complexity while keeping the process
+            playful and visually engaging.
           </p>
         </Reveal>
 
@@ -377,9 +375,9 @@ export default function Kokoro() {
           </h2>
 
           <p className="kokoro-section-intro">
-            The checkout screens help users confirm their product,
-            customization details, delivery information, price, and payment
-            method before placing the order.
+            The checkout experience helps users review customization details,
+            delivery information, pricing, and payment before completing the
+            order.
           </p>
         </Reveal>
 
@@ -424,9 +422,9 @@ export default function Kokoro() {
           <h2 className="kokoro-centered-title">Mobile app walkthrough</h2>
 
           <p className="kokoro-section-intro">
-            The final walkthrough connects the brand intro, catalog browsing,
-            product selection, customization, cart review, and checkout into one
-            cohesive mobile experience.
+            The final walkthrough connects onboarding, product discovery,
+            customization, cart review, and checkout into one cohesive mobile
+            journey.
           </p>
         </Reveal>
 
@@ -451,15 +449,16 @@ export default function Kokoro() {
           <p className="kokoro-section-label">Reflection</p>
 
           <h2>
-            This project helped me design a mobile experience where
-            customization feels guided, emotional, and easy to complete.
+            This project helped me explore how emotional design and guided
+            interactions can improve mobile ordering experiences.
           </h2>
 
           <p>
-            Kokoro strengthened my understanding of mobile hierarchy,
-            step-by-step flows, and how visual tone can support trust and
-            delight. If iterated further, I would test the customization flow,
-            checkout clarity, and how users compare different cake options.
+             Kokoro strengthened my understanding of mobile hierarchy,
+             guided interactions, and how visual tone can support trust,
+             delight, and emotional engagement. If expanded further, I would
+             continue testing customization behavior, checkout clarity, and
+             product comparison patterns.
           </p>
 
           <Link to="/" className="kokoro-primary-link">

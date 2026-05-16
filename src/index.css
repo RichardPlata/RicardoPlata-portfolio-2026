@@ -82,204 +82,33 @@ video {
   }
 }
 
-/* 🔥 PROJECTS LAYOUT */
+/* 🔥 PROJECTS SECTION */
 
-.projects-layout {
-  display: grid;
-  grid-template-columns: 1.25fr 0.85fr;
-  grid-template-rows: repeat(3, 240px);
-  gap: 1.5rem;
-}
-
-.project-large {
-  grid-row: span 3;
-}
-
-.project-small {
-  min-height: 240px;
-}
-
-/* 🔥 FLIP CARD */
-
-.flip-card {
+.projects-section {
   position: relative;
-  perspective: 1200px;
-  min-height: 240px;
-  transition:
-    opacity 300ms ease,
-    transform 300ms ease,
-    filter 300ms ease;
-}
-
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: inherit;
-  transform-style: preserve-3d;
-  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
-
-.flip-card-face {
-  position: absolute;
-  inset: 0;
+  z-index: 20;
+  min-height: 100vh;
   overflow: hidden;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 140, 80, 0.42);
-  backface-visibility: hidden;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(15, 15, 15, 0.48),
-      rgba(0, 0, 0, 0.82)
-    );
-  backdrop-filter: blur(10px);
-  box-shadow:
-    inset 0 0 40px rgba(255, 120, 40, 0.08),
-    0 24px 60px rgba(0, 0, 0, 0.24);
-}
-
-.flip-card-face::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.flip-card-face::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  border-radius: inherit;
-  box-shadow:
-    0 0 30px rgba(255, 120, 40, 0.12),
-    inset 0 0 40px rgba(255, 120, 40, 0.08);
-  pointer-events: none;
-}
-
-.flip-card-front,
-.flip-card-back {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.8rem;
-}
-
-.flip-card-back {
-  transform: rotateY(180deg);
-  background:
-    linear-gradient(
-      180deg,
-      rgba(80, 24, 8, 0.92),
-      rgba(10, 5, 3, 0.98)
-    );
-}
-
-.flip-card:hover .flip-card-face {
-  border-color: rgba(255, 170, 90, 0.85);
-}
-
-/* 🎥 PROJECT VIDEO */
-
-.project-card-video {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.7;
-  filter:
-    brightness(0.78)
-    contrast(1.1)
-    saturate(1.1);
-  transform: scale(1.04);
-  transition:
-    opacity 500ms ease,
-    transform 700ms ease,
-    filter 500ms ease;
-}
-
-.flip-card:hover .project-card-video {
-  opacity: 0.8;
-  transform: scale(1.08);
-  filter:
-    brightness(0.88)
-    contrast(1.14)
-    saturate(1.18);
-}
-
-.project-card-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(12, 4, 2, 0.16) 0%,
-      rgba(8, 3, 1, 0.5) 48%,
-      rgba(5, 2, 1, 0.9) 100%
-    ),
-    radial-gradient(
-      circle at top right,
-      rgba(255, 120, 40, 0.24),
-      transparent 56%
-    );
-  pointer-events: none;
-}
-
-.project-card-back-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(255, 120, 40, 0.22),
-      transparent 55%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(80, 24, 8, 0.88),
-      rgba(8, 3, 1, 0.98)
-    );
-  pointer-events: none;
+  color: white;
 }
 
 /* 🔥 PROJECTS LAYOUT */
 
 .projects-layout {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 430px 250px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.5rem;
 }
 
-.project-featured {
-  grid-column: 1 / -1;
-  min-height: 430px;
-}
-
-.project-small {
-  min-height: 250px;
-}
-
-/* 🔥 PROJECTS LAYOUT */
-
-.projects-layout {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-}
+/* Orden visual:
+   01 Digital Vault | 02 Kokoro
+   03 Beyond        | 04 Manos Místicas
+*/
 
 .project-card {
-  min-height: 330px;
+  position: relative;
+  min-height: 340px;
+  height: 340px;
 }
 
 /* 🔥 FLIP CARD */
@@ -428,11 +257,6 @@ video {
 
 /* 🔥 PROJECT CONTENT */
 
-.project-card {
-  min-height: 340px;
-  height: 340px;
-}
-
 .project-card-top {
   position: relative;
   z-index: 2;
@@ -513,14 +337,19 @@ video {
     0 0 28px rgba(255, 120, 40, 0.45);
 }
 
-/* 🖱️ HOVER READABILITY */
+.project-card-disabled {
+  cursor: default;
+}
 
-.flip-card:hover .flip-card-back .project-title,
-.flip-card:hover .flip-card-back .project-description,
-.flip-card:hover .flip-card-back .project-link,
-.flip-card:hover .flip-card-back .project-number,
-.flip-card:hover .flip-card-back .project-year {
-  opacity: 1;
+.project-link-disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.project-link-disabled:hover {
+  transform: none;
+  color: #ffb07a;
+  text-shadow: none;
 }
 
 /* 📱 RESPONSIVE PROJECTS */
@@ -533,7 +362,7 @@ video {
   }
 
   .projects-layout {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.25rem;
   }
 
@@ -556,8 +385,7 @@ video {
   }
 
   .projects-layout {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 
@@ -572,6 +400,33 @@ video {
 
   .project-card-video {
     object-position: center center;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-card {
+    min-height: 310px;
+    height: 310px;
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    padding: 1.35rem;
+  }
+
+  .project-title {
+    font-size: 1.75rem;
+  }
+
+  .project-description {
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .project-type,
+  .project-link {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
   }
 }
 

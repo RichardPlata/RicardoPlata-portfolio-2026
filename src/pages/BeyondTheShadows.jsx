@@ -117,8 +117,8 @@ export default function BeyondTheShadows() {
 
           <p>
             A horror game UI redesign focused on preserving immersion, improving
-            readability, and aligning interface feedback with a dark narrative
-            atmosphere.
+            readability, and aligning interface feedback with the game’s dark
+            atmospheric tone.
           </p>
 
           <button
@@ -138,15 +138,15 @@ export default function BeyondTheShadows() {
 
         <div className="bts-overview-grid">
           <Reveal>
-            <h2>Redesigning horror UI without breaking immersion.</h2>
+            <h2>Redesigning horror UI without sacrificing immersion.</h2>
           </Reveal>
 
           <Reveal>
             <p>
-              Beyond The Shadows is a narrative horror game developed in Unreal
-              Engine 5. This case study focuses on redesigning its interface to
-              improve HUD clarity, pause-state continuity, visual consistency,
-              and emotional tension during gameplay.
+               Beyond The Shadows is a narrative horror game developed in Unreal
+               Engine 5. This case study explores how interface redesign can improve
+               HUD clarity, pause-state continuity, visual consistency, and emotional
+               tension during gameplay.
             </p>
           </Reveal>
         </div>
@@ -180,8 +180,8 @@ export default function BeyondTheShadows() {
             <h3>The Problem</h3>
             <p>
               The original interface introduced visual elements that competed
-              with the game’s horror atmosphere, reducing immersion and making
-              key gameplay states feel visually disconnected from the world.
+              with the game’s atmosphere, reducing immersion and making key
+              gameplay states feel disconnected from the world.
             </p>
           </Reveal>
 
@@ -210,8 +210,8 @@ export default function BeyondTheShadows() {
 
             <h3>Teen Players</h3>
             <p>
-              Players from 15 years old who enjoy atmospheric, narrative-driven
-              horror experiences.
+              Players aged 15+ who enjoy atmospheric, narrative-driven horror
+              experiences.
             </p>
           </Reveal>
 
@@ -248,7 +248,7 @@ export default function BeyondTheShadows() {
 
           <p className="bts-section-intro">
             The redesign focused on gameplay moments where the interface
-            affected immersion, readability, and emotional continuity.
+            directly impacted immersion, readability, and emotional continuity.
           </p>
         </Reveal>
 
@@ -264,7 +264,7 @@ export default function BeyondTheShadows() {
 
           <BeforeAfterBlock
             title="Pause Menu"
-            description="The pause menu was redesigned as a darker semi-transparent layer to keep the player visually connected to the environment."
+            description="The pause menu was redesigned as a darker semi-transparent layer that keeps players visually connected to the environment."
             beforeImage={pauseBefore}
             afterImage={pauseAfter}
             beforeAlt="Pause menu before redesign"
@@ -285,7 +285,7 @@ export default function BeyondTheShadows() {
       <section className="bts-section bts-wide-section">
         <Reveal>
           <p className="bts-section-label">Benchmarking</p>
-          <h2 className="bts-centered-title">Visual & Genre References</h2>
+          <h2 className="bts-centered-title">Visual References & Genre Inspiration</h2>
         </Reveal>
 
         <div className="bts-benchmark-grid">
@@ -346,7 +346,7 @@ export default function BeyondTheShadows() {
           <p className="bts-section-label">UX Decisions</p>
 
           <h2 className="bts-centered-title">
-            Balancing atmosphere with functional clarity
+            Balancing atmosphere, readability, and immersion
           </h2>
         </Reveal>
 
@@ -400,7 +400,7 @@ export default function BeyondTheShadows() {
 
             <p>
               The redesign uses cold blue shadows, restrained red accents, deep
-              blacks, and translucent surfaces to support tension without
+              blacks, and translucent surfaces to reinforce tension without
               sacrificing readability.
             </p>
 
@@ -421,14 +421,14 @@ export default function BeyondTheShadows() {
           <p className="bts-section-label">Reflection</p>
 
           <h2>
-            This redesign strengthened my understanding of immersive UI systems
-            in horror games.
+            This redesign strengthened my understanding of immersive interface
+            systems within horror games.
           </h2>
 
           <p>
             Balancing atmospheric storytelling with functional clarity required
-            careful attention to contrast, feedback hierarchy, and player-state
-            communication.
+  careful attention to contrast, feedback hierarchy, and player-state
+  communication throughout the experience.
           </p>
 
           <Link to="/" className="bts-primary-link">

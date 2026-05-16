@@ -96,8 +96,8 @@ export default function DigitalVault() {
           <h1>Digital Vault</h1>
 
           <p>
-            A gaming-focused e-commerce platform designed to make product
-            discovery clearer, faster, and visually connected to gaming culture.
+             A gaming-focused e-commerce experience designed to make product
+             discovery feel clearer, faster, and visually connected to gaming culture.
           </p>
 
           <button
@@ -117,13 +117,13 @@ export default function DigitalVault() {
 
         <div className="dv-overview-grid">
           <Reveal>
-            <h2>Designing a clearer marketplace for digital-native gamers.</h2>
+            <h2>Designing a clearer marketplace experience for modern gamers.</h2>
           </Reveal>
 
           <Reveal>
             <p>
-              Digital Vault is a concept e-commerce platform created to explore
-              how gaming products can be presented with stronger hierarchy,
+              Digital Vault is a concept e-commerce experience created to explore
+              how gaming products can be presented through stronger hierarchy,
               cleaner navigation, and a more immersive visual identity.
             </p>
           </Reveal>
@@ -157,8 +157,9 @@ export default function DigitalVault() {
           <Reveal className="dv-info-card">
             <h3>The Problem</h3>
             <p>
-              Many gaming marketplaces expose users to dense layouts, multiple
-              promotions, repeated categories, and competing visual elements.
+               Many gaming marketplaces overwhelm users with dense layouts,
+               competing promotions, repeated categories, and visually cluttered
+               interfaces.
             </p>
           </Reveal>
 
@@ -166,8 +167,8 @@ export default function DigitalVault() {
             <h3>The Objective</h3>
             <p>
               To design a marketplace experience that feels immersive and
-              visually connected to gaming, while keeping the structure easy to
-              scan, navigate, and understand.
+              visually connected to gaming culture while remaining clear,
+              structured, and easy to navigate.
             </p>
           </Reveal>
         </div>
@@ -233,7 +234,7 @@ export default function DigitalVault() {
               <h3>Steam</h3>
               <p>
                 Strong category segmentation and personalized recommendations,
-                but the interface can become visually dense.
+                although the interface can feel visually dense over time.
               </p>
             </div>
           </Reveal>
@@ -246,8 +247,8 @@ export default function DigitalVault() {
               <span className="dv-mini-label">Benchmark</span>
               <h3>Amazon</h3>
               <p>
-                Effective checkout patterns and trust signals, but the
-                experience can feel visually cluttered.
+                 Effective checkout patterns and trust signals, though the overall
+                 experience can feel visually overwhelming.
               </p>
             </div>
           </Reveal>
@@ -260,8 +261,8 @@ export default function DigitalVault() {
               <span className="dv-mini-label">Benchmark</span>
               <h3>Google Shopping</h3>
               <p>
-                Useful for comparison and purchase intent, but limited in
-                immersive branding and emotional product storytelling.
+                 Useful for comparison and purchase intent, but limited in
+                 immersive branding and emotional engagement.
               </p>
             </div>
           </Reveal>
@@ -292,8 +293,8 @@ export default function DigitalVault() {
           <Reveal className="dv-media-card">
             <h3>High Fidelity</h3>
             <p>
-              The final homepage applies hierarchy, dark surfaces, product
-              imagery, and purple accents.
+              The final interface combines dark surfaces, product imagery,
+              structured hierarchy, and purple accents inspired by gaming culture.
             </p>
 
             <div className="dv-media-frame dv-process-media">
@@ -309,7 +310,7 @@ export default function DigitalVault() {
         <Reveal>
           <p className="dv-section-label">UX Decisions</p>
           <h2 className="dv-centered-title">
-            Designing for clarity and purchase confidence
+            Designing for clarity, trust, and purchase confidence
           </h2>
         </Reveal>
 
@@ -440,13 +441,14 @@ export default function DigitalVault() {
           <p className="dv-section-label">Reflection</p>
 
           <h2>
-            This project helped me design a more structured digital shopping
-            experience without losing visual atmosphere.
+             This project helped me explore how visual atmosphere and structured
+             UX can coexist within a gaming-focused shopping experience.
           </h2>
 
           <p>
-            Digital Vault strengthened my understanding of how hierarchy,
-            navigation, and visual identity work together in e-commerce.
+           Digital Vault strengthened my understanding of how hierarchy,
+           navigation, interaction flow, and visual identity work together
+           within modern e-commerce experiences.
           </p>
 
           <Link to="/" className="dv-primary-link">

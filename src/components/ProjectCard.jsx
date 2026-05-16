@@ -5,19 +5,19 @@ import cenizasVideo from "../assets/videos/Flames.mp4";
 
 import digitalVaultVideo from "../assets/videos/DigitalVaultCardVideo.mp4";
 import kokoroVideo from "../assets/videos/KokoroCardVideo.mp4";
-import manosMisticasVideo from "../assets/videos/ManosMisticasCardVideo.mp4";
 import btsVideo from "../assets/videos/BtsVideoCard.mp4";
+import manosMisticasVideo from "../assets/videos/ManosMisticasCardVideo.mp4";
 
 const projects = [
   {
     number: "01",
     title: "Digital Vault",
     year: "April 2025",
-    type: "E-commerce · UX/UI · Marketing",
+    type: "E-commerce · UX/UI · Web Design",
     video: digitalVaultVideo,
     videoPosition: "center center",
     description:
-      "Gaming-focused e-commerce platform designed to simplify product discovery, improve navigation clarity, and support purchase decisions.",
+      "Gaming-focused e-commerce experience designed to improve product discovery, navigation clarity, and purchase confidence through a stronger visual and UX structure.",
     linkLabel: "View Case Study",
     path: "/projects/digital-vault",
     available: true,
@@ -30,36 +30,36 @@ const projects = [
     video: kokoroVideo,
     videoPosition: "center center",
     description:
-      "Bakery mobile app prototype with a cozy visual identity, customization flow, checkout experience, and motion-based interactions.",
+      "Bakery mobile app concept featuring a warm visual identity, product browsing, cake customization, checkout flow, and motion-driven interactions.",
     linkLabel: "View Case Study",
     path: "/projects/kokoro",
     available: true,
   },
   {
     number: "03",
+    title: "Beyond The Shadows",
+    year: "January 2025",
+    type: "Game UI · Player UX · Redesign",
+    video: btsVideo,
+    videoPosition: "center center",
+    description:
+      "Game UI redesign for a narrative horror experience, focused on improving immersion, readability, visual consistency, and player-facing interface clarity.",
+    linkLabel: "View Case Study",
+    path: "/projects/beyond-the-shadows",
+    available: true,
+  },
+  {
+    number: "04",
     title: "Manos Místicas",
-    year: "",
+    year: "Coming Soon",
     type: "Web Design · Motion · UX/UI",
     video: manosMisticasVideo,
     videoPosition: "center top",
     description:
-      "Immersive holistic website experience focused on wellness, visual storytelling, soft motion, and editorial interaction.",
+      "Immersive wellness website concept exploring holistic services through atmospheric visuals, soft motion, editorial layout, and guided interaction.",
     linkLabel: "Coming Soon",
     path: "",
     available: false,
-  },
-  {
-    number: "04",
-    title: "Beyond The Shadows",
-    year: "January 2025",
-    type: "Game UI · Player UX",
-    video: btsVideo,
-    videoPosition: "center center",
-    description:
-      "UI redesign for a narrative horror game focused on improving immersion, readability, and visual consistency.",
-    linkLabel: "View Case Study",
-    path: "/projects/beyond-the-shadows",
-    available: true,
   },
 ];
 
@@ -147,6 +147,7 @@ export default function Projects() {
         loop
         muted
         playsInline
+        preload="none"
         className="
           absolute
           inset-0
@@ -225,6 +226,7 @@ export default function Projects() {
                       muted
                       loop
                       playsInline
+                      preload="metadata"
                       style={{
                         objectPosition: project.videoPosition,
                       }}

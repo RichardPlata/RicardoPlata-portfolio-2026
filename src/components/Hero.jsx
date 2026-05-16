@@ -221,7 +221,7 @@ export default function Hero() {
         </h1>
 
         <p className="font-avatar text-xl mt-5 text-white/70">
-          Digital Designer shaping meaningful experiences
+          Crafting immersive digital experiences through motion and interaction
         </p>
       </div>
     </section>
