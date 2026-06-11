@@ -3,23 +3,23 @@ import { Link } from "react-router-dom";
 
 import cenizasVideo from "../assets/videos/Flames.mp4";
 
+import auraDriveVideo from "../assets/videos/AuraDriveCardVideo.mp4";
 import digitalVaultVideo from "../assets/videos/DigitalVaultCardVideo.mp4";
 import kokoroVideo from "../assets/videos/KokoroCardVideo.mp4";
 import btsVideo from "../assets/videos/BtsVideoCard.mp4";
-import manosMisticasVideo from "../assets/videos/ManosMisticasCardVideo.mp4";
 
 const projects = [
   {
     number: "01",
-    title: "Digital Vault",
-    year: "April 2025",
-    type: "E-commerce · UX/UI · Web Design",
-    video: digitalVaultVideo,
+    title: "AURA Drive",
+    year: "June 2026",
+    type: "Automotive UX · HMI · 3D · React",
+    video: auraDriveVideo,
     videoPosition: "center center",
     description:
-      "Gaming-focused e-commerce experience designed to improve product discovery, navigation clarity, and purchase confidence through a stronger visual and UX structure.",
+      "Interactive automotive HMI concept built with React, Three.js and GSAP, featuring a 3D vehicle showroom, digital cluster, center display, drive modes, ambient lighting, assistant flows, and a cockpit UI focus mode.",
     linkLabel: "View Case Study",
-    path: "/projects/digital-vault",
+    path: "/projects/aura-drive",
     available: true,
   },
   {
@@ -37,6 +37,19 @@ const projects = [
   },
   {
     number: "03",
+    title: "Digital Vault",
+    year: "April 2025",
+    type: "E-commerce · UX/UI · Web Design",
+    video: digitalVaultVideo,
+    videoPosition: "center center",
+    description:
+      "Gaming-focused e-commerce experience designed to improve product discovery, navigation clarity, and purchase confidence through a stronger visual and UX structure.",
+    linkLabel: "View Case Study",
+    path: "/projects/digital-vault",
+    available: true,
+  },
+  {
+    number: "04",
     title: "Beyond The Shadows",
     year: "January 2025",
     type: "Game UI · Player UX · Redesign",
@@ -47,19 +60,6 @@ const projects = [
     linkLabel: "View Case Study",
     path: "/projects/beyond-the-shadows",
     available: true,
-  },
-  {
-    number: "04",
-    title: "Manos Místicas",
-    year: "Coming Soon",
-    type: "Web Design · Motion · UX/UI",
-    video: manosMisticasVideo,
-    videoPosition: "center top",
-    description:
-      "Immersive wellness website concept exploring holistic services through atmospheric visuals, soft motion, editorial layout, and guided interaction.",
-    linkLabel: "Coming Soon",
-    path: "",
-    available: false,
   },
 ];
 
@@ -268,15 +268,9 @@ export default function Projects() {
                         {project.description}
                       </p>
 
-                      {project.available ? (
-                        <Link className="project-link" to={project.path}>
-                          {project.linkLabel}
-                        </Link>
-                      ) : (
-                        <span className="project-link project-link-disabled">
-                          {project.linkLabel}
-                        </span>
-                      )}
+                      <Link className="project-link" to={project.path}>
+                        {project.linkLabel}
+                      </Link>
                     </div>
                   </div>
                 </div>

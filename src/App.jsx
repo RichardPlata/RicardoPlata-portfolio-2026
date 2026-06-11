@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import DigitalVault from "./pages/DigitalVault";
 import Kokoro from "./pages/Kokoro";
 import BeyondTheShadows from "./pages/BeyondTheShadows";
+import AuraDrive from "./pages/AuraDrive";
 
 function App() {
   return (
@@ -16,9 +17,13 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/projects/digital-vault" element={<DigitalVault />} />
+        <Route path="/projects/aura-drive" element={<AuraDrive />} />
         <Route path="/projects/kokoro" element={<Kokoro />} />
-        <Route path="/projects/beyond-the-shadows" element={<BeyondTheShadows />} />
+        <Route path="/projects/digital-vault" element={<DigitalVault />} />
+        <Route
+          path="/projects/beyond-the-shadows"
+          element={<BeyondTheShadows />}
+        />
       </Routes>
     </BrowserRouter>
   );
