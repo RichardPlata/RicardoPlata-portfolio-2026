@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import cenizasVideo from "../assets/videos/Flames.mp4";
 
 import auraDriveVideo from "../assets/videos/AuraDriveCardVideo.mp4";
-import digitalVaultVideo from "../assets/videos/DigitalVaultCardVideo.mp4";
+import guQiVideo from "../assets/videos/GuQi-video.mp4";
 import kokoroVideo from "../assets/videos/KokoroCardVideo.mp4";
 import btsVideo from "../assets/videos/BtsVideoCard.mp4";
 
@@ -37,15 +37,15 @@ const projects = [
   },
   {
     number: "03",
-    title: "Digital Vault",
-    year: "April 2025",
-    type: "E-commerce · UX/UI · Web Design",
-    video: digitalVaultVideo,
+    title: "GU-QI",
+    year: "June 2026",
+    type: "Client Project · UX/UI · Web Design · React",
+    video: guQiVideo,
     videoPosition: "center center",
     description:
-      "Gaming-focused e-commerce experience designed to improve product discovery, navigation clarity, and purchase confidence through a stronger visual and UX structure.",
+      "Integrative wellness website designed for GU-QI, focused on premium visual identity, responsive service discovery, therapy modals, course information, and WhatsApp-based booking.",
     linkLabel: "View Case Study",
-    path: "/projects/digital-vault",
+    path: "/projects/gu-qi",
     available: true,
   },
   {
