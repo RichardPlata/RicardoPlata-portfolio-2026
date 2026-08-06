@@ -1,257 +1,485 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 
 import waterVideo from "../assets/videos/water.mp4";
 
+import Magnetic from "../components/Magnetic";
+import PointerSurface from "../components/PointerSurface";
+
+const emailAddress = "g2ricardogplata@gmail.com";
+const premiumEase = [0.22, 1, 0.36, 1];
+
+const roles = [
+  "Product Design",
+  "UX/UI Design",
+  "Interaction Design",
+  "Automotive HMI",
+  "Creative Technology",
+];
+
+const resources = [
+  {
+    label: "Email",
+    value: emailAddress,
+    href: `mailto:${emailAddress}`,
+    external: false,
+  },
+  {
+    label: "LinkedIn",
+    value: "View professional profile",
+    href: "https://www.linkedin.com/in/ricardo-guadarrama-plata-976a8b209",
+    external: true,
+  },
+  {
+    label: "GitHub",
+    value: "RichardPlata",
+    href: "https://github.com/RichardPlata",
+    external: true,
+  },
+];
+
+const textContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.08,
+    },
+  },
+};
+
+const textItemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 34,
+    filter: "blur(9px)",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.8,
+      ease: premiumEase,
+    },
+  },
+};
+
+const cardContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.09,
+      delayChildren: 0.16,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 26,
+    scale: 0.97,
+    filter: "blur(7px)",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.72,
+      ease: premiumEase,
+    },
+  },
+};
+
 export default function Contact() {
   const sectionRef = useRef(null);
-  const formRef = useRef(null);
-  const ticking = useRef(false);
+  const videoRef = useRef(null);
 
-  const [progress, setProgress] = useState({
-    enter: 0,
-    exit: 0,
+  const reduceMotion = useReducedMotion();
+
+  const isInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.12,
+    margin: "0px 0px -12% 0px",
   });
 
-  const [formStatus, setFormStatus] = useState("");
-  const [isSending, setIsSending] = useState(false);
+  const isSectionVisible = useInView(sectionRef, {
+    amount: 0.05,
+    margin: "180px 0px 180px 0px",
+  });
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const videoScale = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    reduceMotion ? [1, 1, 1] : [1.08, 1.03, 1.08],
+  );
+
+  const videoY = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    reduceMotion ? [0, 0, 0] : [45, 0, -35],
+  );
+
+  const cardY = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    reduceMotion ? [0, 0, 0] : [70, 0, -24],
+  );
+
+  const cardRotate = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    reduceMotion ? [0, 0, 0] : [1.1, 0, -0.8],
+  );
 
   useEffect(() => {
-    const updateProgress = () => {
-      if (!sectionRef.current) return;
+    const video = videoRef.current;
 
-      const rect = sectionRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const sectionHeight = rect.height;
+    if (!video) return;
 
-      const enter = Math.min(
-        Math.max((windowHeight - rect.top) / windowHeight, 0),
-        1
-      );
+    video.playbackRate = 0.65;
 
-      const exitStart = sectionHeight * 0.45;
-      const exitDistance = sectionHeight * 0.55;
+    if (isSectionVisible) {
+      const playPromise = video.play();
 
-      const exit = Math.min(
-        Math.max((-rect.top - exitStart) / exitDistance, 0),
-        1
-      );
-
-      setProgress({ enter, exit });
-      ticking.current = false;
-    };
-
-    const handleScroll = () => {
-      if (!ticking.current) {
-        window.requestAnimationFrame(updateProgress);
-        ticking.current = true;
+      if (playPromise) {
+        playPromise.catch(() => {});
       }
-    };
 
-    updateProgress();
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", updateProgress);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", updateProgress);
-    };
-  }, []);
-
-  useEffect(() => {
-    const video = document.getElementById("water-video");
-
-    if (video) {
-      video.playbackRate = 0.65;
+      return;
     }
-  }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    setIsSending(true);
-    setFormStatus("");
-
-    const formData = new FormData(event.currentTarget);
-
-    try {
-      const response = await fetch("https://formspree.io/f/mojrrava", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (response.ok) {
-        setFormStatus("Thanks — I’ll get back to you soon.");
-        formRef.current.reset();
-      } else {
-        setFormStatus("Something went wrong. Please try again.");
-      }
-    } catch (error) {
-      setFormStatus("Something went wrong. Please try again.");
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const { enter, exit } = progress;
-
-  const contentOpacity =
-    Math.min(Math.max((enter - 0.15) * 1.8, 0), 1) * (1 - exit * 0.75);
-
-  const videoOpacity =
-    Math.min(Math.max((enter - 0.05) * 1.4, 0), 1) * (1 - exit * 0.65);
-
-  const contentY = 70 - contentOpacity * 70 + exit * -25;
-  const cardY = 90 - contentOpacity * 90 + exit * 35;
+    video.pause();
+  }, [isSectionVisible]);
 
   return (
-    <section id="contact" ref={sectionRef} className="contact-section">
-      <video
-        id="water-video"
-        autoPlay
+    <section
+      id="contact"
+      ref={sectionRef}
+      aria-labelledby="contact-title"
+      className="contact-section"
+    >
+      <motion.video
+        ref={videoRef}
         loop
         muted
         playsInline
         preload="none"
+        aria-hidden="true"
         className="contact-water-video"
+        initial={
+          reduceMotion
+            ? false
+            : {
+                opacity: 0.18,
+              }
+        }
+        animate={
+          isSectionVisible
+            ? {
+                opacity: 0.58,
+              }
+            : {
+                opacity: reduceMotion ? 0.48 : 0.18,
+              }
+        }
+        transition={{
+          duration: reduceMotion ? 0 : 1.4,
+          ease: premiumEase,
+        }}
         style={{
-          opacity: videoOpacity,
-          transform: `scale(${1.05 + enter * 0.03})`,
+          scale: videoScale,
+          y: videoY,
         }}
       >
         <source src={waterVideo} type="video/mp4" />
-      </video>
+      </motion.video>
 
       <div className="contact-water-bg" />
       <div className="contact-water-light" />
       <div className="contact-water-vignette" />
+      <div className="contact-water-atmosphere" />
 
       <div className="contact-content">
-        <div
+        <motion.div
           className="contact-info"
+          variants={textContainerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          <motion.p
+            variants={textItemVariants}
+            className="contact-eyebrow"
+          >
+            Available for opportunities
+          </motion.p>
+
+          <motion.h2
+            variants={textItemVariants}
+            id="contact-title"
+            className="contact-title font-avatar"
+          >
+            Let’s build meaningful experiences.
+          </motion.h2>
+
+          <motion.p
+            variants={textItemVariants}
+            className="contact-copy"
+          >
+            I’m open to full-time opportunities and collaborations across
+            product design, UX/UI, interaction design, automotive HMI, and
+            creative technology.
+          </motion.p>
+
+          <motion.div
+            variants={cardContainerVariants}
+            className="contact-role-list"
+          >
+            {roles.map((role) => (
+              <motion.span
+                key={role}
+                variants={cardVariants}
+                className="contact-role"
+              >
+                {role}
+              </motion.span>
+            ))}
+          </motion.div>
+
+          <motion.div
+            variants={cardContainerVariants}
+            className="contact-status-grid"
+          >
+            <motion.article
+              variants={cardVariants}
+              className="contact-status-card"
+            >
+              <span>Location</span>
+
+              <strong>
+                Based in Mexico · Open to relocation
+              </strong>
+            </motion.article>
+
+            <motion.article
+              variants={cardVariants}
+              className="contact-status-card"
+            >
+              <span>Availability</span>
+
+              <strong>
+                Open to full-time opportunities
+              </strong>
+            </motion.article>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="contact-card-wrapper"
+          initial={
+            reduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  scale: 0.93,
+                  filter: "blur(12px)",
+                }
+          }
+          animate={
+            isInView
+              ? {
+                  opacity: 1,
+                  scale: 1,
+                  filter: "blur(0px)",
+                }
+              : {
+                  opacity: 0,
+                  scale: 0.93,
+                  filter: "blur(12px)",
+                }
+          }
+          transition={{
+            duration: reduceMotion ? 0 : 1,
+            delay: reduceMotion ? 0 : 0.24,
+            ease: premiumEase,
+          }}
           style={{
-            opacity: contentOpacity,
-            transform: `translateY(${contentY}px)`,
-            filter: `blur(${exit * 4}px)`,
+            y: cardY,
+            rotate: cardRotate,
           }}
         >
-          <h2 className="contact-title font-avatar">Get in Touch</h2>
-
-          <p className="contact-copy">
-            Have a design project, collaboration, or creative opportunity in
-            mind? Share a few details and I’ll get back to you soon.
-          </p>
-
-          <div className="contact-socials">
-            <a
-              className="contact-social"
-              href="https://www.linkedin.com/in/ricardo-guadarrama-plata-976a8b209"
-              target="_blank"
-              rel="noreferrer"
+          <PointerSurface
+            className="contact-card-surface"
+            strength={4}
+            glowSize={500}
+          >
+            <div className="contact-card">
+            <motion.header
+              variants={textContainerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              className="contact-card-header"
             >
-              LinkedIn
-            </a>
+              <motion.span variants={textItemVariants}>
+                Contact and profiles
+              </motion.span>
 
-            <a
-              className="contact-social"
-              href="https://www.behance.net/rich11"
-              target="_blank"
-              rel="noreferrer"
+              <motion.h3 variants={textItemVariants}>
+                Start a conversation.
+              </motion.h3>
+            </motion.header>
+
+            <motion.div
+              variants={cardContainerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              className="contact-link-list"
             >
-              Behance
-            </a>
+              {resources.map((resource) => (
+                <motion.a
+                  key={resource.label}
+                  variants={cardVariants}
+                  href={resource.href}
+                  className="contact-resource"
+                  target={resource.external ? "_blank" : undefined}
+                  rel={
+                    resource.external
+                      ? "noopener noreferrer"
+                      : undefined
+                  }
+                >
+                  <div className="contact-resource-copy">
+                    <span>{resource.label}</span>
+                    <strong>{resource.value}</strong>
+                  </div>
 
-            <a
-              className="contact-social"
-              href="https://dribbble.com/Richgup"
-              target="_blank"
-              rel="noreferrer"
+                  <span
+                    className="contact-resource-arrow"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+                </motion.a>
+              ))}
+            </motion.div>
+
+            <Magnetic>
+              <motion.a
+                initial={
+                reduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                      y: 20,
+                    }
+              }
+              animate={
+                isInView
+                  ? {
+                      opacity: 1,
+                      y: 0,
+                    }
+                  : {
+                      opacity: 0,
+                      y: 20,
+                    }
+              }
+              transition={{
+                duration: reduceMotion ? 0 : 0.7,
+                delay: reduceMotion ? 0 : 0.55,
+                ease: premiumEase,
+              }}
+              href={`mailto:${emailAddress}?subject=Opportunity%20for%20Ricardo%20Plata`}
+              className="contact-primary-action"
             >
-              Dribbble
-            </a>
-          </div>
-        </div>
+              Email Me
 
-        <div
-          className="contact-form-wrapper"
-          style={{
-            opacity: contentOpacity,
-            transform: `
-              translateY(${cardY}px)
-              scale(${0.96 + contentOpacity * 0.04})
-            `,
-            filter: `blur(${exit * 4}px)`,
-          }}
-        >
-          <form ref={formRef} className="contact-form" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              name="_gotcha"
-              className="hidden"
-              tabIndex="-1"
-            />
+              <span aria-hidden="true">
+                →
+              </span>
+              </motion.a>
+            </Magnetic>
 
-            <div className="contact-form-grid">
-              <input type="text" name="name" placeholder="Name" required />
-
-              <input type="email" name="email" placeholder="Email" required />
+            <motion.p
+              initial={
+                reduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                    }
+              }
+              animate={
+                isInView
+                  ? {
+                      opacity: 1,
+                    }
+                  : {
+                      opacity: 0,
+                    }
+              }
+              transition={{
+                duration: reduceMotion ? 0 : 0.6,
+                delay: reduceMotion ? 0 : 0.7,
+                ease: premiumEase,
+              }}
+              className="contact-response"
+            >
+              Typically responds within 24 hours
+            </motion.p>
             </div>
-
-            <div className="contact-form-grid">
-              <select name="projectType" required defaultValue="">
-                <option value="" disabled>
-                  Project Type
-                </option>
-
-                <option value="UX/UI Design">UX/UI Design</option>
-                <option value="Website Design">Website Design</option>
-                <option value="Interactive Experience">
-                  Interactive Experience
-                </option>
-                <option value="Motion / 3D">Motion / 3D</option>
-                <option value="Collaboration">Collaboration</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <select name="budget" required defaultValue="">
-                <option value="" disabled>
-                  Budget
-                </option>
-
-                <option value="Less than $500">Less than $500</option>
-                <option value="$500 - $1,000">$500 - $1,000</option>
-                <option value="$1,000 - $3,000">$1,000 - $3,000</option>
-                <option value="$3,000+">$3,000+</option>
-                <option value="Not sure yet">Not sure yet</option>
-              </select>
-            </div>
-
-            <input
-              type="text"
-              name="timeline"
-              placeholder="Timeline / Deadline"
-              required
-            />
-
-            <textarea
-              name="message"
-              placeholder="Tell me about your project"
-              rows="8"
-              minLength="40"
-              required
-            />
-
-            <button type="submit" disabled={isSending}>
-              {isSending ? "SENDING..." : "SEND PROJECT INQUIRY"}
-            </button>
-
-            {formStatus && <p className="contact-status">{formStatus}</p>}
-          </form>
-        </div>
+          </PointerSurface>
+        </motion.div>
       </div>
+
+      <motion.footer
+        initial={
+          reduceMotion
+            ? false
+            : {
+                opacity: 0,
+                y: 20,
+              }
+        }
+        animate={
+          isInView
+            ? {
+                opacity: 1,
+                y: 0,
+              }
+            : {
+                opacity: 0,
+                y: 20,
+              }
+        }
+        transition={{
+          duration: reduceMotion ? 0 : 0.7,
+          delay: reduceMotion ? 0 : 0.82,
+          ease: premiumEase,
+        }}
+        className="contact-footer"
+      >
+        <span>
+          Designed and developed by Ricardo Plata
+        </span>
+
+        <span>
+          2026
+        </span>
+      </motion.footer>
     </section>
   );
 }

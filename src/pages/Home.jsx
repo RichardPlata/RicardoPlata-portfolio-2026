@@ -5,7 +5,7 @@ import Contact from "../components/Contact";
 
 export default function Home() {
   return (
-    <main id="home" className="relative bg-[#0f172a]">
+    <main className="relative bg-[#0f172a]">
       <Hero />
       <Projects />
       <About />

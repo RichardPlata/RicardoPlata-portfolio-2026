@@ -1,229 +1,608 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useRef,
+} from "react";
+
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 
 import aireVideo from "../assets/videos/aire.mp4";
+import resumePdf from "../assets/files/Resume-RicardoPlata-2026.pdf";
 
 import cloud1 from "../assets/images/cloud1.png";
 import cloud2 from "../assets/images/cloud2.png";
 
+const premiumEase = [0.22, 1, 0.36, 1];
+
 export default function Hero() {
-  const [scrollY, setScrollY] = useState(0);
-  const [loaded, setLoaded] = useState(false);
+  const sectionRef = useRef(null);
+  const videoRef = useRef(null);
+
+  const reduceMotion = useReducedMotion();
+
+  const sectionIsVisible = useInView(sectionRef, {
+    amount: 0.05,
+    margin: "150px 0px 150px 0px",
+  });
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: [
+      "start start",
+      "end start",
+    ],
+  });
+
+  const cloudOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.48],
+    reduceMotion
+      ? [0.48, 0.48]
+      : [0.48, 0],
+  );
+
+  const secondaryCloudOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.44],
+    reduceMotion
+      ? [0.42, 0.42]
+      : [0.42, 0],
+  );
+
+  const leftCloudX = useTransform(
+    scrollYProgress,
+    [0, 1],
+    reduceMotion
+      ? [0, 0]
+      : [0, -720],
+  );
+
+  const rightCloudX = useTransform(
+    scrollYProgress,
+    [0, 1],
+    reduceMotion
+      ? [0, 0]
+      : [0, 720],
+  );
+
+  const textOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.48],
+    [1, 0],
+  );
+
+  const textScale = useTransform(
+    scrollYProgress,
+    [0, 0.55],
+    reduceMotion
+      ? [1, 1]
+      : [1, 0.78],
+  );
+
+  const textFilter = useTransform(
+    scrollYProgress,
+    [0, 0.48],
+    reduceMotion
+      ? [
+          "blur(0px)",
+          "blur(0px)",
+        ]
+      : [
+          "blur(0px)",
+          "blur(8px)",
+        ],
+  );
+
+  const videoOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.7],
+    [0.12, 0],
+  );
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      setLoaded(true);
-    });
-  }, []);
+    const video = videoRef.current;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+    if (!video) return;
 
-    handleScroll();
+    video.playbackRate = 0.45;
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const saveDataEnabled =
+      navigator.connection?.saveData === true;
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    const video = document.getElementById("aire-video");
-
-    if (video) {
-      video.playbackRate = 0.45;
+    if (
+      saveDataEnabled ||
+      reduceMotion ||
+      !sectionIsVisible
+    ) {
+      video.pause();
+      return;
     }
-  }, []);
 
-  const cloudOpacity = Math.max(0.48 - scrollY / 500, 0);
+    const playPromise = video.play();
 
-  const leftCloudMove = scrollY * 1.5;
-  const rightCloudMove = scrollY * 1.5;
+    if (playPromise) {
+      playPromise.catch(() => {
+        // Algunos navegadores pueden bloquear autoplay.
+      });
+    }
+  }, [
+    reduceMotion,
+    sectionIsVisible,
+  ]);
 
-  const textOpacity = Math.max(1 - scrollY / 450, 0);
-  const textScale = Math.max(1 - scrollY * 0.0012, 0.75);
-  const textBlur = scrollY * 0.015;
-
-  const videoOpacity = Math.max(0.12 - scrollY / 2000, 0);
+  const scrollToProjects = () => {
+    document
+      .getElementById("projects")
+      ?.scrollIntoView({
+        behavior: reduceMotion
+          ? "auto"
+          : "smooth",
+        block: "start",
+      });
+  };
 
   return (
     <section
       id="home"
+      ref={sectionRef}
+      aria-labelledby="hero-title"
       className="
         relative
-        h-screen
+        z-10
+        min-h-screen
         w-full
         overflow-hidden
         text-white
-        z-10
       "
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#60A5FA,_#0F172A)] z-0"></div>
+      <div
+        className="
+          absolute
+          inset-0
+          z-0
+          bg-[radial-gradient(circle_at_center,_#60A5FA,_#0F172A)]
+        "
+      />
 
-      <video
-        id="aire-video"
-        autoPlay
+      <motion.video
+        ref={videoRef}
         loop
         muted
         playsInline
+        preload="metadata"
+        aria-hidden="true"
         style={{
           opacity: videoOpacity,
         }}
         className="
+          pointer-events-none
           absolute
           inset-0
-          w-full
-          h-full
-          object-cover
           z-10
+          h-full
+          w-full
+          object-cover
           mix-blend-screen
-          transition-opacity
-          duration-300
-          pointer-events-none
         "
       >
-        <source src={aireVideo} type="video/mp4" />
-      </video>
+        <source
+          src={aireVideo}
+          type="video/mp4"
+        />
+      </motion.video>
 
-      {/* ☁️ TOP LEFT */}
-      <div
-        style={{
-          opacity: loaded ? cloudOpacity : 0,
-          transform: loaded
-            ? `translateX(-${leftCloudMove}px)`
-            : "translateX(-360px)",
+      {/* Top left cloud */}
+      <motion.div
+        aria-hidden="true"
+        initial={
+          reduceMotion
+            ? false
+            : {
+                x: -360,
+                opacity: 0,
+              }
+        }
+        animate={{
+          x: 0,
+          opacity: 1,
+        }}
+        transition={{
+          duration: reduceMotion
+            ? 0
+            : 0.85,
+          ease: premiumEase,
         }}
         className="
           absolute
-          top-6
-          left-6
-          w-[32rem]
+          left-[-5rem]
+          top-16
           z-20
-          transition-all
-          duration-[850ms]
-          ease-out
+          w-[25rem]
+          sm:left-6
+          sm:top-6
+          sm:w-[32rem]
         "
       >
-        <img
+        <motion.img
           src={cloud1}
           alt=""
           draggable="false"
-          className="w-full cloud-float-slow"
+          loading="eager"
+          decoding="async"
+          style={{
+            x: leftCloudX,
+            opacity: cloudOpacity,
+          }}
+          className="
+            cloud-float-slow
+            w-full
+          "
         />
-      </div>
+      </motion.div>
 
-      {/* ☁️ TOP RIGHT */}
-      <div
-        style={{
-          opacity: loaded ? cloudOpacity : 0,
-          transform: loaded
-            ? `translateX(${rightCloudMove}px)`
-            : "translateX(360px)",
+      {/* Top right cloud */}
+      <motion.div
+        aria-hidden="true"
+        initial={
+          reduceMotion
+            ? false
+            : {
+                x: 360,
+                opacity: 0,
+              }
+        }
+        animate={{
+          x: 0,
+          opacity: 1,
+        }}
+        transition={{
+          duration: reduceMotion
+            ? 0
+            : 0.85,
+          ease: premiumEase,
         }}
         className="
           absolute
-          top-10
-          right-6
-          w-[30rem]
+          right-[-7rem]
+          top-24
           z-20
-          transition-all
-          duration-[850ms]
-          ease-out
+          w-[23rem]
+          sm:right-6
+          sm:top-10
+          sm:w-[30rem]
         "
       >
-        <img
+        <motion.img
           src={cloud2}
           alt=""
           draggable="false"
-          className="w-full cloud-float-medium"
+          loading="eager"
+          decoding="async"
+          style={{
+            x: rightCloudX,
+            opacity: cloudOpacity,
+          }}
+          className="
+            cloud-float-medium
+            w-full
+          "
         />
-      </div>
+      </motion.div>
 
-      {/* ☁️ BOTTOM LEFT */}
-      <div
-        style={{
-          opacity: loaded ? Math.max(cloudOpacity - 0.05, 0) : 0,
-          transform: loaded
-            ? `translateX(-${leftCloudMove}px)`
-            : "translateX(-360px)",
+      {/* Bottom left cloud */}
+      <motion.div
+        aria-hidden="true"
+        initial={
+          reduceMotion
+            ? false
+            : {
+                x: -360,
+                opacity: 0,
+              }
+        }
+        animate={{
+          x: 0,
+          opacity: 1,
+        }}
+        transition={{
+          duration: reduceMotion
+            ? 0
+            : 0.85,
+          delay: reduceMotion
+            ? 0
+            : 0.08,
+          ease: premiumEase,
         }}
         className="
           absolute
-          bottom-10
-          left-6
-          w-[25rem]
+          bottom-12
+          left-[-7rem]
           z-20
-          transition-all
-          duration-[850ms]
-          ease-out
+          w-[20rem]
+          sm:bottom-10
+          sm:left-6
+          sm:w-[25rem]
         "
       >
-        <img
+        <motion.img
           src={cloud2}
           alt=""
           draggable="false"
-          className="w-full cloud-float-fast"
+          loading="eager"
+          decoding="async"
+          style={{
+            x: leftCloudX,
+            opacity: secondaryCloudOpacity,
+          }}
+          className="
+            cloud-float-fast
+            w-full
+          "
         />
-      </div>
+      </motion.div>
 
-      {/* ☁️ BOTTOM RIGHT */}
-      <div
-        style={{
-          opacity: loaded ? Math.max(cloudOpacity - 0.05, 0) : 0,
-          transform: loaded
-            ? `translateX(${rightCloudMove}px)`
-            : "translateX(360px)",
+      {/* Bottom right cloud */}
+      <motion.div
+        aria-hidden="true"
+        initial={
+          reduceMotion
+            ? false
+            : {
+                x: 360,
+                opacity: 0,
+              }
+        }
+        animate={{
+          x: 0,
+          opacity: 1,
+        }}
+        transition={{
+          duration: reduceMotion
+            ? 0
+            : 0.85,
+          delay: reduceMotion
+            ? 0
+            : 0.08,
+          ease: premiumEase,
         }}
         className="
           absolute
           bottom-20
-          right-6
-          w-[28rem]
+          right-[-7rem]
           z-20
-          transition-all
-          duration-[850ms]
-          ease-out
+          w-[22rem]
+          sm:right-6
+          sm:w-[28rem]
         "
       >
-        <img
+        <motion.img
           src={cloud1}
           alt=""
           draggable="false"
-          className="w-full cloud-float-slow"
+          loading="eager"
+          decoding="async"
+          style={{
+            x: rightCloudX,
+            opacity: secondaryCloudOpacity,
+          }}
+          className="
+            cloud-float-slow
+            w-full
+          "
         />
-      </div>
+      </motion.div>
 
-      <div
+      <motion.div
+        initial={
+          reduceMotion
+            ? false
+            : {
+                opacity: 0,
+                scale: 1.08,
+                filter: "blur(12px)",
+              }
+        }
+        animate={{
+          opacity: 1,
+          scale: 1,
+          filter: "blur(0px)",
+        }}
+        transition={{
+          duration: reduceMotion
+            ? 0
+            : 0.9,
+          delay: reduceMotion
+            ? 0
+            : 0.12,
+          ease: premiumEase,
+        }}
         style={{
-          opacity: loaded ? textOpacity : 0,
-          filter: `blur(${textBlur}px)`,
-          transform: loaded ? `scale(${textScale})` : "scale(1.18)",
+          opacity: textOpacity,
+          scale: textScale,
+          filter: textFilter,
         }}
         className="
           relative
           z-30
-          h-full
+          mx-auto
           flex
+          min-h-screen
+          w-full
+          max-w-6xl
           flex-col
           items-center
           justify-center
+          px-6
+          pt-20
           text-center
-          px-4
-          transition-all
-          duration-[750ms]
-          ease-out
+
+          before:absolute
+          before:inset-x-[8%]
+          before:bottom-[18%]
+          before:top-[24%]
+          before:-z-10
+          before:rounded-[3rem]
+          before:bg-slate-950/10
+          before:backdrop-blur-[2px]
+          before:[mask-image:radial-gradient(ellipse_at_center,black,transparent_72%)]
+
+          sm:px-8
         "
       >
-        <h1 className="font-avatar text-6xl md:text-7xl">
-          Ricardo Plata
+        <p
+          className="
+            mb-5
+            text-xs
+            font-medium
+            uppercase
+            tracking-[0.32em]
+            text-white/85
+            [text-shadow:0_2px_12px_rgba(7,18,40,0.7)]
+            sm:text-sm
+          "
+        >
+          Ricardo Guadarrama Plata
+        </p>
+
+        <h1
+          id="hero-title"
+          className="
+            max-w-5xl
+            font-avatar
+            text-[clamp(3rem,8vw,7.5rem)]
+            leading-[0.95]
+            tracking-[-0.045em]
+            text-white
+            [text-shadow:0_5px_22px_rgba(7,18,40,0.58),0_0_34px_rgba(96,165,250,0.14)]
+          "
+        >
+          UX/UI & Interaction Designer
         </h1>
 
-        <p className="font-avatar text-xl mt-5 text-white/70">
-          Crafting immersive digital experiences through motion and interaction
+        <p
+          className="
+            mt-7
+            max-w-3xl
+            font-avatar
+            text-base
+            leading-7
+            text-white/90
+            [text-shadow:0_3px_14px_rgba(7,18,40,0.72)]
+            sm:text-lg
+            md:text-xl
+            md:leading-8
+          "
+        >
+          I design intuitive digital products and interactive experiences
+          through user-centered thinking, motion, and functional prototyping.
         </p>
-      </div>
+
+        <p
+          className="
+            mt-4
+            text-[0.68rem]
+            uppercase
+            tracking-[0.22em]
+            text-white/75
+            [text-shadow:0_2px_10px_rgba(7,18,40,0.8)]
+            sm:text-xs
+          "
+        >
+          Product Design · Automotive HMI · Interactive Experiences
+        </p>
+
+        <div
+          className="
+            mt-10
+            flex
+            w-full
+            max-w-md
+            flex-col
+            items-center
+            justify-center
+            gap-4
+            sm:w-auto
+            sm:max-w-none
+            sm:flex-row
+          "
+        >
+          <button
+            type="button"
+            onClick={scrollToProjects}
+            className="
+              inline-flex
+              w-full
+              items-center
+              justify-center
+              rounded-full
+              border
+              border-white/80
+              bg-white/12
+              px-7
+              py-3.5
+              text-xs
+              uppercase
+              tracking-[0.22em]
+              text-white
+              shadow-[0_12px_32px_rgba(7,18,40,0.2)]
+              backdrop-blur-md
+              transition
+              duration-300
+              hover:-translate-y-0.5
+              hover:bg-white
+              hover:text-slate-900
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+              focus-visible:outline-white
+              sm:w-auto
+            "
+          >
+            View Projects
+          </button>
+
+          <a
+            href={resumePdf}
+            download
+            className="
+              inline-flex
+              w-full
+              items-center
+              justify-center
+              rounded-full
+              border
+              border-white/35
+              bg-slate-950/20
+              px-7
+              py-3.5
+              text-xs
+              uppercase
+              tracking-[0.22em]
+              text-white/95
+              shadow-[0_12px_32px_rgba(7,18,40,0.18)]
+              backdrop-blur-md
+              transition
+              duration-300
+              hover:-translate-y-0.5
+              hover:border-white/70
+              hover:bg-slate-950/35
+              hover:text-white
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+              focus-visible:outline-white
+              sm:w-auto
+            "
+          >
+            Download Resume
+          </a>
+        </div>
+      </motion.div>
     </section>
   );
 }

@@ -7,36 +7,64 @@ export default function ScrollToTop() {
   useEffect(() => {
     const sectionId = location.state?.scrollTo;
 
-    if (sectionId) {
-      setTimeout(() => {
-        if (sectionId === "home") {
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
-          return;
-        }
+    const smoothBehavior = prefersReducedMotion
+      ? "auto"
+      : "smooth";
 
-        const section = document.getElementById(sectionId);
+    let firstFrame;
+    let secondFrame;
+    let timeoutId;
 
-        if (section) {
-          section.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }
-      }, 100);
+    const performScroll = () => {
+      if (!sectionId) {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "auto",
+        });
 
-      return;
-    }
+        return;
+      }
 
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "instant",
+      if (sectionId === "home") {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: smoothBehavior,
+        });
+
+        return;
+      }
+
+      const section = document.getElementById(sectionId);
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: smoothBehavior,
+          block: "start",
+        });
+      }
+    };
+
+    firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        timeoutId = window.setTimeout(performScroll, 80);
+      });
     });
-  }, [location.pathname, location.state]);
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    location.pathname,
+    location.state,
+  ]);
 
   return null;
 }

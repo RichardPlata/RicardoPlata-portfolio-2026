@@ -1,5 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+} from "framer-motion";
 import { Link } from "react-router-dom";
+
+import PointerSurface from "./PointerSurface";
 
 import cenizasVideo from "../assets/videos/Flames.mp4";
 
@@ -13,118 +20,414 @@ const projects = [
     number: "01",
     title: "AURA Drive",
     year: "June 2026",
-    type: "Automotive UX · HMI · 3D · React",
+    category: "Automotive UX",
+    type: "HMI · Interaction Design · Functional Prototype",
+    focus: "Connected cockpit interaction system",
     video: auraDriveVideo,
     videoPosition: "center center",
     description:
-      "Interactive automotive HMI concept built with React, Three.js and GSAP, featuring a 3D vehicle showroom, digital cluster, center display, drive modes, ambient lighting, assistant flows, and a cockpit UI focus mode.",
+      "Interactive automotive HMI prototype combining digital clusters, infotainment, ambient lighting, drive modes, and synchronized cockpit interactions.",
+    role: "UX/UI Designer · Front-End Developer",
+    tools: "React · Three.js · GSAP · Blender",
     linkLabel: "View Case Study",
     path: "/projects/aura-drive",
-    available: true,
   },
   {
     number: "02",
     title: "Kokoro",
     year: "April 2026",
-    type: "Mobile App · UX/UI · Motion",
+    category: "Mobile Product Design",
+    type: "UX/UI · User Flows · Motion",
+    focus: "Mobile ordering and cake customization",
     video: kokoroVideo,
     videoPosition: "center center",
     description:
-      "Bakery mobile app concept featuring a warm visual identity, product browsing, cake customization, checkout flow, and motion-driven interactions.",
+      "Mobile bakery experience simplifying product discovery, custom cake configuration, ordering, and checkout through a warm, approachable interface.",
+    role: "UX/UI Designer",
+    tools: "Figma · Prototyping · Motion Design",
     linkLabel: "View Case Study",
     path: "/projects/kokoro",
-    available: true,
   },
   {
     number: "03",
     title: "GU-QI",
     year: "June 2026",
-    type: "Client Project · UX/UI · Web Design · React",
+    category: "Client Project",
+    type: "Responsive Web · UX/UI · Development",
+    focus: "Service discovery and booking experience",
     video: guQiVideo,
     videoPosition: "center center",
     description:
-      "Integrative wellness website designed for GU-QI, focused on premium visual identity, responsive service discovery, therapy modals, course information, and WhatsApp-based booking.",
+      "Responsive client website improving therapy discovery, service understanding, course visibility, and direct access to booking.",
+    role: "UX/UI Designer · Front-End Developer",
+    tools: "Figma · React · Vite · CSS",
     linkLabel: "View Case Study",
     path: "/projects/gu-qi",
-    available: true,
   },
   {
     number: "04",
     title: "Beyond The Shadows",
     year: "January 2025",
-    type: "Game UI · Player UX · Redesign",
+    category: "Game UX",
+    type: "Player Experience · Interface Redesign",
+    focus: "Immersive and readable horror-game interface",
     video: btsVideo,
     videoPosition: "center center",
     description:
-      "Game UI redesign for a narrative horror experience, focused on improving immersion, readability, visual consistency, and player-facing interface clarity.",
+      "Game UI redesign improving readability, navigation, visual consistency, and immersion across a narrative horror experience.",
+    role: "UX/UI Designer",
+    tools: "Figma · Benchmarking · Motion Design",
     linkLabel: "View Case Study",
     path: "/projects/beyond-the-shadows",
-    available: true,
   },
 ];
 
-export default function Projects() {
-  const sectionRef = useRef(null);
+const premiumEase = [0.22, 1, 0.36, 1];
 
-  const [scrollY, setScrollY] = useState(0);
-  const [sectionTop, setSectionTop] = useState(0);
-  const [sectionBottom, setSectionBottom] = useState(0);
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+function ProjectItem({ project, index }) {
+  const cardRef = useRef(null);
+  const videoRef = useRef(null);
+
+  const reduceMotion = useReducedMotion();
+
+  const isInView = useInView(cardRef, {
+    once: true,
+    amount: 0.22,
+    margin: "0px 0px -8% 0px",
+  });
+
+  const videoIsVisible = useInView(cardRef, {
+    amount: 0.12,
+    margin: "180px 0px 180px 0px",
+  });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const video = videoRef.current;
 
-      if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        setSectionTop(rect.top);
-        setSectionBottom(rect.bottom);
+    if (!video) return;
+
+    if (videoIsVisible) {
+      const playPromise = video.play();
+
+      if (playPromise) {
+        playPromise.catch(() => {
+          // El navegador puede bloquear autoplay en ciertos casos.
+        });
       }
-    };
 
-    const handleResize = () => {
-      setWindowHeight(window.innerHeight);
-    };
+      return;
+    }
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleResize);
+    video.pause();
+  }, [videoIsVisible]);
 
-    handleScroll();
+  const delay = reduceMotion ? 0 : index * 0.14;
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  return (
+    <motion.article
+      ref={cardRef}
+      initial={
+        reduceMotion
+          ? false
+          : {
+              opacity: 0,
+              y: 110,
+              scale: 0.94,
+              filter: "blur(14px)",
+            }
+      }
+      animate={
+        isInView
+          ? {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              filter: "blur(0px)",
+            }
+          : {
+              opacity: 0,
+              y: 110,
+              scale: 0.94,
+              filter: "blur(14px)",
+            }
+      }
+      transition={{
+        duration: reduceMotion ? 0 : 1,
+        delay,
+        ease: premiumEase,
+      }}
+      className="project-card"
+    >
+      <PointerSurface
+        className="project-card-surface"
+        strength={8}
+        glowSize={520}
+      >
+        <Link
+          to={project.path}
+          className="project-card-link"
+          aria-label={`View ${project.title} case study`}
+        >
+        <div className="project-card-media">
+          <motion.div
+            className="project-card-video-motion"
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    scale: 1.12,
+                    opacity: 0.45,
+                  }
+            }
+            animate={
+              isInView
+                ? {
+                    scale: 1,
+                    opacity: 1,
+                  }
+                : {
+                    scale: 1.12,
+                    opacity: 0.45,
+                  }
+            }
+            transition={{
+              duration: reduceMotion ? 0 : 1.5,
+              delay: delay + 0.1,
+              ease: premiumEase,
+            }}
+          >
+            <video
+              ref={videoRef}
+              className="project-card-video"
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+              style={{
+                objectPosition: project.videoPosition,
+              }}
+            >
+              <source src={project.video} type="video/mp4" />
+            </video>
+          </motion.div>
 
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+          <div className="project-card-overlay" />
 
-  const projectProgress = Math.min(scrollY / 700, 1);
-  const projectTranslate = Math.max(100 - projectProgress * 100, 0);
+          <motion.div
+            className="project-card-top"
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: -14,
+                  }
+            }
+            animate={
+              isInView
+                ? {
+                    opacity: 1,
+                    y: 0,
+                  }
+                : {
+                    opacity: 0,
+                    y: -14,
+                  }
+            }
+            transition={{
+              duration: reduceMotion ? 0 : 0.65,
+              delay: delay + 0.28,
+              ease: premiumEase,
+            }}
+          >
+            <span className="project-number">
+              {project.number}
+            </span>
 
-  const enterProgress = clamp(
-    (windowHeight * 0.85 - sectionTop) / (windowHeight * 0.55),
-    0,
-    1
+            <span className="project-year">
+              {project.year}
+            </span>
+          </motion.div>
+
+          <motion.div
+            className="project-card-category"
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 18,
+                    filter: "blur(6px)",
+                  }
+            }
+            animate={
+              isInView
+                ? {
+                    opacity: 1,
+                    y: 0,
+                    filter: "blur(0px)",
+                  }
+                : {
+                    opacity: 0,
+                    y: 18,
+                    filter: "blur(6px)",
+                  }
+            }
+            transition={{
+              duration: reduceMotion ? 0 : 0.65,
+              delay: delay + 0.34,
+              ease: premiumEase,
+            }}
+          >
+            {project.category}
+          </motion.div>
+        </div>
+
+        <div className="project-card-body">
+          <motion.div
+            className="project-card-main"
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 24,
+                  }
+            }
+            animate={
+              isInView
+                ? {
+                    opacity: 1,
+                    y: 0,
+                  }
+                : {
+                    opacity: 0,
+                    y: 24,
+                  }
+            }
+            transition={{
+              duration: reduceMotion ? 0 : 0.7,
+              delay: delay + 0.25,
+              ease: premiumEase,
+            }}
+          >
+            <p className="project-type">
+              {project.type}
+            </p>
+
+            <h3 className="project-title">
+              {project.title}
+            </h3>
+
+            <p className="project-focus">
+              {project.focus}
+            </p>
+
+            <p className="project-description">
+              {project.description}
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="project-card-footer"
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 26,
+                  }
+            }
+            animate={
+              isInView
+                ? {
+                    opacity: 1,
+                    y: 0,
+                  }
+                : {
+                    opacity: 0,
+                    y: 26,
+                  }
+            }
+            transition={{
+              duration: reduceMotion ? 0 : 0.7,
+              delay: delay + 0.38,
+              ease: premiumEase,
+            }}
+          >
+            <div className="project-meta">
+              <div>
+                <span>Role</span>
+                <p>{project.role}</p>
+              </div>
+
+              <div>
+                <span>Tools</span>
+                <p>{project.tools}</p>
+              </div>
+            </div>
+
+            <span className="project-link">
+              {project.linkLabel}
+
+              <span
+                className="project-link-arrow"
+                aria-hidden="true"
+              >
+                →
+              </span>
+            </span>
+          </motion.div>
+        </div>
+        </Link>
+      </PointerSurface>
+    </motion.article>
   );
+}
 
-  const exitProgress = clamp(
-    (windowHeight * 0.25 - sectionBottom) / (windowHeight * 0.55),
-    0,
-    1
-  );
+export default function Projects() {
+  const sectionRef = useRef(null);
+  const backgroundVideoRef = useRef(null);
 
-  const titleOpacity = enterProgress * (1 - exitProgress);
-  const titleTranslateY = (1 - enterProgress) * 70 + exitProgress * -70;
-  const titleBlur = (1 - enterProgress) * 8 + exitProgress * 8;
+  const reduceMotion = useReducedMotion();
+
+  const headerIsInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.16,
+    margin: "0px 0px -25% 0px",
+  });
+
+  const sectionIsVisible = useInView(sectionRef, {
+    amount: 0.05,
+    margin: "180px 0px 180px 0px",
+  });
+
+  useEffect(() => {
+    const video = backgroundVideoRef.current;
+
+    if (!video) return;
+
+    if (sectionIsVisible) {
+      const playPromise = video.play();
+
+      if (playPromise) {
+        playPromise.catch(() => {
+          // El navegador puede bloquear autoplay.
+        });
+      }
+
+      return;
+    }
+
+    video.pause();
+  }, [sectionIsVisible]);
 
   return (
     <section
       id="projects"
       ref={sectionRef}
-      style={{
-        transform: `translateY(${projectTranslate}px)`,
-      }}
+      aria-labelledby="projects-title"
       className="
         projects-section
         relative
@@ -132,151 +435,126 @@ export default function Projects() {
         -mt-[18vh]
         min-h-screen
         overflow-hidden
-        text-white
         px-10
-        pt-[24vh]
         pb-32
-        transition-transform
-        duration-300
+        pt-[24vh]
+        text-white
       "
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#FF7A3D_0%,_#7A1E00_45%,_#180A05_100%)] z-0" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_#FF7A3D_0%,_#7A1E00_45%,_#180A05_100%)]" />
 
-      <video
-        autoPlay
+      <motion.video
+        ref={backgroundVideoRef}
         loop
         muted
         playsInline
         preload="none"
+        aria-hidden="true"
+        initial={
+          reduceMotion
+            ? false
+            : {
+                opacity: 0.18,
+                scale: 1.08,
+              }
+        }
+        animate={
+          sectionIsVisible
+            ? {
+                opacity: 0.6,
+                scale: 1,
+              }
+            : {
+                opacity: 0.18,
+                scale: 1.08,
+              }
+        }
+        transition={{
+          duration: reduceMotion ? 0 : 1.5,
+          ease: premiumEase,
+        }}
         className="
+          pointer-events-none
           absolute
           inset-0
-          w-full
-          h-full
-          object-cover
           z-[5]
-          opacity-60
+          h-full
+          w-full
+          object-cover
           mix-blend-screen
-          pointer-events-none
         "
       >
         <source src={cenizasVideo} type="video/mp4" />
-      </video>
+      </motion.video>
 
-      <div className="absolute inset-0 bg-black/40 z-10" />
-      <div className="absolute inset-0 z-[11] bg-[radial-gradient(circle_at_center,_rgba(255,120,40,0.22),_transparent_55%)] pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-black/40" />
 
-      <div className="relative z-20 max-w-7xl mx-auto">
-        <div
-          style={{
-            opacity: titleOpacity,
-            transform: `translateY(${titleTranslateY}px)`,
-            filter: `blur(${titleBlur}px)`,
+      <div className="pointer-events-none absolute inset-0 z-[11] bg-[radial-gradient(circle_at_center,_rgba(255,120,40,0.22),_transparent_55%)]" />
+
+      <div className="relative z-20 mx-auto max-w-7xl">
+        <motion.header
+          initial={
+            reduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  y: 70,
+                  filter: "blur(12px)",
+                }
+          }
+          animate={
+            headerIsInView
+              ? {
+                  opacity: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                }
+              : {
+                  opacity: 0,
+                  y: 70,
+                  filter: "blur(12px)",
+                }
+          }
+          transition={{
+            duration: reduceMotion ? 0 : 0.95,
+            ease: premiumEase,
           }}
-          className="mb-16 transition-all duration-300 ease-out"
+          className="projects-header"
         >
-          <h2
-            className="
-              font-avatar
-              text-7xl
-              md:text-8xl
-              leading-none
-              text-[#FFD7C2]
-              drop-shadow-[0_0_25px_rgba(255,120,40,0.35)]
-            "
-          >
-            Projects
-          </h2>
-        </div>
+          <p className="projects-eyebrow">
+            Selected work
+          </p>
+
+          <div className="projects-heading-row">
+            <h2
+              id="projects-title"
+              className="
+                font-avatar
+                text-7xl
+                leading-none
+                text-[#FFD7C2]
+                drop-shadow-[0_0_25px_rgba(255,120,40,0.35)]
+                md:text-8xl
+              "
+            >
+              Projects
+            </h2>
+
+            <p className="projects-introduction">
+              UX, HMI, and interactive experiences developed from design
+              thinking to functional prototypes.
+            </p>
+          </div>
+        </motion.header>
 
         <div className="projects-layout">
-          {projects.map((project, index) => {
-            const delay = index * 0.08;
-
-            const cardEnterProgress = clamp(
-              (enterProgress - delay) / 0.55,
-              0,
-              1
-            );
-
-            const cardOpacity = cardEnterProgress * (1 - exitProgress);
-            const cardTranslateY =
-              (1 - cardEnterProgress) * 90 + exitProgress * -80;
-            const cardScale =
-              0.96 + cardEnterProgress * 0.04 - exitProgress * 0.03;
-            const cardBlur = (1 - cardEnterProgress) * 8 + exitProgress * 8;
-
-            return (
-              <article
-                key={project.number}
-                style={{
-                  opacity: cardOpacity,
-                  transform: `translateY(${cardTranslateY}px) scale(${cardScale})`,
-                  filter: `blur(${cardBlur}px)`,
-                }}
-                className={`flip-card project-card ${
-                  !project.available ? "project-card-disabled" : ""
-                }`}
-              >
-                <div className="flip-card-inner">
-                  <div className="flip-card-face flip-card-front">
-                    <video
-                      className="project-card-video"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      style={{
-                        objectPosition: project.videoPosition,
-                      }}
-                    >
-                      <source src={project.video} type="video/mp4" />
-                    </video>
-
-                    <div className="project-card-overlay" />
-
-                    <div className="project-card-top">
-                      <span className="project-number">{project.number}</span>
-
-                      {project.year && (
-                        <span className="project-year">{project.year}</span>
-                      )}
-                    </div>
-
-                    <div className="project-card-content">
-                      <h3 className="project-title">{project.title}</h3>
-                      <p className="project-type">{project.type}</p>
-                    </div>
-                  </div>
-
-                  <div className="flip-card-face flip-card-back">
-                    <div className="project-card-back-overlay" />
-
-                    <div className="project-card-top">
-                      <span className="project-number">{project.number}</span>
-
-                      {project.year && (
-                        <span className="project-year">{project.year}</span>
-                      )}
-                    </div>
-
-                    <div className="project-card-content">
-                      <h3 className="project-title">{project.title}</h3>
-
-                      <p className="project-description">
-                        {project.description}
-                      </p>
-
-                      <Link className="project-link" to={project.path}>
-                        {project.linkLabel}
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+          {projects.map((project, index) => (
+            <ProjectItem
+              key={project.number}
+              project={project}
+              index={index}
+            />
+          ))}
         </div>
       </div>
     </section>
