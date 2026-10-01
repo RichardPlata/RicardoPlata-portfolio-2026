@@ -1,0 +1,14 @@
+diff --git a/src/styles/case.css b/src/styles/case.css
+--- a/src/styles/case.css
++++ b/src/styles/case.css
+@@ -11,7 +11,9 @@
+ .case-media { width: min(100%, 64rem); margin: 0 auto; }
+ .case-media-frame { position: relative; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-large); background: radial-gradient(circle at 72% 18%, color-mix(in srgb, var(--color-accent) 18%, transparent), transparent 36%), linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 92%, var(--color-accent)), var(--color-surface)); }
+ .case-media img, .case-media video, .case-media-empty { width: 100%; display: block; aspect-ratio: 16 / 10; }
+ .case-media img { height: 100%; object-fit: contain; padding: clamp(1rem, 4vw, 3.5rem); }
++.case-media-frame:has(> img) { aspect-ratio: 16 / 9; }
++.case-media-frame:has(> img) .case-media img { padding: clamp(.35rem, 1.6vw, 1.35rem); transform: scale(1.06); transform-origin: center; }
+ .case-media video { height: 100%; object-fit: cover; background: #08080b; }
+ .case-media-video { display: block; width: 100%; }
+ .case-media-empty { display: grid; place-items: center; padding: 2rem; color: var(--color-secondary); text-align: center; background: radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 35%), var(--color-surface); }
+ .case-media-empty span { max-width: 28ch; }
