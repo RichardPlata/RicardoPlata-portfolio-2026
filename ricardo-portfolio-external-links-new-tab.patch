@@ -1,0 +1,12 @@
+diff --git a/src/components/ProfileLink.jsx b/src/components/ProfileLink.jsx
+--- a/src/components/ProfileLink.jsx
++++ b/src/components/ProfileLink.jsx
+@@ -8,7 +8,7 @@ export default function ProfileLink({ name, className = '', withIcon = false }) {
+   const link = siteConfig.links[name]
+   const label = t(`hero.${name}`)
+   if (validProfileUrl(link?.href) && link.status === 'ready') {
+-    return <a className={`editorial-link ${className}`} href={link.href}>
++    return <a className={`editorial-link ${className}`} href={link.href} target="_blank" rel="noopener noreferrer">
+       {withIcon && <ContactIcon name={name} />}<span>{label}</span>{!withIcon && <span aria-hidden="true">↗</span>}
+     </a>
+   }
