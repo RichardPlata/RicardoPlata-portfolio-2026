@@ -1,0 +1,69 @@
+:root {
+  color-scheme: light;
+  --color-light-background: #f1f2ee;
+  --color-dark-background: #191b1e;
+  --color-background: var(--color-light-background);
+  --color-surface: #e6e8e2;
+  --color-elevated: #dcdfd8;
+  --color-text: #171a1d;
+  --color-secondary: #555c59;
+  --color-muted: #575e5a;
+  --color-border: #cfd3cc;
+  --color-control-border: #747c76;
+  --color-accent: #6854d9;
+  --color-accent-strong: #6854d9;
+  --color-focus: var(--color-accent);
+  --hero-ambient-core: rgba(104, 84, 217, 0.05);
+  --hero-ambient-mid: rgba(104, 84, 217, 0.025);
+  --color-cosmic-indigo: #6574cf;
+  --color-cosmic-cyan: #62b6c4;
+  --aurora-opacity: 0.05;
+  --contact-panel-background: #6854d9;
+  --contact-panel-text: #ffffff;
+  --font-body: 'Manrope Variable', system-ui, sans-serif;
+  --space-0: 0.25rem;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 4rem;
+  --space-6: clamp(4rem, 7vw, 7rem);
+  --space-7: clamp(6rem, 10vw, 10rem);
+  --radius-small: 0.25rem;
+  --radius-medium: 0.5rem;
+  --radius-large: 0.75rem;
+  --page-max-width: 90rem;
+  --content-max-width: 67.5rem;
+  --page-gutter-desktop: 3rem;
+  --page-gutter-tablet: 2rem;
+  --page-gutter-mobile: 1rem;
+  --content-width: var(--page-max-width);
+  --page-gutter: clamp(1.25rem, 4vw, 4rem);
+  --header-height: 5.5rem;
+  --motion-duration: 180ms;
+  --motion-easing: cubic-bezier(0.2, 0, 0.2, 1);
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: var(--color-dark-background);
+  --color-surface: #23262a;
+  --color-elevated: #2b2e33;
+  --color-text: #eff1f3;
+  --color-secondary: #c1c6cd;
+  --color-muted: #a0a8b2;
+  --color-border: #383d44;
+  --color-control-border: #7d8794;
+  --color-accent: #a78bfa;
+  --color-focus: var(--color-accent);
+  --hero-ambient-core: rgba(167, 139, 250, 0.10);
+  --hero-ambient-mid: rgba(167, 139, 250, 0.04);
+  --aurora-opacity: 0.16;
+  --contact-panel-background: #a78bfa;
+  --contact-panel-text: #191b1e;
+}
+@media (max-width: 56rem) {
+  :root { --header-height: 4.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-duration: 0ms; }
+}

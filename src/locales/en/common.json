@@ -1,0 +1,122 @@
+{
+  "navigation": {
+    "label": "Main navigation",
+    "projects": "Work",
+    "about": "About",
+    "contact": "Contact",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "home": "Home",
+    "resume": "Resume",
+    "sayHi": "Say hi",
+    "backHome": "Back to home"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode"
+  },
+  "skip": "Skip to content",
+  "hero": {
+    "eyebrow": "Hi, I’m {{name}}.",
+    "headline": "Digital designer shaping brands, interfaces and interactive experiences.",
+    "personality": "I connect clear thinking with playful visuals, motion and technology to make digital experiences feel human.",
+    "orbitLabel": "Illustrated orbit of planets",
+    "orbitCaption": "Between systems and stories",
+    "interfaceLabel": "Interfaces with intention",
+    "motionLabel": "Motion and 3D exploration",
+    "location": "Mexico",
+    "availability": "Available",
+    "selectedWork": "Selected work",
+    "resume": "Resume",
+    "linkedin": "LinkedIn",
+    "linksLabel": "Selected work",
+    "disciplines": "Product Design · UX/UI · Brand Identity · Motion · 3D",
+    "roles": [
+      "creative mind",
+      "digital designer",
+      "curious explorer"
+    ],
+    "rolePrefix": "A",
+    "roleDescription": "Creative digital designer and explorer",
+    "cosmicDescription": "I shape interfaces and interactive experiences through design, motion and 3D.",
+    "scroll": "Scroll to explore"
+  },
+  "projectIndex": {
+    "title": "Index",
+    "label": "Filter projects",
+    "filters": {
+      "projects": "Projects",
+      "explorations": "Explorations"
+    },
+    "back": "Back to selected work"
+  },
+  "about": {
+    "title": "About",
+    "photo": "Portrait forthcoming.",
+    "portraitAlt": "Portrait of {{name}}",
+    "biography": [
+      "I’m Ricardo, a multidisciplinary digital designer based in Mexico. My background began in Game Design and Art, where I became interested in interaction, 3D and designing experiences. Over time, I focused my work on UX/UI, product design, websites and visual identity.",
+      "I’m interested in how an experience works, not only how it looks. I combine research, visual systems, interface design, motion and 3D to turn complex ideas into solutions that feel clear, expressive and useful.",
+      "I’m currently collaborating on client projects and developing personal experiences while looking for opportunities in Product Design, UX/UI and digital design.",
+      "Outside client work, I explore 3D animation and visual storytelling through personal projects."
+    ],
+    "groups": {
+      "background": {
+        "title": "Background",
+        "items": [
+          "Game Design and Art",
+          "Google UX Design Certificate",
+          "Google Digital Marketing & E-commerce",
+          "IBM Generative AI for UI/UX Design"
+        ]
+      },
+      "focus": {
+        "title": "Focus",
+        "items": [
+          "Product Design",
+          "UX/UI and Web Design",
+          "Brand Identity",
+          "Motion and 3D"
+        ]
+      },
+      "tools": {
+        "title": "Selected tools",
+        "items": [
+          "Figma",
+          "Adobe Creative Cloud",
+          "React and Three.js",
+          "Blender"
+        ]
+      }
+    }
+  },
+  "footer": {
+    "location": "Mexico",
+    "backToTop": "Back to top"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Provisional: this page is not available.",
+    "home": "Return home"
+  },
+  "metadata": {
+    "title": "{{name}} | Digital Designer"
+  },
+  "contact": {
+    "label": "Contact",
+    "heading": "Have a project, role or collaboration in mind?",
+    "action": "Let’s talk",
+    "availability": "Based in Mexico. Open to product design, UX/UI and digital design opportunities.",
+    "location": "Based in Mexico",
+    "status": "Available for opportunities",
+    "email": "Email"
+  }
+}

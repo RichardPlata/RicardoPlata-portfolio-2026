@@ -1,0 +1,33 @@
+.cosmic-hero { position: relative; min-height: min(52rem, calc(100svh - .5rem)); display: grid; place-items: center; padding: clamp(5rem, 9vw, 8rem) 1.5rem 7rem; text-align: center; }
+.site-shell--home { position: relative; isolation: isolate; overflow-x: clip; --cosmic-purple: #9670dd99; --cosmic-pink: #d285bf88; --cosmic-blue: #718de080; }
+:root[data-theme='dark'] .site-shell--home { --cosmic-purple: #7f53cb88; --cosmic-pink: #cb91d966; --cosmic-blue: #647bd455; }
+.cosmic-hero-field { position: absolute; z-index: -1; top: calc(-1 * (var(--header-height) + 1rem)); bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); overflow: hidden; pointer-events: none; mask-image: linear-gradient(black 0% 78%, transparent); background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--cosmic-purple) 34%, transparent), transparent 45%); }
+.cosmic-hero-field::before, .cosmic-hero-field::after { content: ''; position: absolute; inset: -20%; border-radius: 50%; pointer-events: none; }
+.cosmic-hero-field::before { background: conic-gradient(from 205deg at 58% 48%, transparent 0deg, color-mix(in srgb, var(--cosmic-purple) 22%, transparent) 55deg, transparent 125deg, color-mix(in srgb, var(--cosmic-pink) 16%, transparent) 210deg, transparent 285deg); filter: blur(28px); animation: cosmic-veil 18s ease-in-out infinite alternate; }
+.cosmic-hero-field::after { background: radial-gradient(circle at 25% 30%, color-mix(in srgb, white 8%, transparent) 0 1px, transparent 1.5px), radial-gradient(circle at 70% 18%, color-mix(in srgb, white 9%, transparent) 0 1px, transparent 1.5px), radial-gradient(circle at 82% 68%, color-mix(in srgb, white 7%, transparent) 0 1px, transparent 1.5px); background-size: 180px 180px, 240px 240px, 210px 210px; opacity: .42; animation: cosmic-stars 22s linear infinite; }
+.cosmic-hero-field span { position: absolute; inset: -35%; border-radius: 50%; filter: blur(42px); opacity: .85; }
+.cosmic-hero-field span:nth-child(1) { background: radial-gradient(ellipse 36% 55% at 65% 45%, var(--cosmic-purple), transparent 75%); transform: rotate(-30deg); }
+.cosmic-hero-field span:nth-child(2) { background: radial-gradient(ellipse 27% 60% at 60% 45%, var(--cosmic-pink), transparent 72%); transform: rotate(-35deg); }
+.cosmic-hero-field span:nth-child(3) { background: radial-gradient(ellipse 33% 46% at 28% 55%, var(--cosmic-blue), transparent 72%); transform: rotate(-30deg); }
+.cosmic-hero-content { max-width: 45rem; }
+.cosmic-hero-eyebrow { margin-bottom: 1.75rem; color: var(--color-secondary); text-transform: uppercase; letter-spacing: .18em; font-size: .7rem; }
+.cosmic-hero h1 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-style: italic; font-size: clamp(3.4rem, 8vw, 7rem); line-height: 1.06; letter-spacing: -.055em; }
+.cosmic-hero-role { margin-top: 1.3rem; font-size: clamp(1.3rem, 2.5vw, 1.75rem); line-height: 1.5; color: var(--color-secondary); }
+.cosmic-hero-word { display: inline-block; min-width: 10ch; text-align: left; color: var(--color-accent); background: linear-gradient(100deg, var(--color-accent), #ab6ed1, var(--color-cosmic-indigo)); background-clip: text; -webkit-text-fill-color: transparent; }
+.cosmic-hero-description { max-width: 39ch; margin: 1.5rem auto 0; font-size: 1rem; line-height: 1.75; color: var(--color-secondary); }
+.cosmic-hero-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: .8rem; margin-top: 2.25rem; }
+.cosmic-hero-button { display: inline-flex; align-items: center; gap: .8rem; justify-content: center; min-height: 2.9rem; padding: .7rem 1.3rem; border: 1px solid var(--color-control-border); border-radius: 999px; font-size: .8rem; text-decoration: none; background: color-mix(in srgb, var(--color-background) 55%, transparent); transition: transform 250ms, background-color 250ms; }
+.cosmic-hero-button--primary { background: var(--color-text); color: var(--color-background); border-color: var(--color-text); }
+.cosmic-hero-scroll { position: absolute; bottom: 2rem; display: flex; flex-direction: column; align-items: center; gap: .5rem; color: var(--color-secondary); text-decoration: none; font-size: .65rem; text-transform: uppercase; letter-spacing: .16em; }
+@media (prefers-reduced-motion: no-preference) { .cosmic-hero-word { animation: cosmic-word-arrive 500ms ease-out both; } .cosmic-hero-field span { animation: cosmic-flow 16s ease-in-out infinite alternate; }.cosmic-hero-field span:nth-child(2) { animation-duration: 21s; animation-delay: -8s; }.cosmic-hero-field span:nth-child(3) { animation-duration: 19s; animation-delay: -5s; } }
+@keyframes cosmic-word-arrive { from { opacity: 0; transform: translateY(.2em); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cosmic-flow { from { opacity: .7; } to { translate: 3% -2%; scale: 1.06; opacity: .95; } }
+@keyframes cosmic-veil { from { transform: rotate(-7deg) translate3d(-2%, 1%, 0) scale(1); } to { transform: rotate(-3deg) translate3d(3%, -2%, 0) scale(1.08); } }
+@keyframes cosmic-stars { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-2%, 1%, 0); } }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .cosmic-hero-button:hover { transform: translateY(-3px); } }
+@media (max-width: 40rem) { .cosmic-hero { min-height: 39rem; padding-inline: .5rem; } .cosmic-hero h1 { font-size: clamp(3rem, 13vw, 4.75rem); }.cosmic-hero-description { font-size: .94rem; } .cosmic-hero-role { font-size: 1.2rem; } }
+@media (prefers-reduced-motion: reduce) { .cosmic-hero * { animation: none !important; transition: none !important; } }
+.editorial-link { display: inline-flex; align-items: baseline; gap: .875rem; min-height: 2.75rem; padding-block: .5rem; font-size: .8125rem; font-weight: 550; text-decoration: none; }
+a.editorial-link > span:first-child { border-bottom: 1px solid var(--color-border); transition: border-color var(--motion-duration) var(--motion-easing); }
+a.editorial-link:hover { color: var(--color-accent); }
+a.editorial-link:hover > span:first-child { border-bottom-color: currentColor; }

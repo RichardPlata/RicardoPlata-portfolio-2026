@@ -1,0 +1,27 @@
+import { siteConfig } from '../config/siteConfig.js'
+import { useLayoutEffect } from 'react'
+import { Navigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import SiteLayout from './SiteLayout.jsx'
+
+export default function LanguageLayout() {
+  const { lang } = useParams()
+  const { i18n } = useTranslation()
+  const supported = lang === 'en' || lang === 'es'
+
+  useLayoutEffect(() => {
+    if (!supported) return
+    i18n.changeLanguage(lang)
+    document.documentElement.lang = lang
+    document.title = i18n.t('metadata.title', { lng: lang, name: siteConfig.name })
+    try {
+      localStorage.setItem('ricardo-portfolio-language', lang)
+    } catch {
+      // URL-based localization still works when storage is unavailable.
+    }
+  }, [lang, supported, i18n])
+
+  if (!supported) return <Navigate to="/en" replace />
+  // Synchronize before paint without unmounting Home, its theme, or scroll state.
+  return <SiteLayout />
+}
