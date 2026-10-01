@@ -1,0 +1,17 @@
+{
+  "empty": "Las exploraciones están en preparación.",
+  "openCaseStudy": "Abrir el caso de estudio de {{title}}",
+  "comingSoon": "En preparación",
+  "types": {
+    "digitalProduct": "Producto digital",
+    "brandIdentity": "Identidad de marca",
+    "webDesignCollection": "Colección de diseño web",
+    "automotiveInterface": "Interfaz automotriz",
+    "webDesign": "Diseño web",
+    "healthcareWebsite": "Sitio web de salud",
+    "gameInterface": "Interfaz de videojuego"
+  },
+  "back": "Volver al índice de proyectos",
+  "detailPlaceholder": "Provisional: contenido y material visual del caso de estudio pendientes de aprobación.",
+  "collectionTitle": "Proyectos de esta colección"
+}

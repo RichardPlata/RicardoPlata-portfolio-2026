@@ -1,0 +1,120 @@
+diff --git a/src/data/mediaAssets.js b/src/data/mediaAssets.js
+index 5bb8242..e5635fe 100644
+--- a/src/data/mediaAssets.js
++++ b/src/data/mediaAssets.js
+@@ -1,22 +1,23 @@
+-export const guqi1 = new URL('../../images/GuQi-CaseStudy1.png', import.meta.url).href
+-export const guqi2 = new URL('../../images/GuQi-CaseStudy2.png', import.meta.url).href
+-export const guqi3 = new URL('../../images/GuQi-CaseStudy3.png', import.meta.url).href
+-
+-export const hardwood1 = new URL('../../images/HardWood-CaseStudy1.png', import.meta.url).href
+-export const hardwood2 = new URL('../../images/HardWood-CaseStudy2.png', import.meta.url).href
+-export const hardwood3 = new URL('../../images/HardWood-CaseStudy3.png', import.meta.url).href
+-
+-export const kokoro1 = new URL('../../images/Kokoro-CaseStudy1.png', import.meta.url).href
+-export const kokoro2 = new URL('../../images/Kokoro-CaseStudy2.png', import.meta.url).href
+-export const kokoro3 = new URL('../../images/Kokoro-CaseStudy3.png', import.meta.url).href
+-export const kokoroProjects = new URL('../../images/Kokoro-Projects.png', import.meta.url).href
+-
+-export const shine1 = new URL('../../images/ShineCleaning-CaseStudy1.png', import.meta.url).href
+-export const shine2 = new URL('../../images/ShineCleaning-CaseStudy2.png', import.meta.url).href
+-export const shine3 = new URL('../../images/ShineCleaning-CaseStudy3.png', import.meta.url).href
+-
+-export const auraProjectsVideo = new URL('../../videos/AURA-video-projects.mp4', import.meta.url).href
+-export const auraDriveModesVideo = new URL('../../videos/Aura-drivemodes-video.mp4', import.meta.url).href
+-export const auraExteriorVideo = new URL('../../videos/Aura-exteriortocockpit-video.mp4', import.meta.url).href
+-export const hardwoodProjectsVideo = new URL('../../videos/hardwood-video-projects.mp4', import.meta.url).href
+-export const shineProjectsVideo = new URL('../../videos/ShineCleaning-video-projects.mp4', import.meta.url).href
++export const guqi1 = new URL('../assets/images/GuQi-CaseStudy1.png', import.meta.url).href
++export const guqi2 = new URL('../assets/images/GuQi-CaseStudy2.png', import.meta.url).href
++export const guqi3 = new URL('../assets/images/GuQi-CaseStudy3.png', import.meta.url).href
++export const guqiProjectsVideo = new URL('../assets/videos/GuQi-video-projects.mp4', import.meta.url).href
++
++export const hardwood1 = new URL('../assets/images/HardWood-CaseStudy1.png', import.meta.url).href
++export const hardwood2 = new URL('../assets/images/HardWood-CaseStudy2.png', import.meta.url).href
++export const hardwood3 = new URL('../assets/images/HardWood-CaseStudy3.png', import.meta.url).href
++
++export const kokoro1 = new URL('../assets/images/Kokoro-CaseStudy1.png', import.meta.url).href
++export const kokoro2 = new URL('../assets/images/Kokoro-CaseStudy2.png', import.meta.url).href
++export const kokoro3 = new URL('../assets/images/Kokoro-CaseStudy3.png', import.meta.url).href
++export const kokoroProjects = new URL('../assets/images/Kokoro-Projects.png', import.meta.url).href
++
++export const shine1 = new URL('../assets/images/ShineCleaning-CaseStudy1.png', import.meta.url).href
++export const shine2 = new URL('../assets/images/ShineCleaning-CaseStudy2.png', import.meta.url).href
++export const shine3 = new URL('../assets/images/ShineCleaning-CaseStudy3.png', import.meta.url).href
++
++export const auraProjectsVideo = new URL('../assets/videos/AURA-video-projects.mp4', import.meta.url).href
++export const auraDriveModesVideo = new URL('../assets/videos/Aura-drivemodes-video.mp4', import.meta.url).href
++export const auraExteriorVideo = new URL('../assets/videos/Aura-exteriortocockpit-video.mp4', import.meta.url).href
++export const hardwoodProjectsVideo = new URL('../assets/videos/hardwood-video-projects.mp4', import.meta.url).href
++export const shineProjectsVideo = new URL('../assets/videos/ShineCleaning-video-projects.mp4', import.meta.url).href
+diff --git a/src/data/projects.js b/src/data/projects.js
+index 244010c..87b0a81 100644
+--- a/src/data/projects.js
++++ b/src/data/projects.js
+@@ -1,8 +1,8 @@
+ // Display order for the home.
+-import { auraProjectsVideo, guqi1, hardwoodProjectsVideo, kokoroProjects, shineProjectsVideo } from './mediaAssets.js'
++import { auraProjectsVideo, guqiProjectsVideo, hardwoodProjectsVideo, kokoroProjects, shineProjectsVideo } from './mediaAssets.js'
+ 
+ export const professionalProjects = [
+-  { slug: 'gu-qi', title: 'GU-QI', typeKey: 'types.webDesign', layoutVariant: 'lead', order: 1, image: guqi1 },
++  { slug: 'gu-qi', title: 'GU-QI', typeKey: 'types.webDesign', layoutVariant: 'lead', order: 1, video: guqiProjectsVideo },
+   { slug: 'kokoro', title: 'Kokoro Bake Studio', typeKey: 'types.digitalProduct', layoutVariant: 'support', order: 2, image: kokoroProjects },
+   { slug: 'a-plus-hardwood', title: 'A+ Hardwood Flooring', typeKey: 'types.webDesign', layoutVariant: 'support', order: 3, video: hardwoodProjectsVideo },
+   { slug: 'shine-cleaning', title: 'Shine Cleaning', typeKey: 'types.webDesign', layoutVariant: 'closing', order: 4, video: shineProjectsVideo },
+diff --git a/src/pages/CaseStudy.jsx b/src/pages/CaseStudy.jsx
+index 0ce1a67..d824f16 100644
+--- a/src/pages/CaseStudy.jsx
++++ b/src/pages/CaseStudy.jsx
+@@ -16,7 +16,6 @@ function MediaSlot({ label, media }) {
+       {media?.type === 'image' && <img src={media.src} alt={label} loading="lazy" decoding="async" />}
+       {!filled && <div className="case-media-empty" role="img" aria-label={label}><span>{label}</span></div>}
+     </div>
+-    <figcaption>{label}</figcaption>
+   </figure>
+ }
+ 
+@@ -96,7 +95,6 @@ export default function CaseStudy() {
+       <div className="case-storyline">
+         {copy.sections.map((section, index) => <section className={`case-chapter ${index >= MAX_CASE_IMAGES - 1 ? 'case-chapter--text-only' : ''}`} data-case-reveal key={section.title}>
+           <div className="case-chapter-copy">
+-            <span className="case-number">{String(index + 1).padStart(2, '0')}</span>
+             <div>
+               <h2>{section.title}</h2>
+               <p>{section.body}</p>
+diff --git a/src/styles/case.css b/src/styles/case.css
+index 7203581..c351b55 100644
+--- a/src/styles/case.css
++++ b/src/styles/case.css
+@@ -1,6 +1,6 @@
+ .case-article { padding-top: clamp(6rem, 10vw, 9rem); padding-bottom: clamp(4rem, 9vw, 9rem); }
+ .case-hero { max-width: 62rem; margin: clamp(2rem, 6vw, 5rem) auto clamp(3rem, 7vw, 6rem); text-align: center; }
+-.case-eyebrow, .case-number, .case-kicker { font-size: .72rem; color: var(--color-secondary); text-transform: uppercase; letter-spacing: .16em; }
++.case-eyebrow, .case-kicker { font-size: .72rem; color: var(--color-secondary); text-transform: uppercase; letter-spacing: .16em; }
+ .case-hero h1 { margin: .8rem 0 1.25rem; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(3.2rem, 8vw, 7rem); font-weight: 400; font-style: italic; line-height: 1.02; letter-spacing: -.06em; }
+ .case-lead { max-width: 42rem; margin-inline: auto; font-size: clamp(1.25rem, 2.5vw, 1.8rem); line-height: 1.45; color: var(--color-secondary); }
+ .case-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.25rem 2rem; margin-top: 2rem; }
+@@ -15,12 +15,11 @@
+ .case-media video { height: 100%; object-fit: cover; background: #08080b; }
+ .case-media-empty { display: grid; place-items: center; padding: 2rem; color: var(--color-secondary); text-align: center; background: radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 35%), var(--color-surface); }
+ .case-media-empty span { max-width: 28ch; }
+-.case-media figcaption { margin-top: .7rem; font-size: .76rem; color: var(--color-secondary); }
+ .case-context { width: min(100%, 48rem); margin: clamp(4rem, 10vw, 9rem) auto; }
+ .case-context p:last-child { margin-top: .8rem; max-width: 58ch; font-size: clamp(1.05rem, 1.7vw, 1.2rem); line-height: 1.8; }
+ .case-storyline { width: min(100%, 68rem); margin-inline: auto; }
+ .case-chapter { display: grid; grid-template-columns: minmax(14rem, .75fr) minmax(0, 1.45fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; min-height: 76vh; padding-block: clamp(4rem, 10vw, 9rem); border-top: 1px solid var(--color-border); }
+-.case-chapter-copy { position: sticky; top: calc(var(--header-height) + 4rem); display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 1.2rem; padding-top: 1rem; }
++.case-chapter-copy { position: sticky; top: calc(var(--header-height) + 4rem); display: block; padding-top: 1rem; }
+ .case-chapter h2, .case-ending h2 { margin-bottom: 1rem; font-size: clamp(1.65rem, 3vw, 2.8rem); line-height: 1.12; letter-spacing: -.045em; }
+ .case-chapter p, .case-chapter li, .case-ending p { font-size: 1rem; line-height: 1.8; color: var(--color-secondary); }
+ .case-chapter ul { margin: 1.2rem 0 0; padding-left: 1.2rem; }
+@@ -62,7 +61,7 @@
+ @media (max-width: 48rem) {
+   .case-article { padding-top: 5rem; }
+   .case-chapter { grid-template-columns: 1fr; min-height: auto; gap: 2rem; padding-block: 4rem; }
+-  .case-chapter-copy { position: static; grid-template-columns: 2rem minmax(0, 1fr); }
++  .case-chapter-copy { position: static; }
+   .case-chapter .case-media { order: 2; }
+   .case-decision-grid { grid-template-columns: 1fr; }
+ }

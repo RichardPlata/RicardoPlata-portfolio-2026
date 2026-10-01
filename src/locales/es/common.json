@@ -1,0 +1,122 @@
+{
+  "navigation": {
+    "label": "Navegación principal",
+    "projects": "Trabajo",
+    "about": "Sobre mí",
+    "contact": "Contacto",
+    "openMenu": "Abrir menú de navegación",
+    "closeMenu": "Cerrar menú de navegación",
+    "home": "Inicio",
+    "resume": "CV",
+    "sayHi": "Hola",
+    "backHome": "Volver al inicio"
+  },
+  "language": {
+    "label": "Idioma",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "switchToDark": "Cambiar al modo oscuro",
+    "switchToLight": "Cambiar al modo claro"
+  },
+  "skip": "Saltar al contenido",
+  "hero": {
+    "eyebrow": "Hola, soy {{name}}.",
+    "headline": "Diseñador digital creando marcas, interfaces y experiencias interactivas.",
+    "personality": "Conecto ideas claras con imágenes, movimiento y tecnología para crear experiencias digitales más humanas.",
+    "orbitLabel": "Ilustración de órbitas y planetas",
+    "orbitCaption": "Entre sistemas e historias",
+    "interfaceLabel": "Interfaces con intención",
+    "motionLabel": "Exploración en motion y 3D",
+    "location": "México",
+    "availability": "Disponible",
+    "selectedWork": "Trabajo seleccionado",
+    "resume": "CV",
+    "linkedin": "LinkedIn",
+    "linksLabel": "Trabajo seleccionado",
+    "disciplines": "Diseño de producto · UX/UI · Identidad visual · Motion · 3D",
+    "roles": [
+      "creativo",
+      "diseñador",
+      "explorador"
+    ],
+    "rolePrefix": "Soy",
+    "roleDescription": "Diseñador digital, creativo y explorador",
+    "cosmicDescription": "Doy forma a interfaces y experiencias interactivas a través del diseño, el movimiento y el 3D.",
+    "scroll": "Explora mi trabajo"
+  },
+  "projectIndex": {
+    "title": "Índice",
+    "label": "Filtrar proyectos",
+    "filters": {
+      "projects": "Proyectos",
+      "explorations": "Exploraciones"
+    },
+    "back": "Volver a proyectos"
+  },
+  "about": {
+    "title": "Sobre mí",
+    "photo": "Fotografía próximamente.",
+    "portraitAlt": "Retrato de {{name}}",
+    "biography": [
+      "Soy Ricardo, un diseñador digital multidisciplinario ubicado en México. Mi formación comenzó en Diseño y Arte para Videojuegos, donde me acerqué a la interacción, el 3D y la creación de experiencias. Con el tiempo enfoqué mi trabajo en UX/UI, diseño de producto, sitios web e identidad visual.",
+      "Me interesa comprender cómo funciona una experiencia, no solamente cómo se ve. Combino investigación, sistemas visuales, diseño de interfaces, motion y 3D para transformar ideas complejas en soluciones claras, expresivas y útiles.",
+      "Actualmente colaboro en proyectos para clientes y desarrollo experiencias personales mientras busco oportunidades en Product Design, UX/UI y diseño digital.",
+      "Fuera del trabajo con clientes, exploro la animación 3D y la narrativa visual a través de proyectos personales."
+    ],
+    "groups": {
+      "background": {
+        "title": "Formación",
+        "items": [
+          "Diseño y Arte para Videojuegos",
+          "Certificado de Diseño UX de Google",
+          "Google Marketing Digital y E-Commerce",
+          "IBM Generative AI for UI/UX Design"
+        ]
+      },
+      "focus": {
+        "title": "Enfoque",
+        "items": [
+          "Diseño de producto",
+          "UX/UI y diseño web",
+          "Identidad de marca",
+          "Motion y 3D"
+        ]
+      },
+      "tools": {
+        "title": "Herramientas",
+        "items": [
+          "Figma",
+          "Adobe Creative Cloud",
+          "React y Three.js",
+          "Blender"
+        ]
+      }
+    }
+  },
+  "footer": {
+    "location": "México",
+    "backToTop": "Volver arriba"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "Provisional: esta página no está disponible.",
+    "home": "Volver al inicio"
+  },
+  "metadata": {
+    "title": "{{name}} | Diseñador digital"
+  },
+  "contact": {
+    "label": "Contacto",
+    "heading": "¿Tienes un proyecto, una oportunidad o una colaboración en mente?",
+    "action": "Hablemos",
+    "availability": "Ubicado en México. Disponible para oportunidades en diseño de producto, UX/UI y diseño digital.",
+    "location": "Ubicado en México",
+    "status": "Disponible para oportunidades",
+    "email": "Correo"
+  }
+}

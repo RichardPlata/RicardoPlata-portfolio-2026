@@ -1,0 +1,158 @@
+diff --git a/src/components/Header.css b/src/components/Header.css
+index b840d39..299ffae 100644
+--- a/src/components/Header.css
++++ b/src/components/Header.css
+@@ -91,6 +91,12 @@
+ .site-shell--home .header-inner { margin-top: .75rem; min-height: calc(var(--header-height) - .4rem); padding-inline: clamp(1rem, 2.5vw, 2rem); border: 1px solid var(--color-border); border-radius: 999px; background: color-mix(in srgb, var(--color-background) 86%, transparent); backdrop-filter: blur(18px); }
+ @media (max-width: 56rem) { .site-shell--home .header-inner { border-radius: 1.3rem; } }
+ 
++/* The hero navigation is reused on every case study so the portfolio feels like one system. */
++.site-header--floating { background: transparent; border-bottom-color: transparent; }
++.site-header--floating .header-inner { margin-top: .75rem; min-height: calc(var(--header-height) - .4rem); padding-inline: clamp(1rem, 2.5vw, 2rem); border: 1px solid var(--color-border); border-radius: 999px; background: color-mix(in srgb, var(--color-background) 86%, transparent); backdrop-filter: blur(18px); }
++.site-header--floating[data-scrolled='true'] { background: transparent; border-bottom-color: transparent; }
++@media (max-width: 56rem) { .site-header--floating .header-inner { border-radius: 1.3rem; } }
++
+ @media (max-width: 56rem) {
+   .header-inner { gap: 0.5rem; }
+   .header-controls { gap: 0.625rem; }
+@@ -137,28 +143,3 @@
+   .language-control a { min-width: 2.25rem; font-size: 0.75rem; }
+ }
+ 
+-/* Case studies use a compact floating control inspired by the visual language of the reference. */
+-.site-header--case { position: fixed; inset: 0 0 auto; background: transparent; border: 0; pointer-events: none; }
+-.site-header--case .case-header-shell { position: relative; min-height: 5.5rem; display: flex; align-items: center; justify-content: center; padding-inline: 1rem; }
+-.case-back-button { position: fixed; inset-block-start: 1rem; inset-inline-start: 1rem; z-index: 2; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: color-mix(in srgb, var(--color-text) 84%, transparent); color: var(--color-background); text-decoration: none; font-size: 1.2rem; backdrop-filter: blur(14px); pointer-events: auto; transition: transform 200ms var(--motion-easing), background-color 200ms var(--motion-easing); }
+-.case-back-button:hover { transform: translateX(-2px); background: var(--color-text); }
+-.case-header-pill { display: flex; align-items: center; gap: .35rem; padding: .3rem .55rem .3rem .4rem; border: 1px solid color-mix(in srgb, var(--color-text) 18%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--color-background) 78%, transparent); box-shadow: 0 1rem 3rem color-mix(in srgb, #000 15%, transparent); backdrop-filter: blur(18px); pointer-events: auto; }
+-.case-header-brand { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--color-text); color: var(--color-background); text-decoration: none; font-size: .62rem; font-weight: 700; letter-spacing: -.03em; }
+-.site-header--case .header-navigation { display: flex; gap: .1rem; }
+-.site-header--case .header-navigation a, .site-header--case .language-control a { min-height: 2rem; padding-inline: .65rem; border-radius: 999px; color: var(--color-secondary); font-size: .68rem; text-decoration: none; }
+-.site-header--case .header-navigation a:hover, .site-header--case .language-control a:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+-.site-header--case .language-control { margin-left: .15rem; }
+-.site-header--case .language-control span { font-size: .65rem; }
+-.site-header--case .menu-toggle { display: none; }
+-@media (max-width: 56rem) {
+-  .site-header--case .case-header-shell { justify-content: flex-end; min-height: 4.5rem; }
+-  .site-header--case .case-header-pill { padding-right: .35rem; }
+-  .site-header--case .header-navigation { display: none; position: absolute; inset: calc(100% + .4rem) 0 auto; padding: .5rem; border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-background); box-shadow: 0 1rem 3rem color-mix(in srgb, #000 15%, transparent); }
+-  .site-header--case[data-menu-open='true'] .header-navigation { display: grid; }
+-  .site-header--case .header-navigation a { justify-content: flex-start; min-height: 2.75rem; }
+-  .site-header--case .menu-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 2.35rem; height: 2.35rem; padding: 0; border: 0; background: transparent; }
+-  .site-header--case .menu-line { display: block; width: 16px; height: 1px; background: currentColor; }
+-  .site-header--case[data-menu-open='true'] .menu-line:first-child { transform: translateY(3px) rotate(45deg); }
+-  .site-header--case[data-menu-open='true'] .menu-line:last-child { transform: translateY(-3px) rotate(-45deg); }
+-}
+-@media (prefers-reduced-motion: reduce) { .case-back-button { transition: none; } }
+diff --git a/src/components/Header.jsx b/src/components/Header.jsx
+index 06ba8a9..078e733 100644
+--- a/src/components/Header.jsx
++++ b/src/components/Header.jsx
+@@ -18,7 +18,6 @@ export default function Header({ framed = false }) {
+   const { pathname, search, hash } = useLocation()
+   const locationKey = pathname + search + hash
+   const menuOpen = menuLocation === locationKey
+-  const isCaseStudy = pathname.includes('/work/')
+ 
+   useEffect(() => {
+     const onScroll = () => setScrolled(window.scrollY > 16)
+@@ -51,45 +50,7 @@ export default function Header({ framed = false }) {
+     hash,
+   })
+ 
+-  if (isCaseStudy) {
+-    return <header ref={headerRef} className="site-header site-header--case" data-scrolled={scrolled}
+-      data-menu-open={menuOpen}
+-      onKeyDown={(event) => {
+-        if (event.key === 'Escape' && menuOpen) {
+-          setMenuLocation(null)
+-          menuButtonRef.current?.focus()
+-        }
+-      }}>
+-      <div className="case-header-shell">
+-        <Link className="case-back-button" to={`/${lang}`} aria-label={t('navigation.backHome')}>
+-          <span aria-hidden="true">←</span>
+-        </Link>
+-        <div className="case-header-pill">
+-          <SectionLink className="case-header-brand" section="top">RP</SectionLink>
+-          <nav id="primary-navigation" className="header-navigation" aria-label={t('navigation.label')}>
+-            <Link ref={firstLinkRef} to={`/${lang}`} onClick={() => setMenuLocation(null)}>{t('navigation.home')}</Link>
+-            <Link to={`/${lang}#work`} onClick={() => setMenuLocation(null)}>{t('navigation.projects')}</Link>
+-            <a href={siteConfig.links.resume.href} target="_blank" rel="noopener noreferrer">{t('navigation.resume')}</a>
+-            <Link to={`/${lang}#contact`} onClick={() => setMenuLocation(null)}>{t('navigation.sayHi')}</Link>
+-          </nav>
+-          <nav className="language-control" aria-label={t('language.label')}>
+-            <Link to={languageTarget('es')} lang="es" hrefLang="es" aria-label={t('language.spanish')} aria-current={lang === 'es' ? 'page' : undefined}>ESP</Link>
+-            <span aria-hidden="true">/</span>
+-            <Link to={languageTarget('en')} lang="en" hrefLang="en" aria-label={t('language.english')} aria-current={lang === 'en' ? 'page' : undefined}>ENG</Link>
+-          </nav>
+-          <button ref={menuButtonRef} className="menu-toggle" type="button"
+-            aria-expanded={menuOpen} aria-controls="primary-navigation"
+-            aria-label={t(menuOpen ? 'navigation.closeMenu' : 'navigation.openMenu')}
+-            onClick={() => setMenuLocation(menuOpen ? null : locationKey)}>
+-            <span className="menu-line" aria-hidden="true" />
+-            <span className="menu-line" aria-hidden="true" />
+-          </button>
+-        </div>
+-      </div>
+-    </header>
+-  }
+-
+-  return <header ref={headerRef} className="site-header" data-scrolled={scrolled}
++  return <header ref={headerRef} className={`site-header ${framed ? 'site-header--floating' : ''}`} data-scrolled={scrolled}
+     data-menu-open={menuOpen}
+     onKeyDown={(event) => {
+       if (event.key === 'Escape' && menuOpen) {
+diff --git a/src/pages/CaseStudy.jsx b/src/pages/CaseStudy.jsx
+index ffa1774..d4cb6ce 100644
+--- a/src/pages/CaseStudy.jsx
++++ b/src/pages/CaseStudy.jsx
+@@ -6,6 +6,8 @@ import Footer from '../components/Footer.jsx'
+ import NotFound from './NotFound.jsx'
+ import { caseStudies } from '../data/caseStudies.js'
+ 
++const MAX_CASE_IMAGES = 3
++
+ function MediaSlot({ label, image }) {
+   return <figure className={`case-media ${image ? 'case-media--filled' : 'case-media--pending'}`} data-case-media>
+     <div className="case-media-frame">
+@@ -54,7 +56,7 @@ export default function CaseStudy() {
+ 
+   return <div className={`case-shell case-shell--${slug}`}>
+     <a className="skip-link" href="#case-content">{t('skip')}</a>
+-    <Header />
++    <Header framed />
+     <main ref={contentRef} id="case-content" className="case-article content-frame" tabIndex={-1}>
+       <header className="case-hero" data-case-reveal>
+         <p className="case-eyebrow">{study.role} · {study.tools}</p>
+@@ -76,7 +78,7 @@ export default function CaseStudy() {
+       </section>
+ 
+       <div className="case-storyline">
+-        {copy.sections.map((section, index) => <section className="case-chapter" data-case-reveal key={section.title}>
++        {copy.sections.map((section, index) => <section className={`case-chapter ${index >= MAX_CASE_IMAGES - 1 ? 'case-chapter--text-only' : ''}`} data-case-reveal key={section.title}>
+           <div className="case-chapter-copy">
+             <span className="case-number">{String(index + 1).padStart(2, '0')}</span>
+             <div>
+@@ -85,7 +87,7 @@ export default function CaseStudy() {
+               {section.points?.length > 0 && <ul>{section.points.map((point) => <li key={point}>{point}</li>)}</ul>}
+             </div>
+           </div>
+-          <MediaSlot label={section.media} image={study.media?.[index]} />
++          {index < MAX_CASE_IMAGES - 1 && <MediaSlot label={section.media} image={study.media?.[index]} />}
+         </section>)}
+       </div>
+ 
+diff --git a/src/styles/case.css b/src/styles/case.css
+index f3414f3..7ffab9a 100644
+--- a/src/styles/case.css
++++ b/src/styles/case.css
+@@ -23,6 +23,8 @@
+ .case-chapter p, .case-chapter li, .case-ending p { font-size: 1rem; line-height: 1.8; color: var(--color-secondary); }
+ .case-chapter ul { margin: 1.2rem 0 0; padding-left: 1.2rem; }
+ .case-chapter .case-media { width: 100%; align-self: center; }
++.case-chapter--text-only .case-chapter-copy { grid-column: 1 / -1; max-width: 48rem; }
++.case-chapter--text-only { min-height: auto; }
+ .case-decision { width: min(100%, 62rem); margin: clamp(5rem, 12vw, 10rem) auto; padding: clamp(1.5rem, 5vw, 3.5rem); border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface); }
+ .case-decision-label { margin-bottom: .75rem; }
+ .case-decision h2 { max-width: 30ch; margin-bottom: 2rem; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.15; letter-spacing: -.04em; }

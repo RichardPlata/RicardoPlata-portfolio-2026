@@ -1,0 +1,17 @@
+{
+  "empty": "Explorations are being prepared.",
+  "openCaseStudy": "Open {{title}} case study",
+  "comingSoon": "In progress",
+  "types": {
+    "digitalProduct": "Digital Product",
+    "brandIdentity": "Brand Identity",
+    "webDesignCollection": "Web Design Collection",
+    "automotiveInterface": "Automotive Interface",
+    "webDesign": "Web Design",
+    "healthcareWebsite": "Healthcare Website",
+    "gameInterface": "Game Interface"
+  },
+  "back": "Back to project index",
+  "detailPlaceholder": "Provisional: case study content and media pending approval.",
+  "collectionTitle": "Projects in this collection"
+}

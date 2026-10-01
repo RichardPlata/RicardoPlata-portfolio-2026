@@ -1,0 +1,72 @@
+.site-shell--home {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  --aurora-strength: 0.28;
+  --aurora-blue: #5878cf;
+  --aurora-purple: #7958d8;
+  --aurora-lilac: #9c77e6;
+  --aurora-magenta: #cc69ae;
+}
+:root[data-theme='dark'] .site-shell--home { --aurora-strength: 0.48; }
+.hero-aurora {
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  height: clamp(260px, 34svh, 340px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--aurora-strength);
+  /* The glow begins at the top edge and fades before the headline. */
+  mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 100%);
+}
+.hero-aurora-field {
+  position: absolute;
+  inset: -95px -5% 0;
+  transform: translate(var(--aurora-x, 0px), var(--aurora-y, 0px));
+}
+.aurora-band {
+  position: absolute;
+  top: -20%;
+  width: 65%;
+  height: 100%;
+  filter: blur(42px);
+}
+.aurora-band--left {
+  left: -9%;
+  background: radial-gradient(ellipse 78% 56% at 50% 32%, var(--aurora-blue) 8%, var(--aurora-purple) 40%, transparent 78%);
+}
+.aurora-band--center {
+  left: 18%;
+  background: radial-gradient(ellipse 78% 52% at 50% 30%, var(--aurora-purple) 8%, var(--aurora-lilac) 40%, transparent 78%);
+}
+.aurora-band--right {
+  right: -9%;
+  background: radial-gradient(ellipse 78% 54% at 50% 32%, var(--aurora-magenta) 8%, var(--aurora-purple) 42%, transparent 78%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .aurora-band { will-change: transform, opacity; }
+  .aurora-band--left { animation: aurora-left 12s ease-in-out -3s infinite alternate; }
+  .aurora-band--center { animation: aurora-center 15s ease-in-out -7s infinite alternate; }
+  .aurora-band--right { animation: aurora-right 18s ease-in-out -11s infinite alternate; }
+}
+@keyframes aurora-left {
+  from { transform: translate(-22px, -5px) scale(1); opacity: 0.82; filter: blur(42px); }
+  to { transform: translate(24px, 4px) scale(1.06); opacity: 1; filter: blur(42px); }
+}
+@keyframes aurora-center {
+  from { transform: translate(17px, 4px) scale(1.04); opacity: 1; filter: blur(42px); }
+  to { transform: translate(-20px, -5px) scale(1); opacity: 0.82; filter: blur(42px); }
+}
+@keyframes aurora-right {
+  from { transform: translate(-18px, 5px) scale(1); opacity: 0.84; filter: blur(42px); }
+  to { transform: translate(21px, -5px) scale(1.05); opacity: 1; filter: blur(42px); }
+}
+@media (max-width: 56rem) { .hero-aurora { height: 290px; } }
+@media (max-width: 40rem) {
+  .hero-aurora { height: 245px; }
+  .aurora-band { filter: blur(42px); }
+}
+@media (prefers-reduced-motion: reduce), (max-width: 56rem), (hover: none), (pointer: coarse) {
+  .hero-aurora-field { transform: none; }
+}

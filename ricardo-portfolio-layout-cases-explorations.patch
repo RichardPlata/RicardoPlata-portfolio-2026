@@ -1,0 +1,396 @@
+diff --git a/CASE_STUDIES.md b/CASE_STUDIES.md
+index 0896053..b1964cb 100644
+--- a/CASE_STUDIES.md
++++ b/CASE_STUDIES.md
+@@ -2,13 +2,13 @@
+ 
+ El home presenta, en este orden: GU-QI, Kokoro, A+ Hardwood Flooring, Shine Cleaning, Fisiomóvil y AURA Drive. Las tres landings son tarjetas sin enlace hasta que su trabajo y fotografías estén listos.
+ 
+-Los casos de GU-QI, Kokoro y AURA Drive comparten `src/pages/CaseStudy.jsx` y sus textos en español e inglés viven en `src/data/caseStudies.js`. En cada caso hay una portada y dos espacios visuales, con una breve descripción. Las imágenes todavía no forman parte del proyecto.
++Los casos de GU-QI, Kokoro y AURA Drive comparten `src/pages/CaseStudy.jsx` y sus textos en español e inglés viven en `src/data/caseStudies.js`. GU-QI y AURA Drive tienen una portada y dos espacios visuales; Kokoro tiene una portada y tres espacios para explicar su proceso. Las imágenes todavía no forman parte del proyecto.
+ 
+ Para añadir mockups:
+ 
+ 1. Exporta cada composición como WebP; usa proporción aproximada 16:9 para el caso y 16:10 para la tarjeta del home. Conserva los originales de alta resolución fuera del repositorio.
+ 2. Guarda los WebP finales en `src/media/cases/<slug>/` y la portada de cada tarjeta en `src/media/cards/`.
+-3. Importa los archivos en `src/data/caseStudies.js` y asigna `cover` y `media: [primeraImagen, segundaImagen]` al proyecto correspondiente.
++3. Importa los archivos en `src/data/caseStudies.js` y asigna `cover` y `media: [primeraImagen, segundaImagen]` al proyecto correspondiente. Para Kokoro, añade una tercera imagen al arreglo.
+ 4. Importa la imagen de portada de la tarjeta en `src/data/projects.js` y asigna `image` al proyecto. No es obligatorio utilizar el mismo recorte en el home y el caso.
+ 5. Ejecuta `npm run lint` y `npm run build` antes de compartir el resultado. Si faltan fotos definitivas, deja el espacio vacío en vez de añadir material provisional pesado.
+ 
+diff --git a/src/components/BubbleWipe.jsx b/src/components/BubbleWipe.jsx
+index d961ddf..3595992 100644
+--- a/src/components/BubbleWipe.jsx
++++ b/src/components/BubbleWipe.jsx
+@@ -9,7 +9,7 @@ export default function BubbleWipe() {
+   return (
+     <div className="bubble-wipe" aria-hidden="true">
+       {bubbles.map(([x, y, size, delay, drift], index) => (
+-        <span key={index} style={{ left: `${x}%`, top: `${y}%`, '--bubble-size': `${size}px`, '--bubble-delay': `${delay}ms`, '--bubble-drift': `${drift}px` }} />
++        <span key={index} style={{ left: `${x}%`, top: `${y}%`, '--bubble-size': `${size}px`, '--bubble-delay': `${delay * 3}ms`, '--bubble-drift': `${drift}px` }} />
+       ))}
+     </div>
+   )
+diff --git a/src/components/ProjectIndex.css b/src/components/ProjectIndex.css
+index 8ad094c..4a810eb 100644
+--- a/src/components/ProjectIndex.css
++++ b/src/components/ProjectIndex.css
+@@ -1,133 +1,134 @@
+-.project-index-heading {
+-  display: flex;
+-  align-items: baseline;
+-  justify-content: space-between;
+-  gap: var(--space-3);
+-  padding-block: var(--space-3);
+-  margin-bottom: var(--space-4);
+-  border-top: 1px solid var(--color-border);
+-}
+-.project-index-heading h2 { font-size: 0.9375rem; font-weight: 500; }
+-.project-category-controls { display: flex; gap: var(--space-3); }
+-.project-category-controls button {
+-  padding: var(--space-1) 0;
+-  border: 0;
+-  border-bottom: 1px solid transparent;
+-  background: transparent;
+-  color: var(--color-muted);
+-  font-size: 0.875rem;
+-}
+-.project-category-controls button[aria-pressed='true'] {
+-  color: var(--color-text);
+-  background: transparent;
+-  border-bottom-color: var(--color-accent);
+-}
+-.project-index .project-grid {
+-  display: grid;
+-  grid-template-columns: repeat(12, minmax(0, 1fr));
+-  gap: clamp(1rem, 2.2vw, 2rem);
+-  margin: 0;
+-  padding: 0;
+-  list-style: none;
+-}
+-.project-card-slot { min-width: 0; }
+-.project-card-slot--lead { grid-column: 1 / 8; grid-row: span 2; }
+-.project-card-slot--support { grid-column: 8 / -1; }
+-.project-card-slot--support-left { grid-column: 1 / 6; }
+-.project-card-slot--closing { grid-column: 6 / -1; grid-row: 3 / 5; }
+-.project-card {
+-  display: flex;
+-  flex-direction: column;
+-  height: 100%;
+-  overflow: hidden;
+-  border-radius: var(--radius-large);
+-  background: var(--color-surface);
+-  color: var(--color-text);
+-  text-decoration: none;
+-}
+-.project-card-media {
+-  position: relative;
+-  flex: none;
+-  min-height: 0;
+-  aspect-ratio: 16 / 9;
+-  overflow: hidden;
+-  background: var(--color-surface);
+-}
+-.project-card-slot--lead .project-card-media { flex: 1; aspect-ratio: auto; }
+-.project-card-slot--closing .project-card-media { flex: 1; aspect-ratio: auto; }
+-.project-card-media img, .project-card-video {
+-  position: absolute;
+-  width: 100%;
+-  height: 100%;
+-  object-fit: cover;
+-  transition: transform 450ms var(--motion-easing);
+-}
+-.project-card-info {
+-  display: flex;
+-  align-items: center;
+-  justify-content: space-between;
+-  gap: var(--space-2);
+-  padding: var(--space-3);
+-  background: var(--color-elevated);
+-}
+-.project-card-info h3 { font-size: 1.125rem; font-weight: 550; letter-spacing: -0.025em; }
+-.project-card-info p { margin-top: var(--space-0); color: var(--color-secondary); font-size: 0.8125rem; }
+-.project-card-arrow { flex-shrink: 0; color: var(--color-accent); font-size: 1.5rem; transition: transform var(--motion-duration) var(--motion-easing); }
+-.project-card:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
+-.project-card-slot:focus-within { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
+-.project-empty { padding-block: var(--space-5); color: var(--color-secondary); }
+-.project-results-stage { position: relative; }
+-.bubble-wipe { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
+-.bubble-wipe span { position: absolute; width: var(--bubble-size); height: var(--bubble-size); border-radius: 50%; border: 1px solid var(--color-cosmic-indigo); background: radial-gradient(circle at 28% 25%, color-mix(in srgb, var(--color-cosmic-cyan) 20%, transparent), transparent 35%), color-mix(in srgb, var(--color-accent) 12%, transparent); animation: bubble-pass 650ms var(--motion-easing) var(--bubble-delay) both; }
+-@keyframes bubble-pass {
+-  0% { opacity: 0; transform: translate(-50%, 55%) scale(0.7); }
+-  25% { opacity: 0.85; }
+-  100% { opacity: 0; transform: translate(calc(-50% + var(--bubble-drift)), -130%) scale(1.15); }
+-}
+-@media (prefers-reduced-motion: reduce) { .bubble-wipe { display: none; } }
+-@media (max-width: 40rem) { .bubble-wipe span:nth-child(n + 7) { display: none; } }
+-
+-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+-  .project-card:hover .project-card-media img { transform: scale(1.025); }
+-  .project-card:hover .project-card-arrow { transform: translate(2px, -2px); }
+-}
+-@media (prefers-reduced-motion: no-preference) {
+-  .project-card-slot[data-revealed='pending'] { opacity: 0.65; transform: scale(1.035); filter: blur(1px); }
+-  .project-card-slot[data-revealed='true'] {
+-    transform-origin: center;
+-    animation: project-settle 850ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms) backwards;
+-  }
+-}
+-@keyframes project-settle {
+-  from { opacity: 0.65; transform: scale(1.035); filter: blur(1px); }
+-  to { opacity: 1; transform: scale(1); filter: blur(0); }
+-}
+-@media (max-width: 56rem) {
+-  .project-card-slot--lead, .project-card-slot--closing { grid-column: 1 / -1; grid-row: auto; }
+-  .project-card-slot--support, .project-card-slot--support-left { grid-column: span 6; }
+-  .project-card-slot--lead .project-card-media { flex: none; aspect-ratio: 16 / 10; }
+-  .project-card-slot--closing .project-card-media { flex: none; aspect-ratio: 2 / 1; }
+-  .project-card-info { padding: var(--space-2); }
+-}
+-@media (max-width: 40rem) {
+-  .project-card-video { display: none; }
+-  .project-index-heading { flex-direction: column; gap: var(--space-1); }
+-  .project-index .project-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+-  .project-card-slot--lead, .project-card-slot--support, .project-card-slot--support-left, .project-card-slot--closing { grid-column: 1; }
+-  .project-card-slot .project-card-media { flex: none; aspect-ratio: 4 / 3; }
+-  .project-card-slot--closing .project-card-media { aspect-ratio: 16 / 9; }
+-}
+-
+-/* Four published projects: two stacked beside the lead, then a wide closing case. */
+-@media (min-width: 56.001rem) {
+-  .project-card-slot--closing { grid-column: 1 / -1; grid-row: auto; }
+-  .project-card-slot--closing .project-card-media { aspect-ratio: 21 / 9; flex: none; }
+-}
++.project-index-heading {
++  display: flex;
++  align-items: baseline;
++  justify-content: space-between;
++  gap: var(--space-3);
++  padding-block: var(--space-3);
++  margin-bottom: var(--space-4);
++  border-top: 1px solid var(--color-border);
++}
++.project-index-heading h2 { font-size: 0.9375rem; font-weight: 500; }
++.project-category-controls { display: flex; gap: var(--space-3); }
++.project-category-controls button {
++  padding: var(--space-1) 0;
++  border: 0;
++  border-bottom: 1px solid transparent;
++  background: transparent;
++  color: var(--color-muted);
++  font-size: 0.875rem;
++}
++.project-category-controls button[aria-pressed='true'] {
++  color: var(--color-text);
++  background: transparent;
++  border-bottom-color: var(--color-accent);
++}
++.project-index .project-grid {
++  display: grid;
++  grid-template-columns: repeat(12, minmax(0, 1fr));
++  gap: clamp(1rem, 2.2vw, 2rem);
++  margin: 0;
++  padding: 0;
++  list-style: none;
++}
++.project-card-slot { min-width: 0; }
++.project-card-slot--lead { grid-column: 1 / 8; grid-row: span 2; }
++.project-card-slot--support { grid-column: 8 / -1; }
++.project-card-slot--support-left { grid-column: 1 / 6; }
++.project-card-slot--closing { grid-column: 6 / -1; grid-row: 3 / 5; }
++.project-card {
++  display: flex;
++  flex-direction: column;
++  height: 100%;
++  overflow: hidden;
++  border-radius: var(--radius-large);
++  background: var(--color-surface);
++  color: var(--color-text);
++  text-decoration: none;
++}
++.project-card-media {
++  position: relative;
++  flex: none;
++  min-height: 0;
++  aspect-ratio: 16 / 9;
++  overflow: hidden;
++  background: var(--color-surface);
++}
++.project-card-slot--lead .project-card-media { flex: 1; aspect-ratio: auto; }
++.project-card-slot--closing .project-card-media { flex: 1; aspect-ratio: auto; }
++.project-card-media img, .project-card-video {
++  position: absolute;
++  width: 100%;
++  height: 100%;
++  object-fit: cover;
++  transition: transform 450ms var(--motion-easing);
++}
++.project-card-info {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: var(--space-2);
++  padding: var(--space-3);
++  background: var(--color-elevated);
++}
++.project-card-info h3 { font-size: 1.125rem; font-weight: 550; letter-spacing: -0.025em; }
++.project-card-info p { margin-top: var(--space-0); color: var(--color-secondary); font-size: 0.8125rem; }
++.project-card-arrow { flex-shrink: 0; color: var(--color-accent); font-size: 1.5rem; transition: transform var(--motion-duration) var(--motion-easing); }
++.project-card:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
++.project-card-slot:focus-within { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
++.project-empty { padding-block: var(--space-5); color: var(--color-secondary); }
++.project-results-stage { position: relative; }
++.bubble-wipe { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
++.bubble-wipe span { position: absolute; width: var(--bubble-size); height: var(--bubble-size); border-radius: 50%; border: 1px solid var(--color-cosmic-indigo); background: radial-gradient(circle at 28% 25%, color-mix(in srgb, var(--color-cosmic-cyan) 20%, transparent), transparent 35%), color-mix(in srgb, var(--color-accent) 12%, transparent); animation: bubble-pass 1350ms var(--motion-easing) var(--bubble-delay) both; }
++@keyframes bubble-pass {
++  0% { opacity: 0; transform: translate(-50%, 55%) scale(0.7); }
++  30% { opacity: 0.85; }
++  70% { opacity: 0.65; }
++  100% { opacity: 0; transform: translate(calc(-50% + var(--bubble-drift)), -130%) scale(1.15); }
++}
++@media (prefers-reduced-motion: reduce) { .bubble-wipe { display: none; } }
++@media (max-width: 40rem) { .bubble-wipe span:nth-child(n + 7) { display: none; } }
+ 
+-/* Six ordered projects, including three non-clickable landing previews. */
+-.project-index .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+-.project-index .project-card-slot { grid-column: auto; grid-row: auto; }
+-.project-index .project-card-media { aspect-ratio: 16 / 10; flex: none; }
++@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
++  .project-card:hover .project-card-media img { transform: scale(1.025); }
++  .project-card:hover .project-card-arrow { transform: translate(2px, -2px); }
++}
++@media (prefers-reduced-motion: no-preference) {
++  .project-card-slot[data-revealed='pending'] { opacity: 0.65; transform: scale(1.035); filter: blur(1px); }
++  .project-card-slot[data-revealed='true'] {
++    transform-origin: center;
++    animation: project-settle 850ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms) backwards;
++  }
++}
++@keyframes project-settle {
++  from { opacity: 0.65; transform: scale(1.035); filter: blur(1px); }
++  to { opacity: 1; transform: scale(1); filter: blur(0); }
++}
++@media (max-width: 56rem) {
++  .project-card-slot--lead, .project-card-slot--closing { grid-column: 1 / -1; grid-row: auto; }
++  .project-card-slot--support, .project-card-slot--support-left { grid-column: span 6; }
++  .project-card-slot--lead .project-card-media { flex: none; aspect-ratio: 16 / 10; }
++  .project-card-slot--closing .project-card-media { flex: none; aspect-ratio: 2 / 1; }
++  .project-card-info { padding: var(--space-2); }
++}
++@media (max-width: 40rem) {
++  .project-card-video { display: none; }
++  .project-index-heading { flex-direction: column; gap: var(--space-1); }
++  .project-index .project-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
++  .project-card-slot--lead, .project-card-slot--support, .project-card-slot--support-left, .project-card-slot--closing { grid-column: 1; }
++  .project-card-slot .project-card-media { flex: none; aspect-ratio: 4 / 3; }
++  .project-card-slot--closing .project-card-media { aspect-ratio: 16 / 9; }
++}
++
++/* Keep the original asymmetric six-project composition. */
+ .project-card--upcoming { cursor: default; }
+-.project-media-placeholder { position: absolute; inset: 0; display: grid; place-items: center; padding: 2rem; color: var(--color-secondary); text-align: center; font-size: clamp(1.5rem, 3vw, 2.5rem); letter-spacing: -.04em; }
+-@media (max-width: 40rem) { .project-index .project-grid { grid-template-columns: 1fr; } }
++.project-media-placeholder { position: absolute; inset: 0; display: grid; place-items: center; padding: 2rem; color: var(--color-secondary); text-align: center; font-size: clamp(1.3rem, 2.4vw, 2rem); letter-spacing: -.04em; }
++@media (min-width: 56.001rem) {
++  .project-index .project-card-slot--lead { grid-column: 1 / 8; grid-row: span 2; }
++  .project-index .project-card-slot--support { grid-column: 8 / -1; }
++  .project-index .project-card-slot--support-left { grid-column: 1 / 6; }
++  .project-index .project-card-slot--closing { grid-column: 6 / -1; grid-row: span 2; }
++  .project-card-slot--lead .project-card-media,
++  .project-card-slot--closing .project-card-media { flex: 1; aspect-ratio: auto; }
++  .project-card-slot--support .project-card-media,
++  .project-card-slot--support-left .project-card-media { aspect-ratio: 16 / 8; }
++}
+diff --git a/src/data/caseStudies.js b/src/data/caseStudies.js
+index 0698789..5e8fcbe 100644
+--- a/src/data/caseStudies.js
++++ b/src/data/caseStudies.js
+@@ -27,19 +27,21 @@ export const caseStudies = {
+     title: 'Kokoro', role: 'UX/UI · Prototipo', tools: 'Figma',
+     en: {
+       intro: 'A mobile app concept for discovering desserts and assembling a personalized cake.',
+-      context: 'I designed a product experience that brings browsing, customization, favorites, and order review into one coherent flow. This case focuses on the app interface.',
++      context: 'The app began with a practical question: how can someone browse desserts and configure a cake without getting lost among too many choices? I mapped discovery, customization, and order review as a single journey. This case focuses on the app interface and prototype.',
+       sections: [
+-        { title: 'Start with discovery', body: 'The home screen introduces product categories and gives people a way to browse cakes and desserts before committing to a custom order.', media: 'Home, categories and favorites' },
+-        { title: 'Make personalization manageable', body: 'I divided cake customization into smaller choices: size, flavors, fillings, decoration, and delivery. A review step brings those choices together before checkout.', media: 'Customization flow and order review' },
++        { title: 'Let people explore first', body: 'I organized the home screen around product categories, featured desserts, and favorites. Browsing remains useful even for someone who is not ready to customize a cake.', media: 'Home, categories and favorites' },
++        { title: 'Turn a complex order into small decisions', body: 'A custom cake can involve size, flavors, fillings, toppings, decoration, and delivery. I separated these into consecutive steps so each screen asks for one manageable choice.', media: 'Customization steps and cake builder' },
++        { title: 'Bring every choice back together', body: 'The cart and final review summarize the selected options before the person continues. That gives them a chance to spot omissions or revisit an earlier decision.', media: 'Cart and order review' },
+       ],
+       closing: 'The prototype illustrates how a long customization flow can remain approachable. Ordering outcomes and usability still need to be validated with real customers.',
+     },
+     es: {
+       intro: 'Un concepto de app móvil para descubrir postres y preparar un pastel personalizado.',
+-      context: 'Diseñé una experiencia que reúne exploración, personalización, favoritos y revisión del pedido en un mismo recorrido. Este caso se centra en la interfaz de la app.',
++      context: 'La app partió de una pregunta práctica: ¿cómo explorar postres y configurar un pastel sin perderse entre tantas opciones? Organicé el descubrimiento, la personalización y la revisión del pedido como un solo recorrido. Este caso se centra en la interfaz y el prototipo de la app.',
+       sections: [
+-        { title: 'Empezar por el descubrimiento', body: 'La pantalla de inicio presenta categorías y permite explorar pasteles y postres antes de comenzar un pedido personalizado.', media: 'Inicio, categorías y favoritos' },
+-        { title: 'Hacer manejable la personalización', body: 'Dividí el proceso en decisiones pequeñas: tamaño, sabores, rellenos, decoración y entrega. Una revisión final reúne las elecciones antes de continuar con el pedido.', media: 'Flujo de personalización y revisión del pedido' },
++        { title: 'Permitir explorar primero', body: 'Organicé el inicio alrededor de categorías, postres destacados y favoritos. La exploración sigue siendo útil incluso para quien todavía no quiere personalizar un pastel.', media: 'Inicio, categorías y favoritos' },
++        { title: 'Convertir un pedido complejo en decisiones pequeñas', body: 'Un pastel personalizado implica tamaño, sabores, rellenos, toppings, decoración y entrega. Separé esas elecciones en pasos consecutivos para que cada pantalla plantee una decisión manejable.', media: 'Pasos de personalización del pastel' },
++        { title: 'Reunir todas las elecciones al final', body: 'El carrito y la revisión final resumen las opciones elegidas antes de continuar. Así la persona puede detectar lo que falta o regresar a una decisión anterior.', media: 'Carrito y revisión del pedido' },
+       ],
+       closing: 'El prototipo muestra cómo hacer más accesible un proceso largo de personalización. Los resultados de compra y la facilidad de uso aún requieren validación con clientes reales.',
+     },
+diff --git a/src/data/projects.js b/src/data/projects.js
+index 2cbdd1a..e0b1045 100644
+--- a/src/data/projects.js
++++ b/src/data/projects.js
+@@ -1,9 +1,9 @@
+ // Display order for the home. Landing cards reserve their place until their case studies are ready.
+ export const professionalProjects = [
+-  { slug: 'gu-qi', title: 'GU-QI', typeKey: 'types.webDesign', order: 1 },
+-  { slug: 'kokoro', title: 'Kokoro', typeKey: 'types.digitalProduct', order: 2 },
+-  { slug: 'a-plus-hardwood', title: 'A+ Hardwood Flooring', typeKey: 'types.webDesign', order: 3, upcoming: true },
+-  { slug: 'shine-cleaning', title: 'Shine Cleaning', typeKey: 'types.webDesign', order: 4, upcoming: true },
+-  { slug: 'fisiomovil', title: 'Fisiomóvil', typeKey: 'types.healthcareWebsite', order: 5, upcoming: true },
+-  { slug: 'aura-drive', title: 'AURA Drive', typeKey: 'types.automotiveInterface', order: 6 },
++  { slug: 'gu-qi', title: 'GU-QI', typeKey: 'types.webDesign', layoutVariant: 'lead', order: 1 },
++  { slug: 'kokoro', title: 'Kokoro', typeKey: 'types.digitalProduct', layoutVariant: 'support', order: 2 },
++  { slug: 'a-plus-hardwood', title: 'A+ Hardwood Flooring', typeKey: 'types.webDesign', layoutVariant: 'support', order: 3, upcoming: true },
++  { slug: 'shine-cleaning', title: 'Shine Cleaning', typeKey: 'types.webDesign', layoutVariant: 'support-left', order: 4, upcoming: true },
++  { slug: 'fisiomovil', title: 'Fisiomóvil', typeKey: 'types.healthcareWebsite', layoutVariant: 'support-left', order: 5, upcoming: true },
++  { slug: 'aura-drive', title: 'AURA Drive', typeKey: 'types.automotiveInterface', layoutVariant: 'closing', order: 6 },
+ ]
+diff --git a/src/hooks/projectFilter.js b/src/hooks/projectFilter.js
+index d65cfed..61f48dc 100644
+--- a/src/hooks/projectFilter.js
++++ b/src/hooks/projectFilter.js
+@@ -1,4 +1,4 @@
+-export const bubbleDuration = 800
++export const bubbleDuration = 1900
+ 
+ export function entersExplorations(previous, next, reducedMotion) {
+   return previous === 'projects' && next === 'explorations' && !reducedMotion
+diff --git a/src/styles/base.css b/src/styles/base.css
+index 4f190bf..edebacb 100644
+--- a/src/styles/base.css
++++ b/src/styles/base.css
+@@ -19,7 +19,9 @@ button, select {
+ }
+ button { cursor: pointer; }
+ button[aria-pressed='true'] { color: var(--color-background); background: var(--color-text); }
+-:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
++:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
++/* The programmatically focused page is not a control; keep focus rings on links and buttons. */
++[tabindex='-1']:focus { outline: none; }
+ h1, h2, h3 { line-height: 1.25; }
+ h1 { font-size: 2rem; }
+ h2 { font-size: 1.5rem; }
+diff --git a/src/styles/case.css b/src/styles/case.css
+index dedbcf9..a91980f 100644
+--- a/src/styles/case.css
++++ b/src/styles/case.css
+@@ -20,3 +20,11 @@
+ 
+ .case-story > p { grid-column: 2; }
+ @media (max-width: 40rem) { .case-story > p { grid-column: 1; } }
++
++/* Center the reading column and keep future mockups at editorial scale. */
++.case-intro { margin-inline: auto; }
++.case-article > .case-media, .case-chapter > .case-media { width: min(100%, 49rem); margin-inline: auto; }
++.case-media img, .case-media-empty { max-height: 32rem; }
++.case-story { max-width: 49rem; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 1.5rem; }
++.case-ending { max-width: 49rem; padding-left: 4rem; }
++@media (max-width: 40rem) { .case-ending { padding-left: 0; } }

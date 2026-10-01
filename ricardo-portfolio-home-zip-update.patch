@@ -1,0 +1,2096 @@
+diff --git a/README.md b/README.md
+index d32e0df..0f133c3 100644
+--- a/README.md
++++ b/README.md
+@@ -19,7 +19,7 @@ Open the local URL printed by Vite (normally `http://localhost:5173/`). Use `npm
+ - Previous `/projects/{slug}` URLs redirect to the corresponding English case study.
+ - The Home interface is bilingual; the original case study prose is currently in English and will be edited when each case is redesigned.
+ 
+-The Home data lives in `src/data/projects.js`, its translations in `src/locales/{en,es}`, and layout/styles in `src/components` and `src/styles`. The four existing case pages are in `src/pages`. `src/legacy.css` holds their older styles until they are redesigned, while `src/index.css` imports the new foundation. Existing case study media remain in `src/assets`. Lightweight WebP previews for Home live in `src/media`.
++The Home data lives in `src/data/projects.js`, its translations in `src/locales/{en,es}`, and layout/styles in `src/components` and `src/styles`. The Home uses the later aurora, project mosaic, About, and Contact components from the redesign while showing only the four published cases. The four existing case pages are in `src/pages`. `src/legacy.css` holds their older styles until they are redesigned, while `src/index.css` imports the new foundation. Existing case study media remain in `src/assets`. Lightweight WebP previews for Home live in `src/media`.
+ 
+ ## Editing and publishing
+ 
+diff --git a/src/components/AboutPreview.jsx b/src/components/AboutPreview.jsx
+index be0ada2..f8a8435 100644
+--- a/src/components/AboutPreview.jsx
++++ b/src/components/AboutPreview.jsx
+@@ -1,18 +1,33 @@
+ import { useTranslation } from 'react-i18next'
+-import portrait from '../assets/images/About-Picture.png'
++import { siteConfig } from '../config/siteConfig.js'
++import ProfileLink from './ProfileLink.jsx'
++import './HomeSections.css'
+ 
+ export default function AboutPreview() {
+   const { t } = useTranslation()
+   return (
+-    <section id="about" className="about-preview section" tabIndex={-1} aria-labelledby="about-title">
+-      <div className="about-preview-copy">
+-        <p className="section-eyebrow">02 / {t('about.eyebrow')}</p>
++    <section id="about" className="home-about home-section" tabIndex={-1} aria-labelledby="about-title">
++      <div className="home-section-label">
+         <h2 id="about-title">{t('about.title')}</h2>
+-        <p>{t('about.description')}</p>
+-        <p>{t('about.secondary')}</p>
+       </div>
+-      <div className="about-preview-photo">
+-        <img src={portrait} alt={t('about.photoAlt')} loading="lazy" decoding="async" />
++      <div className="about-biography">
++        {t('about.biography', { returnObjects: true }).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
++      </div>
++      <div className="about-portrait">
++        {siteConfig.profile.portrait ? (
++          <img src={siteConfig.profile.portrait} alt={t('about.portraitAlt', { name: siteConfig.name })} loading="lazy" />
++        ) : <p>{t('about.photo')}</p>}
++      </div>
++      <div className="about-facts">
++        {['background', 'focus', 'tools'].map((group) => (
++          <div className="about-fact" key={group}>
++            <h3>{t(`about.groups.${group}.title`)}</h3>
++            <ul>{t(`about.groups.${group}.items`, { returnObjects: true }).map((item) => <li key={item}>{item}</li>)}</ul>
++          </div>
++        ))}
++      </div>
++      <div className="about-links">
++        <ProfileLink name="resume" /><ProfileLink name="linkedin" />
+       </div>
+     </section>
+   )
+diff --git a/src/components/BubbleWipe.jsx b/src/components/BubbleWipe.jsx
+new file mode 100644
+index 0000000..a618560
+--- /dev/null
++++ b/src/components/BubbleWipe.jsx
+@@ -0,0 +1,16 @@
++const bubbles = [
++  [4, 72, 92, 0, -24], [18, 38, 130, 30, 20], [33, 83, 76, 70, -16],
++  [49, 27, 116, 45, 22], [66, 64, 148, 10, -18], [86, 33, 96, 80, 24],
++  [96, 80, 124, 35, -22], [43, 61, 68, 110, 16], [73, 14, 82, 95, -20],
++  [10, 14, 56, 120, 14],
++]
++
++export default function BubbleWipe() {
++  return (
++    <div className="bubble-wipe" aria-hidden="true">
++      {bubbles.map(([x, y, size, delay, drift], index) => (
++        <span key={index} style={{ left: `${x}%`, top: `${y}%`, '--bubble-size': `${size}px`, '--bubble-delay': `${delay}ms`, '--bubble-drift': `${drift}px` }} />
++      ))}
++    </div>
++  )
++}
+diff --git a/src/components/Contact.css b/src/components/Contact.css
+new file mode 100644
+index 0000000..8a44f30
+--- /dev/null
++++ b/src/components/Contact.css
+@@ -0,0 +1,33 @@
++.home-closing { border-top: 0; }
++.contact-metadata { display: flex; justify-content: space-between; gap: var(--space-3); font-size: 0.8125rem; color: var(--color-secondary); }
++.contact-orbits { display: block; width: min(100%, 45rem); height: auto; margin: var(--space-3) auto -3rem; position: relative; color: var(--color-accent); pointer-events: none; }
++.orbital-paths { opacity: 0.45; }
++.orbital-indigo { color: var(--color-cosmic-indigo); }
++.orbital-cyan { color: var(--color-cosmic-cyan); }
++.contact-panel { position: relative; border-radius: 2rem; background: var(--contact-panel-background); color: var(--contact-panel-text); padding: clamp(1.5rem, 4vw, 3rem); }
++.contact-panel-top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
++.contact-panel-top h2 { font-size: 0.9375rem; font-weight: 500; }
++.contact-panel-links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
++.contact-panel-links a, .contact-panel-links button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.5rem 0; border: 0; background: transparent; color: inherit; font-size: 0.8125rem; font-weight: 550; text-decoration: none; }
++.contact-panel-links a:hover, .contact-panel-links button:hover { color: inherit; text-decoration: underline; text-underline-offset: 0.25em; }
++.contact-panel :focus-visible { outline-color: var(--contact-panel-text); }
++.contact-icon { width: 1.125rem; height: 1.125rem; flex: 0 0 auto; }
++.contact-wordmark { margin-top: clamp(4rem, 9vw, 8rem); font-size: clamp(2.75rem, 10.2vw, 9rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.065em; white-space: nowrap; }
++.contact-copyright { margin-top: var(--space-3); font-size: 0.75rem; }
++@media (prefers-reduced-motion: no-preference) {
++  .contact-orbits[data-entered='true'] .orbital-paths { animation: orbit-path-arrive 600ms ease-out backwards; }
++  .contact-orbits[data-entered='true'] .orbital-bodies { animation: orbit-body-arrive 650ms var(--motion-easing) 70ms backwards; }
++  .contact-orbits[data-entered='true'] .orbital-stars { animation: orbit-path-arrive 500ms ease-out 140ms backwards; }
++}
++@keyframes orbit-path-arrive { from { opacity: 0; } }
++@keyframes orbit-body-arrive { from { opacity: 0; transform: translateY(8px); } }
++@media (max-width: 56rem) {
++  .contact-panel-top { flex-direction: column; gap: var(--space-2); }
++  .contact-orbits { margin-bottom: -2rem; }
++}
++@media (max-width: 40rem) {
++  .contact-metadata { flex-direction: column; gap: var(--space-1); }
++  .contact-panel { border-radius: 1.25rem; }
++  .contact-orbits { margin-bottom: -1rem; }
++  .contact-wordmark { font-size: clamp(2rem, 10.2vw, 4rem); }
++}
+diff --git a/src/components/Contact.jsx b/src/components/Contact.jsx
+new file mode 100644
+index 0000000..df6dbbe
+--- /dev/null
++++ b/src/components/Contact.jsx
+@@ -0,0 +1,35 @@
++import { useTranslation } from 'react-i18next'
++import { siteConfig } from '../config/siteConfig.js'
++import { emailHref } from '../config/contactLinks.js'
++import { scrollToSection } from '../hooks/scrollPosition.js'
++import ProfileLink from './ProfileLink.jsx'
++import ContactIcon from './ContactIcon.jsx'
++import OrbitalIllustration from './OrbitalIllustration.jsx'
++import './Contact.css'
++
++export default function Contact() {
++  const { t } = useTranslation()
++  const email = emailHref(siteConfig.contact.email)
++  return (
++    <div className="orbital-contact">
++      <div className="contact-metadata">
++        <p>{t('contact.location')}</p>
++        <p>{t('contact.status')}</p>
++      </div>
++      <OrbitalIllustration />
++      <div className="contact-panel">
++        <div className="contact-panel-top">
++          <h2 id="contact-title">{t('contact.label')}</h2>
++          <div className="contact-panel-links">
++            {email && <a href={email}><ContactIcon name="email" /><span>{t('contact.email')}</span></a>}
++            <ProfileLink name="linkedin" withIcon />
++            <ProfileLink name="resume" withIcon />
++            <button type="button" onClick={() => scrollToSection('top')}><ContactIcon name="top" /><span>{t('footer.backToTop')}</span></button>
++          </div>
++        </div>
++        <p className="contact-wordmark">{siteConfig.name}</p>
++        <p className="contact-copyright">© {new Date().getFullYear()}</p>
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/ContactIcon.jsx b/src/components/ContactIcon.jsx
+new file mode 100644
+index 0000000..b32a216
+--- /dev/null
++++ b/src/components/ContactIcon.jsx
+@@ -0,0 +1,10 @@
++const paths = {
++  email: 'M3 5h18v14H3z M3 6l9 7 9-7',
++  linkedin: 'M5 9v11 M5 4v1 M10 20V9h4v2c4-4 6-1 6 2v7 M14 20v-7',
++  resume: 'M6 3h8l4 4v14H6z M14 3v5h4 M9 12h6 M9 16h6',
++  top: 'M12 20V4 M5 11l7-7 7 7',
++}
++
++export default function ContactIcon({ name }) {
++  return <svg className="contact-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={paths[name]} /></svg>
++}
+diff --git a/src/components/Footer.jsx b/src/components/Footer.jsx
+index 0f61e67..d2af0da 100644
+--- a/src/components/Footer.jsx
++++ b/src/components/Footer.jsx
+@@ -1,26 +1,29 @@
+ import { siteConfig } from '../config/siteConfig.js'
+ import { useTranslation } from 'react-i18next'
++import ProfileLink from './ProfileLink.jsx'
++import Contact from './Contact.jsx'
++import { scrollToSection } from '../hooks/scrollPosition.js'
++import './HomeSections.css'
+ 
+-export default function Footer() {
++export default function Footer({ showContact = false }) {
+   const { t } = useTranslation()
+   return (
+-    <footer id="contact" className="site-footer container" tabIndex={-1} aria-labelledby="contact-title">
+-      <p className="section-eyebrow">03 / {t('footer.eyebrow')}</p>
+-      <div className="footer-main">
+-        <div>
+-          <h2 id="contact-title">{t('footer.title')}</h2>
+-          <p>{t('footer.description')}</p>
++    <footer className={`site-footer ${showContact ? 'content-frame home-closing' : 'container'}`}
++      id={showContact ? 'contact' : undefined} tabIndex={showContact ? -1 : undefined}
++      aria-labelledby={showContact ? 'contact-title' : undefined}>
++      {showContact && <Contact />}
++      {!showContact && <div className="footer-bottom">
++        <div className="footer-signature">
++          <p>{siteConfig.name}</p>
++          <p className="footer-meta">© {new Date().getFullYear()} · {t('footer.location')}</p>
+         </div>
+-        <a className="footer-email" href={`mailto:${siteConfig.email}`}>{siteConfig.email} <span aria-hidden="true">↗</span></a>
+-      </div>
+-      <div className="footer-bottom">
+-        <span>© {new Date().getFullYear()} {siteConfig.name}</span>
+         <div className="footer-links">
+-          <a href={siteConfig.links.linkedin.href} target="_blank" rel="noreferrer">LinkedIn</a>
+-          <a href={siteConfig.links.github.href} target="_blank" rel="noreferrer">GitHub</a>
+-          <a href={siteConfig.links.resume.href} target="_blank" rel="noreferrer">{t('hero.resume')}</a>
++          <ProfileLink name="linkedin" /><ProfileLink name="resume" />
++          <button className="footer-top" type="button" onClick={() => scrollToSection('top')}>
++            {t('footer.backToTop')} <span aria-hidden="true">↑</span>
++          </button>
+         </div>
+-      </div>
++      </div>}
+     </footer>
+   )
+ }
+diff --git a/src/components/Header.css b/src/components/Header.css
+index 8388b6d..26d3b98 100644
+--- a/src/components/Header.css
++++ b/src/components/Header.css
+@@ -1,4 +1,4 @@
+-﻿.site-header {
++.site-header {
+   position: sticky;
+   inset-block-start: 0;
+   z-index: 20;
+@@ -43,20 +43,43 @@
+   text-decoration: none;
+ }
+ .header-navigation a, .theme-toggle { color: var(--color-secondary); }
+-.header-navigation a:hover, .theme-toggle:hover { color: var(--color-text); }
++.header-navigation a:hover { color: var(--color-accent); }
+ .header-navigation a:hover { text-decoration: underline; }
+ .theme-toggle {
+-  min-width: 3.25rem;
++  width: 2.75rem;
++  min-width: 2.75rem;
+   padding: 0;
+   background: none;
+   border: 0;
+   border-radius: var(--radius-small);
+ }
++.theme-switch-track {
++  position: relative;
++  display: block;
++  width: 38px;
++  height: 21px;
++  border: 1px solid var(--color-control-border);
++  border-radius: 999px;
++  background: var(--color-surface);
++  transition: background-color 200ms var(--motion-easing), border-color 200ms var(--motion-easing);
++}
++.theme-switch-thumb {
++  position: absolute;
++  inset: 2px auto auto 2px;
++  width: 15px;
++  height: 15px;
++  border-radius: 50%;
++  background: var(--color-accent-strong);
++  transition: transform 200ms var(--motion-easing), background-color 200ms var(--motion-easing);
++}
++.theme-toggle[aria-checked='true'] .theme-switch-track { background: var(--color-accent-strong); border-color: var(--color-accent-strong); }
++.theme-toggle[aria-checked='true'] .theme-switch-thumb { transform: translateX(17px); background: var(--color-light-background); }
+ .language-control { gap: 0.125rem; }
+-.language-control a { min-width: 1.875rem; color: var(--color-muted); }
++.language-control a { min-width: 2.5rem; color: var(--color-muted); }
++.language-control a:hover { color: var(--color-accent); }
+ .language-control span { color: var(--color-muted); font-size: 0.75rem; }
+ .language-control a[aria-current='page'] {
+-  color: var(--color-text);
++  color: var(--color-accent);
+   text-decoration: underline;
+   text-underline-offset: 0.4em;
+   text-decoration-thickness: 1px;
+@@ -67,7 +90,7 @@
+   .header-inner { gap: 0.5rem; }
+   .header-controls { gap: 0.625rem; }
+   .language-control { order: 1; }
+-  .theme-toggle { order: 2; font-size: 0.75rem; }
++  .theme-toggle { order: 2; }
+   .menu-toggle {
+     order: 3;
+     display: flex;
+@@ -106,5 +129,5 @@
+ @media (max-width: 23rem) {
+   .wordmark { font-size: 0.9375rem; }
+   .header-controls { gap: 0.25rem; }
+-  .language-control a { min-width: 1.625rem; font-size: 0.75rem; }
++  .language-control a { min-width: 2.25rem; font-size: 0.75rem; }
+ }
+diff --git a/src/components/Header.jsx b/src/components/Header.jsx
+index 367e736..81f958f 100644
+--- a/src/components/Header.jsx
++++ b/src/components/Header.jsx
+@@ -1,11 +1,12 @@
+-﻿import { useEffect, useRef, useState } from 'react'
++import { useEffect, useRef, useState } from 'react'
+ import { Link, useLocation, useParams } from 'react-router-dom'
+ import { useTranslation } from 'react-i18next'
+ import useTheme from '../hooks/useTheme.js'
+ import { siteConfig } from '../config/siteConfig.js'
+ import './Header.css'
++import SectionLink from './SectionLink.jsx'
+ 
+-export default function Header() {
++export default function Header({ framed = false }) {
+   const [theme, setTheme] = useTheme()
+   const [scrolled, setScrolled] = useState(false)
+   const [menuLocation, setMenuLocation] = useState(null)
+@@ -61,25 +62,25 @@ export default function Header() {
+       onBlur={(event) => {
+         if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setMenuLocation(null)
+       }}>
+-      <div className="header-inner container">
+-        <Link className="wordmark" to={`/${lang}`}>{siteConfig.name}</Link>
++      <div className={`header-inner ${framed ? 'content-frame' : 'container'}`}>
++        <SectionLink className="wordmark" section="top">{siteConfig.name}</SectionLink>
+         <div className="header-controls">
+           <nav id="primary-navigation" className="header-navigation" aria-label={t('navigation.label')}>
+-            <Link ref={firstLinkRef} to={`/${lang}#projects`} onClick={() => setMenuLocation(null)}>{t('navigation.projects')}</Link>
+-            <Link to={`/${lang}#about`} onClick={() => setMenuLocation(null)}>{t('navigation.about')}</Link>
+-            <Link to={`/${lang}#contact`} onClick={() => setMenuLocation(null)}>{t('navigation.contact')}</Link>
++            <SectionLink ref={firstLinkRef} section="work" onClick={() => setMenuLocation(null)}>{t('navigation.projects')}</SectionLink>
++            <SectionLink section="about" onClick={() => setMenuLocation(null)}>{t('navigation.about')}</SectionLink>
++            <SectionLink section="contact" onClick={() => setMenuLocation(null)}>{t('navigation.contact')}</SectionLink>
+           </nav>
+           <button className="theme-toggle" type="button" role="switch"
+-            aria-checked={theme === 'dark'} aria-label={t('theme.toggle')}
++            aria-checked={theme === 'dark'} aria-label={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}
+             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+-            {t(`theme.${theme}`)}
++            <span className="theme-switch-track" aria-hidden="true"><span className="theme-switch-thumb" /></span>
+           </button>
+           <nav className="language-control" aria-label={t('language.label')}>
+-            <Link to={languageTarget('en')} lang="en" hrefLang="en"
+-              aria-label={t('language.english')} aria-current={lang === 'en' ? 'page' : undefined}>EN</Link>
+-            <span aria-hidden="true">/</span>
+             <Link to={languageTarget('es')} lang="es" hrefLang="es"
+-              aria-label={t('language.spanish')} aria-current={lang === 'es' ? 'page' : undefined}>ES</Link>
++              aria-label={t('language.spanish')} aria-current={lang === 'es' ? 'page' : undefined}>ESP</Link>
++            <span aria-hidden="true">/</span>
++            <Link to={languageTarget('en')} lang="en" hrefLang="en"
++              aria-label={t('language.english')} aria-current={lang === 'en' ? 'page' : undefined}>ENG</Link>
+           </nav>
+           <button ref={menuButtonRef} className="menu-toggle" type="button"
+             aria-expanded={menuOpen} aria-controls="primary-navigation"
+diff --git a/src/components/Hero.css b/src/components/Hero.css
+index f2570d5..48f813c 100644
+--- a/src/components/Hero.css
++++ b/src/components/Hero.css
+@@ -1,13 +1,14 @@
+-﻿.hero {
+-  min-height: 78svh;
++.hero {
++  position: relative;
++  isolation: isolate;
++  min-height: min(calc(70svh - var(--header-height)), 44rem);
+   display: grid;
+   grid-template-columns: repeat(12, minmax(0, 1fr));
+-  align-content: end;
++  align-content: center;
+   column-gap: clamp(1rem, 2.2vw, 2rem);
+-  row-gap: clamp(2.5rem, 5vh, 4rem);
+-  padding-block: clamp(4rem, 10vh, 7rem) clamp(2.5rem, 6vh, 4rem);
++  padding-block: clamp(2rem, 4svh, 3rem) clamp(3rem, 7svh, 4.5rem);
+ }
+-.hero-main { grid-column: 1 / 9; }
++.hero-content { grid-column: 2 / -2; width: 100%; max-width: 55rem; min-width: 0; justify-self: center; }
+ .hero-eyebrow {
+   margin-bottom: clamp(1.5rem, 3.5vh, 2.5rem);
+   color: var(--color-secondary);
+@@ -15,22 +16,20 @@
+   font-weight: 500;
+ }
+ .hero-headline {
+-  max-width: 16ch;
+-  font-size: clamp(2.75rem, 4.45vw, 4.75rem);
++  max-width: 23ch;
++  font-size: clamp(2.75rem, 4.45vw, 4.25rem);
+   font-weight: 500;
+   line-height: 1.08;
+   letter-spacing: -0.055em;
+   text-wrap: balance;
+ }
+-.hero-secondary { grid-column: 10 / -1; align-self: end; }
+-.hero-description {
+-  color: var(--color-secondary);
+-  font-size: clamp(0.9375rem, 1.08vw, 1.0625rem);
+-  line-height: 1.7;
+-}
+-.hero-profile { margin-top: var(--space-4); font-size: 0.8125rem; line-height: 1.8; }
++.hero-disciplines { margin-top: var(--space-3); color: var(--color-secondary); font-size: 0.875rem; line-height: 1.7; }
++.hero-bottom { display: flex; justify-content: space-between; align-items: start; gap: var(--space-4); margin-top: clamp(2rem, 4svh, 3rem); }
++.hero-profile { font-size: 0.8125rem; line-height: 1.8; padding-block: 0.5rem; }
++.hero-availability { display: flex; align-items: center; gap: 0.5rem; }
++.availability-dot { width: 0.375rem; height: 0.375rem; flex: 0 0 auto; border-radius: 50%; background: var(--color-accent); }
++.hero-location { padding-left: 0.875rem; color: var(--color-secondary); }
+ .hero-profile > p + p { margin-top: 0.125rem; }
+-.hero-profile .hero-disciplines { margin-top: var(--space-2); color: var(--color-muted); }
+ .hero-links {
+   grid-column: 1 / -1;
+   display: flex;
+@@ -52,22 +51,29 @@ a.editorial-link > span:first-child {
+   border-bottom: 1px solid var(--color-border);
+   transition: border-color var(--motion-duration) var(--motion-easing);
+ }
++a.editorial-link:hover { color: var(--color-accent); }
+ a.editorial-link:hover > span:first-child { border-bottom-color: currentColor; }
+-.editorial-link-pending { flex-direction: column; gap: 0.125rem; color: var(--color-muted); }
+-.link-pending-label { font-size: 0.6875rem; font-weight: 400; }
++
++@media (prefers-reduced-motion: no-preference) {
++  .hero-content > * { animation: hero-arrive 600ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
++  .hero-headline { animation-delay: 50ms; }
++  .hero-disciplines { animation-delay: 100ms; }
++  .hero-bottom { animation-delay: 150ms; }
++}
++@keyframes hero-arrive {
++  from { opacity: 0.7; transform: translateY(6px); }
++  to { opacity: 1; transform: translateY(0); }
++}
+ 
+ @media (max-width: 56rem) {
+   .hero {
+-    min-height: calc(82svh - var(--header-height));
++    min-height: auto;
+     grid-template-columns: minmax(0, 1fr);
+     gap: var(--space-4);
+-    padding-block: clamp(3rem, 7vh, 5rem) var(--space-4);
++    padding-block: clamp(2.5rem, 6svh, 4rem) 3rem;
+   }
+-  .hero-main, .hero-secondary, .hero-links { grid-column: 1; }
+-  .hero-headline { max-width: 19ch; font-size: clamp(2.5rem, 6.8vw, 3.75rem); }
+-  .hero-secondary { max-width: 36rem; }
+-  .hero-description { font-size: 1rem; }
+-  .hero-profile { margin-top: var(--space-3); }
++  .hero-content { grid-column: 1; }
++  .hero-headline { max-width: 23ch; font-size: clamp(2.5rem, 6.8vw, 3.75rem); }
+ }
+ @media (max-width: 40rem) {
+   .hero {
+@@ -76,6 +82,7 @@ a.editorial-link:hover > span:first-child { border-bottom-color: currentColor; }
+     gap: var(--space-3);
+   }
+   .hero-eyebrow { margin-bottom: var(--space-3); }
+-  .hero-headline { font-size: clamp(2.125rem, 9.8vw, 3rem); letter-spacing: -0.045em; }
++  .hero-headline { font-size: clamp(2rem, 8.8vw, 3rem); letter-spacing: -0.045em; }
++  .hero-bottom { flex-direction: column; gap: var(--space-3); }
+   .hero-links { gap: var(--space-2) var(--space-3); }
+ }
+diff --git a/src/components/Hero.jsx b/src/components/Hero.jsx
+index 50b8856..9158e60 100644
+--- a/src/components/Hero.jsx
++++ b/src/components/Hero.jsx
+@@ -1,43 +1,29 @@
+-﻿import { Link, useParams } from 'react-router-dom'
+ import { useTranslation } from 'react-i18next'
+ import { siteConfig } from '../config/siteConfig.js'
+ import './Hero.css'
++import SectionLink from './SectionLink.jsx'
+ 
+ export default function Hero() {
+   const { t } = useTranslation()
+-  const { lang } = useParams()
+ 
+   return (
+     <section className="hero" aria-labelledby="intro-title">
+-      <div className="hero-main">
++      <div className="hero-content">
+         <p className="hero-eyebrow">{t('hero.eyebrow', { name: siteConfig.name })}</p>
+         <h1 id="intro-title" className="hero-headline">{t('hero.headline')}</h1>
+-      </div>
+-      <div className="hero-secondary">
+-        <p className="hero-description">{t('hero.description')}</p>
+-        <div className="hero-profile">
+-          <p>{t(siteConfig.profile.locationKey)}</p>
+-          <p>{t(siteConfig.profile.availabilityKey)}</p>
+-          <p className="hero-disciplines">{t(siteConfig.profile.disciplinesKey)}</p>
++        <p className="hero-disciplines">{t('hero.disciplines')}</p>
++        <div className="hero-bottom">
++          <nav className="hero-links" aria-label={t('hero.linksLabel')}>
++            <SectionLink className="editorial-link" section="work">
++              <span>{t('hero.selectedWork')}</span><span aria-hidden="true">↘</span>
++            </SectionLink>
++          </nav>
++          <div className="hero-profile">
++            <p className="hero-availability"><span className="availability-dot" aria-hidden="true" />{t(siteConfig.profile.availabilityKey)}</p>
++            <p className="hero-location">{t(siteConfig.profile.locationKey)}</p>
++          </div>
+         </div>
+       </div>
+-      <nav className="hero-links" aria-label={t('hero.linksLabel')}>
+-        <Link className="editorial-link" to={`/${lang}#projects`}>
+-          <span>{t('hero.selectedWork')}</span><span aria-hidden="true">↘</span>
+-        </Link>
+-        {Object.entries(siteConfig.links).map(([key, link]) => (
+-          link.href && link.status === 'ready' ? (
+-            <a key={key} className="editorial-link" href={link.href}>
+-              <span>{t(`hero.${key}`)}</span><span aria-hidden="true">↗</span>
+-            </a>
+-          ) : (
+-            <span key={key} className="editorial-link editorial-link-pending" aria-disabled="true">
+-              <span>{t(`hero.${key}`)}</span>
+-              <span className="link-pending-label">{t('hero.pending')}</span>
+-            </span>
+-          )
+-        ))}
+-      </nav>
+     </section>
+   )
+ }
+diff --git a/src/components/HomeAurora.css b/src/components/HomeAurora.css
+new file mode 100644
+index 0000000..69170e4
+--- /dev/null
++++ b/src/components/HomeAurora.css
+@@ -0,0 +1,75 @@
++.site-shell--home {
++  position: relative;
++  isolation: isolate;
++  overflow-x: clip;
++  --aurora-strength: 0.16;
++  --aurora-deep: #3f2a78;
++  --aurora-purple: #8b5cf6;
++  --aurora-lilac: #a78bfa;
++  --aurora-magenta: #c65ce7;
++}
++:root[data-theme='dark'] .site-shell--home { --aurora-strength: 0.30; }
++.hero-aurora {
++  position: absolute;
++  top: 0;
++  inset-inline: 0;
++  height: clamp(320px, 42svh, 400px);
++  z-index: -1;
++  pointer-events: none;
++  opacity: var(--aurora-strength);
++  /* Broad horizontal field, with a complete fade before the lower boundary. */
++  mask-image:
++    linear-gradient(to bottom, rgb(0 0 0 / 0.2) 0 90px, black 140px, transparent 96%),
++    linear-gradient(to right, transparent, black 8% 92%, transparent);
++  mask-composite: intersect;
++}
++.hero-aurora-field {
++  position: absolute;
++  inset: -90px -5% -50px;
++  transform: translate(var(--aurora-x, 0px), var(--aurora-y, 0px));
++}
++.aurora-band {
++  position: absolute;
++  top: -8%;
++  width: 65%;
++  height: 100%;
++  filter: blur(36px);
++}
++.aurora-band--left {
++  left: -12%;
++  background: radial-gradient(ellipse 65% 48% at 50% 35%, var(--aurora-deep) 12%, var(--color-accent-strong) 38%, transparent 76%);
++}
++.aurora-band--center {
++  left: 18%;
++  background: radial-gradient(ellipse 65% 44% at 50% 30%, var(--aurora-purple) 10%, var(--aurora-lilac) 34%, transparent 75%);
++}
++.aurora-band--right {
++  right: -13%;
++  background: radial-gradient(ellipse 65% 46% at 50% 34%, var(--aurora-magenta) 10%, var(--aurora-purple) 38%, transparent 76%);
++}
++@media (prefers-reduced-motion: no-preference) {
++  .aurora-band { will-change: transform, opacity; }
++  .aurora-band--left { animation: aurora-left 12s ease-in-out -3s infinite alternate; }
++  .aurora-band--center { animation: aurora-center 15s ease-in-out -7s infinite alternate; }
++  .aurora-band--right { animation: aurora-right 18s ease-in-out -11s infinite alternate; }
++}
++@keyframes aurora-left {
++  from { transform: translate(-30px, -10px) scale(1); opacity: 0.85; }
++  to { transform: translate(35px, 12px) scale(1.08); opacity: 1; }
++}
++@keyframes aurora-center {
++  from { transform: translate(25px, 10px) scale(1.06); opacity: 1; }
++  to { transform: translate(-30px, -12px) scale(1); opacity: 0.88; }
++}
++@keyframes aurora-right {
++  from { transform: translate(-20px, 12px) scale(1); opacity: 0.88; }
++  to { transform: translate(30px, -8px) scale(1.07); opacity: 1; }
++}
++@media (max-width: 56rem) { .hero-aurora { height: 320px; } }
++@media (max-width: 40rem) {
++  .hero-aurora { height: 280px; }
++  .aurora-band { filter: blur(24px); }
++}
++@media (prefers-reduced-motion: reduce), (max-width: 56rem), (hover: none), (pointer: coarse) {
++  .hero-aurora-field { transform: none; }
++}
+diff --git a/src/components/HomeAurora.jsx b/src/components/HomeAurora.jsx
+new file mode 100644
+index 0000000..3a55806
+--- /dev/null
++++ b/src/components/HomeAurora.jsx
+@@ -0,0 +1,13 @@
++import './HomeAurora.css'
++
++export default function HomeAurora() {
++  return (
++    <div className="hero-aurora" aria-hidden="true">
++      <div className="hero-aurora-field">
++        <div className="aurora-band aurora-band--left" />
++        <div className="aurora-band aurora-band--center" />
++        <div className="aurora-band aurora-band--right" />
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/HomeSections.css b/src/components/HomeSections.css
+new file mode 100644
+index 0000000..6ba8960
+--- /dev/null
++++ b/src/components/HomeSections.css
+@@ -0,0 +1,62 @@
++.home-section {
++  display: grid;
++  grid-template-columns: repeat(12, minmax(0, 1fr));
++  column-gap: clamp(1rem, 2.2vw, 2rem);
++  row-gap: var(--space-4);
++  border-top: 1px solid var(--color-border);
++  padding-block: var(--space-6);
++}
++.home-section-label { grid-column: 1 / 3; }
++.home-section-label h2 { font-size: 0.9375rem; font-weight: 500; }
++.home-about > .home-section-label { grid-column: 1 / -1; }
++.about-biography { grid-column: 5 / -1; grid-row: 2; max-width: 42rem; font-size: 1rem; line-height: 1.8; }
++.about-biography p + p { margin-top: var(--space-3); color: var(--color-secondary); }
++.about-portrait {
++  grid-column: 1 / 5;
++  grid-row: 2;
++  aspect-ratio: 4 / 5;
++  width: 100%;
++  max-width: 20rem;
++  align-self: start;
++  display: flex;
++  align-items: end;
++  background: var(--color-surface);
++  border-radius: var(--radius-medium);
++  overflow: hidden;
++}
++.about-portrait p { padding: var(--space-3); font-size: 0.75rem; color: var(--color-muted); }
++.about-portrait img { width: 100%; height: 100%; object-fit: cover; }
++.about-facts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border); }
++.about-fact h3 { font-size: 0.8125rem; font-weight: 500; color: var(--color-secondary); }
++.about-fact ul { list-style: none; margin: var(--space-2) 0 0; padding: 0; font-size: 0.9375rem; }
++.about-fact li + li { margin-top: var(--space-1); }
++.about-links { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-3); }
++.about-links:empty { display: none; }
++.home-contact { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(1rem, 2.2vw, 2rem); }
++.contact-main { grid-column: 4 / -1; }
++.contact-heading { max-width: 24ch; font-size: clamp(1.75rem, 3.4vw, 3.25rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.045em; text-wrap: balance; }
++.contact-actions { display: flex; align-items: start; flex-wrap: wrap; gap: var(--space-4); margin-block: var(--space-4); }
++.contact-cta { font-size: clamp(1.25rem, 2vw, 1.75rem); text-underline-offset: 0.25em; }
++.contact-cta:hover { color: var(--color-accent); }
++.contact-availability { margin-top: var(--space-3); max-width: 36rem; font-size: 0.9375rem; color: var(--color-secondary); }
++.site-footer { padding-block: var(--space-4); }
++.footer-bottom { display: flex; align-items: start; justify-content: space-between; gap: var(--space-4); }
++.home-closing { padding-block: var(--space-5) var(--space-4); }
++.home-closing .footer-bottom { margin-top: var(--space-5); }
++.footer-signature > p:first-child { font-size: 1.125rem; font-weight: 550; letter-spacing: -0.035em; }
++.footer-meta { margin-top: var(--space-1); font-size: 0.75rem; color: var(--color-muted); }
++.footer-links { display: flex; align-items: start; flex-wrap: wrap; gap: var(--space-3); }
++.footer-top { border: 0; padding: var(--space-1) 0; background: transparent; color: var(--color-text); font-size: 0.8125rem; }
++.footer-top span { margin-left: var(--space-1); }
++.footer-top:hover { color: var(--color-accent); }
++@media (max-width: 56rem) {
++  .home-section-label { grid-column: 1 / -1; }
++  .contact-main { grid-column: 1 / -1; }
++  .about-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
++}
++@media (max-width: 40rem) {
++  .home-section { grid-template-columns: minmax(0, 1fr); padding-block: var(--space-5); gap: var(--space-3); }
++  .home-section > * { grid-column: 1; grid-row: auto; }
++  .about-facts { grid-template-columns: minmax(0, 1fr); }
++  .footer-bottom { flex-direction: column; gap: var(--space-3); }
++}
+diff --git a/src/components/LanguageLayout.jsx b/src/components/LanguageLayout.jsx
+index d5a24ba..352518f 100644
+--- a/src/components/LanguageLayout.jsx
++++ b/src/components/LanguageLayout.jsx
+@@ -1,5 +1,5 @@
+ import { siteConfig } from '../config/siteConfig.js'
+-import { useEffect } from 'react'
++import { useLayoutEffect } from 'react'
+ import { Navigate, useParams } from 'react-router-dom'
+ import { useTranslation } from 'react-i18next'
+ import SiteLayout from './SiteLayout.jsx'
+@@ -9,7 +9,7 @@ export default function LanguageLayout() {
+   const { i18n } = useTranslation()
+   const supported = lang === 'en' || lang === 'es'
+ 
+-  useEffect(() => {
++  useLayoutEffect(() => {
+     if (!supported) return
+     i18n.changeLanguage(lang)
+     document.documentElement.lang = lang
+@@ -22,7 +22,6 @@ export default function LanguageLayout() {
+   }, [lang, supported, i18n])
+ 
+   if (!supported) return <Navigate to="/en" replace />
+-  // Do not briefly render the previous language on direct entry or navigation.
+-  if (i18n.resolvedLanguage !== lang) return null
++  // Synchronize before paint without unmounting Home, its theme, or scroll state.
+   return <SiteLayout />
+ }
+diff --git a/src/components/LegacyProjectRedirect.jsx b/src/components/LegacyProjectRedirect.jsx
+index 30cc96d..4724efb 100644
+--- a/src/components/LegacyProjectRedirect.jsx
++++ b/src/components/LegacyProjectRedirect.jsx
+@@ -1,4 +1,4 @@
+-﻿import { Navigate, useLocation, useParams } from 'react-router-dom'
++import { Navigate, useLocation, useParams } from 'react-router-dom'
+ 
+ export default function LegacyProjectRedirect() {
+   const { slug } = useParams()
+diff --git a/src/components/OrbitalIllustration.jsx b/src/components/OrbitalIllustration.jsx
+new file mode 100644
+index 0000000..6096a50
+--- /dev/null
++++ b/src/components/OrbitalIllustration.jsx
+@@ -0,0 +1,26 @@
++import useOrbitReveal from '../hooks/useOrbitReveal.js'
++
++export default function OrbitalIllustration() {
++  const ref = useOrbitReveal()
++  return (
++    <svg ref={ref} className="contact-orbits" viewBox="0 0 720 240" aria-hidden="true" focusable="false" fill="none">
++      <g className="orbital-paths" stroke="currentColor" strokeWidth="1">
++        <ellipse cx="360" cy="136" rx="275" ry="62" transform="rotate(-12 360 136)" />
++        <ellipse cx="360" cy="136" rx="206" ry="89" transform="rotate(17 360 136)" />
++        <ellipse cx="360" cy="136" rx="128" ry="104" transform="rotate(-28 360 136)" />
++      </g>
++      <g className="orbital-bodies" fill="currentColor">
++        <circle cx="93" cy="159" r="7" />
++        <circle cx="240" cy="45" r="11" className="orbital-indigo" />
++        <circle cx="324" cy="118" r="5" />
++        <circle cx="408" cy="46" r="18" />
++        <ellipse cx="408" cy="46" rx="31" ry="7" transform="rotate(-22 408 46)" fill="none" stroke="currentColor" strokeWidth="2" />
++        <circle cx="535" cy="118" r="8" className="orbital-cyan" />
++        <circle cx="559" cy="203" r="12" className="orbital-indigo" />
++      </g>
++      <g className="orbital-stars" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
++        <path d="M154 61v10m-5-5h10 M579 42v8m-4-4h8 M458 186v10m-5-5h10" />
++      </g>
++    </svg>
++  )
++}
+diff --git a/src/components/ProfileLink.jsx b/src/components/ProfileLink.jsx
+new file mode 100644
+index 0000000..fa1641b
+--- /dev/null
++++ b/src/components/ProfileLink.jsx
+@@ -0,0 +1,16 @@
++import { useTranslation } from 'react-i18next'
++import { siteConfig } from '../config/siteConfig.js'
++import { validProfileUrl } from '../config/contactLinks.js'
++import ContactIcon from './ContactIcon.jsx'
++
++export default function ProfileLink({ name, className = '', withIcon = false }) {
++  const { t } = useTranslation()
++  const link = siteConfig.links[name]
++  const label = t(`hero.${name}`)
++  if (validProfileUrl(link?.href) && link.status === 'ready') {
++    return <a className={`editorial-link ${className}`} href={link.href}>
++      {withIcon && <ContactIcon name={name} />}<span>{label}</span>{!withIcon && <span aria-hidden="true">↗</span>}
++    </a>
++  }
++  return null
++}
+diff --git a/src/components/ProjectGrid.jsx b/src/components/ProjectGrid.jsx
+index 2d77b72..be7ec91 100644
+--- a/src/components/ProjectGrid.jsx
++++ b/src/components/ProjectGrid.jsx
+@@ -1,34 +1,43 @@
+ import { Link, useParams } from 'react-router-dom'
+ import { useTranslation } from 'react-i18next'
++import useProjectReveal from '../hooks/useProjectReveal.js'
++import ProjectMedia from './ProjectMedia.jsx'
++import './ProjectIndex.css'
+ 
+ export default function ProjectGrid({ projects }) {
+   const { t } = useTranslation('projects')
+   const { lang } = useParams()
++  const gridRef = useProjectReveal(projects)
+   return (
+-    <ol className="work-grid">
+-      {projects.map((project, index) => (
+-        <li key={project.slug} className="work-card">
+-          <Link className="work-card-link" to={`/${lang}/work/${project.slug}`}
+-            aria-label={t('open', { title: project.title })}>
+-            <div className={`work-card-media work-card-media-${project.slug}`}>
+-              <img src={project.image} alt={t(`${project.slug}.alt`)}
+-                loading="lazy" decoding="async" width="1600" height="1050" />
+-            </div>
+-            <div className="work-card-meta">
+-              <span className="work-card-number">{String(index + 1).padStart(2, '0')}</span>
+-              <span className="work-card-category">{t(`${project.slug}.category`)}</span>
+-              <span className="work-card-year">{project.year}</span>
+-            </div>
+-            <div className="work-card-bottom">
+-              <div>
+-                <h3>{project.title}</h3>
+-                <p>{t(`${project.slug}.description`)}</p>
+-              </div>
+-              <span className="work-card-arrow" aria-hidden="true">↗</span>
+-            </div>
+-          </Link>
+-        </li>
+-      ))}
+-    </ol>
++    <div id="project-results">
++      <p role="status" className={projects.length === 0 ? 'project-empty' : undefined}>
++        {projects.length === 0 ? t('empty') : null}
++      </p>
++      {projects.length > 0 && (
++        <ul ref={gridRef} className="project-grid">
++          {[...projects].sort((a, b) => a.order - b.order).map((project, index) => {
++            const title = project.cardTitle || project.title
++            return (
++              <li key={project.slug} data-project={project.slug} className={`project-card-slot project-card-slot--${project.layoutVariant || 'support'}`}
++                style={{ '--reveal-delay': `${(index % 3) * 70}ms` }}
++                onFocus={(event) => { event.currentTarget.dataset.revealed = 'complete' }}
++                onAnimationEnd={(event) => { event.currentTarget.dataset.revealed = 'complete' }}>
++                <Link className="project-card" to={`/${lang}/work/${project.slug}`}
++                  aria-label={t('openCaseStudy', { title })}>
++                  <ProjectMedia project={project} />
++                  <div className="project-card-info">
++                    <div>
++                      <h3>{title}</h3>
++                      <p>{t(project.typeKey)}</p>
++                    </div>
++                    <span className="project-card-arrow" aria-hidden="true">↗</span>
++                  </div>
++                </Link>
++              </li>
++            )
++          })}
++        </ul>
++      )}
++    </div>
+   )
+ }
+diff --git a/src/components/ProjectIndex.css b/src/components/ProjectIndex.css
+new file mode 100644
+index 0000000..6ba4fec
+--- /dev/null
++++ b/src/components/ProjectIndex.css
+@@ -0,0 +1,125 @@
++.project-index-heading {
++  display: flex;
++  align-items: baseline;
++  justify-content: space-between;
++  gap: var(--space-3);
++  padding-block: var(--space-3);
++  margin-bottom: var(--space-4);
++  border-top: 1px solid var(--color-border);
++}
++.project-index-heading h2 { font-size: 0.9375rem; font-weight: 500; }
++.project-category-controls { display: flex; gap: var(--space-3); }
++.project-category-controls button {
++  padding: var(--space-1) 0;
++  border: 0;
++  border-bottom: 1px solid transparent;
++  background: transparent;
++  color: var(--color-muted);
++  font-size: 0.875rem;
++}
++.project-category-controls button[aria-pressed='true'] {
++  color: var(--color-text);
++  background: transparent;
++  border-bottom-color: var(--color-accent);
++}
++.project-index .project-grid {
++  display: grid;
++  grid-template-columns: repeat(12, minmax(0, 1fr));
++  gap: clamp(1rem, 2.2vw, 2rem);
++  margin: 0;
++  padding: 0;
++  list-style: none;
++}
++.project-card-slot { min-width: 0; }
++.project-card-slot--lead { grid-column: 1 / 8; grid-row: span 2; }
++.project-card-slot--support { grid-column: 8 / -1; }
++.project-card-slot--support-left { grid-column: 1 / 6; }
++.project-card-slot--closing { grid-column: 6 / -1; grid-row: 3 / 5; }
++.project-card {
++  display: flex;
++  flex-direction: column;
++  height: 100%;
++  overflow: hidden;
++  border-radius: var(--radius-large);
++  background: var(--color-surface);
++  color: var(--color-text);
++  text-decoration: none;
++}
++.project-card-media {
++  position: relative;
++  flex: none;
++  min-height: 0;
++  aspect-ratio: 16 / 9;
++  overflow: hidden;
++  background: var(--color-surface);
++}
++.project-card-slot--lead .project-card-media { flex: 1; aspect-ratio: auto; }
++.project-card-slot--closing .project-card-media { flex: 1; aspect-ratio: auto; }
++.project-card-media img, .project-card-video {
++  position: absolute;
++  width: 100%;
++  height: 100%;
++  object-fit: cover;
++  transition: transform 450ms var(--motion-easing);
++}
++.project-card-info {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: var(--space-2);
++  padding: var(--space-3);
++  background: var(--color-elevated);
++}
++.project-card-info h3 { font-size: 1.125rem; font-weight: 550; letter-spacing: -0.025em; }
++.project-card-info p { margin-top: var(--space-0); color: var(--color-secondary); font-size: 0.8125rem; }
++.project-card-arrow { flex-shrink: 0; color: var(--color-accent); font-size: 1.5rem; transition: transform var(--motion-duration) var(--motion-easing); }
++.project-card:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
++.project-card-slot:focus-within { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
++.project-empty { padding-block: var(--space-5); color: var(--color-secondary); }
++.project-results-stage { position: relative; }
++.bubble-wipe { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
++.bubble-wipe span { position: absolute; width: var(--bubble-size); height: var(--bubble-size); border-radius: 50%; border: 1px solid var(--color-cosmic-indigo); background: radial-gradient(circle at 28% 25%, color-mix(in srgb, var(--color-cosmic-cyan) 20%, transparent), transparent 35%), color-mix(in srgb, var(--color-accent) 12%, transparent); animation: bubble-pass 650ms var(--motion-easing) var(--bubble-delay) both; }
++@keyframes bubble-pass {
++  0% { opacity: 0; transform: translate(-50%, 55%) scale(0.7); }
++  25% { opacity: 0.85; }
++  100% { opacity: 0; transform: translate(calc(-50% + var(--bubble-drift)), -130%) scale(1.15); }
++}
++@media (prefers-reduced-motion: reduce) { .bubble-wipe { display: none; } }
++@media (max-width: 40rem) { .bubble-wipe span:nth-child(n + 7) { display: none; } }
++
++@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
++  .project-card:hover .project-card-media img { transform: scale(1.025); }
++  .project-card:hover .project-card-arrow { transform: translate(2px, -2px); }
++}
++@media (prefers-reduced-motion: no-preference) {
++  .project-card-slot[data-revealed='pending'] { opacity: 0.65; transform: scale(1.035); filter: blur(1px); }
++  .project-card-slot[data-revealed='true'] {
++    transform-origin: center;
++    animation: project-settle 850ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms) backwards;
++  }
++}
++@keyframes project-settle {
++  from { opacity: 0.65; transform: scale(1.035); filter: blur(1px); }
++  to { opacity: 1; transform: scale(1); filter: blur(0); }
++}
++@media (max-width: 56rem) {
++  .project-card-slot--lead, .project-card-slot--closing { grid-column: 1 / -1; grid-row: auto; }
++  .project-card-slot--support, .project-card-slot--support-left { grid-column: span 6; }
++  .project-card-slot--lead .project-card-media { flex: none; aspect-ratio: 16 / 10; }
++  .project-card-slot--closing .project-card-media { flex: none; aspect-ratio: 2 / 1; }
++  .project-card-info { padding: var(--space-2); }
++}
++@media (max-width: 40rem) {
++  .project-card-video { display: none; }
++  .project-index-heading { flex-direction: column; gap: var(--space-1); }
++  .project-index .project-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
++  .project-card-slot--lead, .project-card-slot--support, .project-card-slot--support-left, .project-card-slot--closing { grid-column: 1; }
++  .project-card-slot .project-card-media { flex: none; aspect-ratio: 4 / 3; }
++  .project-card-slot--closing .project-card-media { aspect-ratio: 16 / 9; }
++}
++
++/* Four published projects: two stacked beside the lead, then a wide closing case. */
++@media (min-width: 56.001rem) {
++  .project-card-slot--closing { grid-column: 1 / -1; grid-row: auto; }
++  .project-card-slot--closing .project-card-media { aspect-ratio: 21 / 9; flex: none; }
++}
+diff --git a/src/components/ProjectIndex.jsx b/src/components/ProjectIndex.jsx
+new file mode 100644
+index 0000000..70b3e23
+--- /dev/null
++++ b/src/components/ProjectIndex.jsx
+@@ -0,0 +1,22 @@
++import { useTranslation } from 'react-i18next'
++
++import './ProjectIndex.css'
++
++const projectFilters = ['projects', 'explorations']
++
++export default function ProjectIndex({ activeFilter, onFilterChange }) {
++  const { t } = useTranslation()
++  return (
++    <div className="project-index-heading">
++      <h2 id="projects-title">{t('projectIndex.title')}</h2>
++      <div className="project-category-controls" role="group" aria-label={t('projectIndex.label')}>
++        {projectFilters.map((filter) => (
++          <button key={filter} type="button" aria-pressed={activeFilter === filter}
++            aria-controls="project-results" onClick={() => onFilterChange(filter)}>
++            {t(`projectIndex.filters.${filter}`)}
++          </button>
++        ))}
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/ProjectMedia.jsx b/src/components/ProjectMedia.jsx
+new file mode 100644
+index 0000000..a942f3c
+--- /dev/null
++++ b/src/components/ProjectMedia.jsx
+@@ -0,0 +1,18 @@
++import useReducedMotion from '../hooks/useReducedMotion.js'
++
++export default function ProjectMedia({ project }) {
++  const reducedMotion = useReducedMotion()
++  return (
++    <div className="project-card-media" aria-hidden="true">
++      {project.image && (
++        <picture>
++          {project.mobileImage && <source media="(max-width: 40rem)" srcSet={project.mobileImage} />}
++          <img src={project.image} alt="" loading="lazy" decoding="async" />
++        </picture>
++      )}
++      {project.video && project.image && !reducedMotion && (
++        <video className="project-card-video" src={project.video} poster={project.image} autoPlay muted loop playsInline preload="none" tabIndex={-1} />
++      )}
++    </div>
++  )
++}
+diff --git a/src/components/SectionLink.jsx b/src/components/SectionLink.jsx
+new file mode 100644
+index 0000000..6ea3a18
+--- /dev/null
++++ b/src/components/SectionLink.jsx
+@@ -0,0 +1,20 @@
++import { Link, useLocation, useParams } from 'react-router-dom'
++import { scrollToSection } from '../hooks/scrollPosition.js'
++
++export default function SectionLink({ section, onClick, children, ...props }) {
++  const { lang } = useParams()
++  const location = useLocation()
++  const pathname = `/${lang}`
++  const hash = section === 'top' ? '' : `#${section}`
++  return (
++    <Link {...props} to={{ pathname, search: location.pathname === pathname ? location.search : '', hash }}
++      onClick={(event) => {
++        onClick?.(event)
++        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
++        if (location.pathname === pathname && location.hash === hash) {
++          event.preventDefault()
++          scrollToSection(section)
++        }
++      }}>{children}</Link>
++  )
++}
+diff --git a/src/components/SiteLayout.jsx b/src/components/SiteLayout.jsx
+index 02126f5..c51d6a6 100644
+--- a/src/components/SiteLayout.jsx
++++ b/src/components/SiteLayout.jsx
+@@ -1,25 +1,26 @@
+-import { useEffect } from 'react'
+ import { useTranslation } from 'react-i18next'
+-import { Outlet, useLocation } from 'react-router-dom'
++import { Outlet, useLocation, useParams } from 'react-router-dom'
++import useSectionNavigation from '../hooks/useSectionNavigation.js'
+ import Header from './Header.jsx'
+ import Footer from './Footer.jsx'
++import HomeAurora from './HomeAurora.jsx'
++import useAuroraPointer from '../hooks/useAuroraPointer.js'
+ 
+ export default function SiteLayout() {
+   const { t } = useTranslation()
+-  const { pathname, hash } = useLocation()
+-  useEffect(() => {
+-    const target = hash ? document.getElementById(hash.slice(1)) : document.getElementById('main-content')
+-    target?.focus({ preventScroll: true })
+-    if (hash) target?.scrollIntoView()
+-    else window.scrollTo(0, 0)
+-  }, [pathname, hash])
++  const { pathname } = useLocation()
++  const { lang } = useParams()
++  const isHome = pathname.replace(/\/$/, '') === `/${lang}`
++  const shellRef = useAuroraPointer(isHome)
++  useSectionNavigation()
+ 
+   return (
+-    <>
++    <div className={isHome ? 'site-shell site-shell--home' : 'site-shell'} ref={shellRef}>
++      {isHome && <HomeAurora />}
+       <a className="skip-link" href="#main-content">{t('skip')}</a>
+-      <Header />
+-      <main id="main-content" className="container" tabIndex={-1}><Outlet /></main>
+-      <Footer />
+-    </>
++      <Header framed={isHome} />
++      <main id="main-content" className={isHome ? 'content-frame' : 'container'} tabIndex={-1}><Outlet /></main>
++      <Footer showContact={isHome} />
++    </div>
+   )
+ }
+diff --git a/src/config/contactLinks.js b/src/config/contactLinks.js
+new file mode 100644
+index 0000000..6fbab91
+--- /dev/null
++++ b/src/config/contactLinks.js
+@@ -0,0 +1,10 @@
++export function validProfileUrl(value) {
++  if (typeof value !== 'string' || !value.trim() || value !== value.trim()) return false
++  if (value.startsWith('/') && !value.startsWith('//') && !value.includes('\\')) return true
++  try { return ['https:', 'http:'].includes(new URL(value).protocol) } catch { return false }
++}
++
++export function emailHref(value) {
++  return typeof value === 'string' && /^[^\s@?&#]+@[^\s@?&#]+\.[^\s@?&#]+$/.test(value)
++    ? `mailto:${value}` : null
++}
+diff --git a/src/config/siteConfig.js b/src/config/siteConfig.js
+index afe0314..09764a3 100644
+--- a/src/config/siteConfig.js
++++ b/src/config/siteConfig.js
+@@ -1,17 +1,17 @@
+-import resumeUrl from '../assets/files/Resume-RicardoPlata-2026.pdf'
++import portrait from '../assets/images/About-Picture.png'
++import resume from '../assets/files/Resume-RicardoPlata-2026.pdf'
+ 
+ export const siteConfig = {
+   name: 'Ricardo Plata',
+-  email: 'g2ricardogplata@gmail.com',
+   profile: {
++    portrait,
+     locationKey: 'hero.location',
+     availabilityKey: 'hero.availability',
+-    disciplinesKey: 'hero.disciplines',
+   },
+   links: {
+-    // Pending: supply approved destinations. Null renders a non-interactive label.
+-    resume: { href: resumeUrl, status: 'ready' },
++    // Supply approved destinations and set status to ready; missing actions stay hidden.
++    resume: { href: resume, status: 'ready' },
+     linkedin: { href: 'https://www.linkedin.com/in/ricardo-guadarrama-plata-976a8b209', status: 'ready' },
+-    github: { href: 'https://github.com/RichardPlata', status: 'ready' },
+   },
++  contact: { email: 'g2ricardogplata@gmail.com' },
+ }
+diff --git a/src/data/freestyle.js b/src/data/freestyle.js
+new file mode 100644
+index 0000000..e048835
+--- /dev/null
++++ b/src/data/freestyle.js
+@@ -0,0 +1,4 @@
++// Populate only with approved pieces. Use the same slug/title/featured/items
++// shape as professionalProjects; do not invent projects or media.
++// Future scope: motion, CGI, 3D, logo animation, interfaces, personal explorations.
++export const freestylePieces = []
+diff --git a/src/data/projects.js b/src/data/projects.js
+index 55ea4b2..4fbc1a8 100644
+--- a/src/data/projects.js
++++ b/src/data/projects.js
+@@ -1,11 +1,28 @@
+-import auraImage from '../media/aura-drive.webp'
+-import kokoroImage from '../media/kokoro.webp'
+-import guQiImage from '../media/gu-qi.webp'
+-import beyondImage from '../media/beyond-the-shadows.webp'
++import guQiPoster from '../media/gu-qi.webp'
++import kokoroPoster from '../media/kokoro.webp'
++import beyondPoster from '../media/beyond-the-shadows.webp'
++import auraPoster from '../media/aura-drive.webp'
+ 
++// Four published case studies. New landing pages will be added when their content is ready.
+ export const professionalProjects = [
+-  { slug: 'aura-drive', title: 'AURA Drive', image: auraImage, year: '2026' },
+-  { slug: 'kokoro', title: 'Kokoro', image: kokoroImage, year: '2026' },
+-  { slug: 'gu-qi', title: 'GU-QI', image: guQiImage, year: '2026' },
+-  { slug: 'beyond-the-shadows', title: 'Beyond the Shadows', image: beyondImage, year: '2026' },
++  {
++    slug: 'gu-qi', title: 'GU-QI', category: 'projects',
++    typeKey: 'types.digitalProduct', layoutVariant: 'lead', order: 1,
++    image: guQiPoster, items: [],
++  },
++  {
++    slug: 'kokoro', title: 'Kokoro', category: 'projects',
++    typeKey: 'types.brandIdentity', layoutVariant: 'support', order: 2,
++    image: kokoroPoster, items: [],
++  },
++  {
++    slug: 'beyond-the-shadows', title: 'Beyond the Shadows', category: 'projects',
++    typeKey: 'types.gameInterface', layoutVariant: 'support', order: 3,
++    image: beyondPoster, items: [],
++  },
++  {
++    slug: 'aura-drive', title: 'AURA Drive', category: 'projects',
++    typeKey: 'types.automotiveInterface', layoutVariant: 'closing', order: 4,
++    image: auraPoster, items: [],
++  },
+ ]
+diff --git a/src/hooks/projectFilter.js b/src/hooks/projectFilter.js
+new file mode 100644
+index 0000000..14b30fb
+--- /dev/null
++++ b/src/hooks/projectFilter.js
+@@ -0,0 +1,5 @@
++export const bubbleDuration = 800
++
++export function entersExplorations(previous, next, reducedMotion) {
++  return previous === 'projects' && next === 'explorations' && !reducedMotion
++}
+diff --git a/src/hooks/scrollPosition.js b/src/hooks/scrollPosition.js
+new file mode 100644
+index 0000000..9403d84
+--- /dev/null
++++ b/src/hooks/scrollPosition.js
+@@ -0,0 +1,27 @@
++export function scrollToSection(section, behavior = 'smooth') {
++  const id = section === 'projects' ? 'work' : section
++  const target = document.getElementById(id === 'top' ? 'main-content' : id)
++  if (!target) return
++  const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
++  const scrollBehavior = motion.matches ? 'instant' : behavior
++  target.focus({ preventScroll: true })
++  if (id === 'top') window.scrollTo({ top: 0, left: 0, behavior: scrollBehavior })
++  else target.scrollIntoView({ behavior: scrollBehavior, block: 'start' })
++}
++
++export function captureScrollPosition() {
++  const header = document.querySelector('.site-header')?.getBoundingClientRect().height || 0
++  const section = ['work', 'about', 'contact'].map((id) => document.getElementById(id))
++    .filter((element) => element && element.getBoundingClientRect().top <= header + 32).at(-1)
++  return {
++    x: window.scrollX, y: window.scrollY,
++    section: section?.id,
++    offset: section?.getBoundingClientRect().top,
++  }
++}
++
++export function restoreScrollPosition(position, preserveSection = false) {
++  const target = preserveSection && position.section && document.getElementById(position.section)
++  const top = target ? window.scrollY + target.getBoundingClientRect().top - position.offset : position.y
++  window.scrollTo({ left: position.x, top, behavior: 'instant' })
++}
+diff --git a/src/hooks/useAuroraPointer.js b/src/hooks/useAuroraPointer.js
+new file mode 100644
+index 0000000..c50b6d2
+--- /dev/null
++++ b/src/hooks/useAuroraPointer.js
+@@ -0,0 +1,72 @@
++import { useEffect, useRef } from 'react'
++
++// Exported separately so listener/RAF cleanup and motion preferences can be checked.
++export function attachAuroraPointer(node, browser = window) {
++  if (!node) return
++  const media = browser.matchMedia('(min-width: 56.001rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)')
++  let frame = 0
++  let previousTime = 0
++  let x = 0
++  let y = 0
++  let targetX = 0
++  let targetY = 0
++  const paint = () => {
++    node.style.setProperty('--aurora-x', `${x.toFixed(3)}px`)
++    node.style.setProperty('--aurora-y', `${y.toFixed(3)}px`)
++  }
++  const tick = (time) => {
++    frame = 0
++    const delta = previousTime ? Math.min(time - previousTime, 64) : 16
++    previousTime = time
++    const ease = 1 - Math.exp(-delta / 180)
++    x += (targetX - x) * ease
++    y += (targetY - y) * ease
++    if (Math.abs(targetX - x) + Math.abs(targetY - y) < 0.02) {
++      x = targetX
++      y = targetY
++      previousTime = 0
++    } else frame = browser.requestAnimationFrame(tick)
++    paint()
++  }
++  const schedule = () => { if (!frame) frame = browser.requestAnimationFrame(tick) }
++  const move = (event) => {
++    if (!media.matches || event.pointerType === 'touch') return
++    const rect = node.getBoundingClientRect()
++    if (!rect.width || !rect.height) return
++    const hero = node.querySelector?.('.hero')?.getBoundingClientRect()
++    const height = hero ? hero.bottom - rect.top : rect.height
++    if (event.clientY > rect.top + height) { leave(); return }
++    // The vector is bounded to 20px, including at the corners.
++    const dx = (event.clientX - rect.left) / rect.width * 2 - 1
++    const dy = (event.clientY - rect.top) / height * 2 - 1
++    const divisor = Math.max(1, Math.hypot(dx, dy))
++    targetX = dx / divisor * 20
++    targetY = dy / divisor * 20
++    schedule()
++  }
++  const leave = () => { targetX = 0; targetY = 0; if (media.matches) schedule() }
++  const reset = () => {
++    browser.cancelAnimationFrame(frame)
++    frame = 0
++    previousTime = 0
++    x = y = targetX = targetY = 0
++    node.style.removeProperty('--aurora-x')
++    node.style.removeProperty('--aurora-y')
++  }
++  const onPreference = () => { if (!media.matches) reset() }
++  node.addEventListener('pointermove', move, { passive: true })
++  node.addEventListener('pointerleave', leave)
++  media.addEventListener('change', onPreference)
++  return () => {
++    reset()
++    node.removeEventListener('pointermove', move)
++    node.removeEventListener('pointerleave', leave)
++    media.removeEventListener('change', onPreference)
++  }
++}
++
++export default function useAuroraPointer(enabled = true) {
++  const ref = useRef(null)
++  useEffect(() => enabled ? attachAuroraPointer(ref.current) : undefined, [enabled])
++  return ref
++}
+diff --git a/src/hooks/useOrbitReveal.js b/src/hooks/useOrbitReveal.js
+new file mode 100644
+index 0000000..acd65bf
+--- /dev/null
++++ b/src/hooks/useOrbitReveal.js
+@@ -0,0 +1,27 @@
++import { useEffect, useRef } from 'react'
++
++export default function useOrbitReveal() {
++  const ref = useRef(null)
++  useEffect(() => {
++    const node = ref.current
++    if (!node || !('IntersectionObserver' in window)) return
++    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
++    const finish = () => { node.dataset.entered = 'complete' }
++    const onEnd = (event) => { if (event.animationName === 'orbit-body-arrive') finish() }
++    const onMotion = () => { if (media.matches) finish() }
++    const observer = new IntersectionObserver((entries) => {
++      if (!entries.some((entry) => entry.isIntersecting)) return
++      node.dataset.entered = media.matches ? 'complete' : 'true'
++      observer.disconnect()
++    }, { threshold: 0.2 })
++    node.addEventListener('animationend', onEnd)
++    media.addEventListener('change', onMotion)
++    observer.observe(node)
++    return () => {
++      observer.disconnect()
++      node.removeEventListener('animationend', onEnd)
++      media.removeEventListener('change', onMotion)
++    }
++  }, [])
++  return ref
++}
+diff --git a/src/hooks/useProjectReveal.js b/src/hooks/useProjectReveal.js
+new file mode 100644
+index 0000000..476a3f5
+--- /dev/null
++++ b/src/hooks/useProjectReveal.js
+@@ -0,0 +1,42 @@
++import { useLayoutEffect, useRef } from 'react'
++
++// Visible by default: only a successful intersection starts animation.
++export function observeProjectCards(grid, seen = new Set()) {
++  if (!grid || !('IntersectionObserver' in window)) return
++  const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
++  if (motion.matches) return
++
++  const observer = new IntersectionObserver((entries) => {
++    for (const entry of entries) {
++      if (!entry.isIntersecting) continue
++      if (entry.target.dataset.revealed !== 'complete') entry.target.dataset.revealed = 'true'
++      seen.add(entry.target.dataset.project)
++      observer.unobserve(entry.target)
++    }
++  }, { threshold: 0.08 })
++  const cards = [...grid.children]
++  cards.forEach((card) => {
++    if (seen.has(card.dataset.project)) return
++    card.dataset.revealed = 'pending'
++    observer.observe(card)
++  })
++  const stop = () => {
++    observer.disconnect()
++    cards.forEach((card) => delete card.dataset.revealed)
++  }
++  const onMotionChange = () => {
++    if (motion.matches) stop()
++  }
++  motion.addEventListener('change', onMotionChange)
++  return () => {
++    stop()
++    motion.removeEventListener('change', onMotionChange)
++  }
++}
++
++export default function useProjectReveal(projects) {
++  const ref = useRef(null)
++  const seen = useRef(new Set())
++  useLayoutEffect(() => observeProjectCards(ref.current, seen.current), [projects])
++  return ref
++}
+diff --git a/src/hooks/useReducedMotion.js b/src/hooks/useReducedMotion.js
+new file mode 100644
+index 0000000..4934387
+--- /dev/null
++++ b/src/hooks/useReducedMotion.js
+@@ -0,0 +1,12 @@
++import { useSyncExternalStore } from 'react'
++
++const query = '(prefers-reduced-motion: reduce)'
++function subscribe(callback) {
++  const media = window.matchMedia(query)
++  media.addEventListener('change', callback)
++  return () => media.removeEventListener('change', callback)
++}
++
++export default function useReducedMotion() {
++  return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches, () => true)
++}
+diff --git a/src/hooks/useSectionNavigation.js b/src/hooks/useSectionNavigation.js
+new file mode 100644
+index 0000000..5d55585
+--- /dev/null
++++ b/src/hooks/useSectionNavigation.js
+@@ -0,0 +1,39 @@
++import { useEffect, useRef } from 'react'
++import { useLocation, useNavigationType } from 'react-router-dom'
++import { captureScrollPosition, restoreScrollPosition, scrollToSection } from './scrollPosition.js'
++
++export default function useSectionNavigation() {
++  const location = useLocation()
++  const navigationType = useNavigationType()
++  const previous = useRef(null)
++  const positions = useRef(new Map())
++
++  useEffect(() => {
++    const original = window.history.scrollRestoration
++    window.history.scrollRestoration = 'manual'
++    return () => { window.history.scrollRestoration = original }
++  }, [])
++
++  useEffect(() => {
++    const last = previous.current
++    const languageOnly = last && last.pathname !== location.pathname &&
++      last.pathname.replace(/^\/(en|es)/, '') === location.pathname.replace(/^\/(en|es)/, '')
++    const saved = positions.current.get(location.key)
++    const priorPosition = last && positions.current.get(last.key)
++    const record = () => positions.current.set(location.key, captureScrollPosition())
++    // Wait until route content and the language layout effect have committed.
++    const frame = window.requestAnimationFrame(() => {
++      if (navigationType === 'POP' && saved) restoreScrollPosition(saved)
++      else if (languageOnly && priorPosition) restoreScrollPosition(priorPosition, true)
++      else if (location.hash) scrollToSection(location.hash.slice(1), last ? 'smooth' : 'instant')
++      else scrollToSection('top', 'instant')
++      record()
++    })
++    window.addEventListener('scroll', record, { passive: true })
++    previous.current = location
++    return () => {
++      window.cancelAnimationFrame(frame)
++      window.removeEventListener('scroll', record)
++    }
++  }, [location, navigationType])
++}
+diff --git a/src/hooks/useTheme.js b/src/hooks/useTheme.js
+index 898ef80..b39c2dc 100644
+--- a/src/hooks/useTheme.js
++++ b/src/hooks/useTheme.js
+@@ -1,9 +1,23 @@
+-﻿import { useEffect, useState } from 'react'
++import { useEffect, useState } from 'react'
+ import { applyTheme, getInitialTheme, saveTheme } from '../theme/theme.js'
+ 
+ export default function useTheme() {
+   const [theme, setTheme] = useState(getInitialTheme)
+ 
++  useEffect(() => {
++    if (!import.meta.env.DEV || window.self === window.top) return
++    const onMessage = (event) => {
++      if (event.source !== window.parent || event.origin !== window.location.origin) return
++      if (!document.documentElement.dataset.previewTheme || event.data?.type !== 'portfolio-preview-theme') return
++      const next = event.data.theme
++      if (next !== 'light' && next !== 'dark') return
++      document.documentElement.dataset.previewTheme = next
++      setTheme(next)
++    }
++    window.addEventListener('message', onMessage)
++    return () => window.removeEventListener('message', onMessage)
++  }, [])
++
+   useEffect(() => {
+     applyTheme(theme)
+     saveTheme(theme)
+diff --git a/src/i18n/index.js b/src/i18n/index.js
+index a550180..98cdb5f 100644
+--- a/src/i18n/index.js
++++ b/src/i18n/index.js
+@@ -1,4 +1,4 @@
+-﻿import i18n from 'i18next'
++import i18n from 'i18next'
+ import { initReactI18next } from 'react-i18next'
+ import enCommon from '../locales/en/common.json'
+ import esCommon from '../locales/es/common.json'
+diff --git a/src/index.css b/src/index.css
+index 78b6997..d2578fc 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -1,5 +1,4 @@
+-﻿@import './styles/reset.css';
++@import './styles/reset.css';
+ @import './styles/variables.css';
+ @import './styles/base.css';
+-
+-@import './styles/home.css';
++@import './styles/case.css';
+diff --git a/src/locales/en/common.json b/src/locales/en/common.json
+index 8f4e3fd..39f8404 100644
+--- a/src/locales/en/common.json
++++ b/src/locales/en/common.json
+@@ -16,39 +16,72 @@
+     "label": "Theme",
+     "light": "Light",
+     "dark": "Dark",
+-    "toggle": "Dark mode"
++    "switchToDark": "Switch to dark mode",
++    "switchToLight": "Switch to light mode"
+   },
+   "skip": "Skip to content",
+   "hero": {
+     "eyebrow": "Hi, I’m {{name}}.",
+     "headline": "Digital designer shaping brands, interfaces and interactive experiences.",
+-    "description": "I combine UX/UI, visual identity, motion and 3D to create digital experiences that feel clear, expressive and useful.",
+-    "location": "Based in Mexico.",
+-    "availability": "Available for opportunities.",
+-    "disciplines": "UX/UI · Brand · Motion · 3D",
++    "location": "Mexico",
++    "availability": "Available",
+     "selectedWork": "Selected work",
+-    "resume": "Résumé",
++    "resume": "Resume",
+     "linkedin": "LinkedIn",
+-    "linksLabel": "Explore my work and profile",
+-    "pending": "Link pending"
++    "linksLabel": "Selected work",
++    "disciplines": "Product Design · UX/UI · Brand Identity · Motion · 3D"
+   },
+   "projectIndex": {
+-    "title": "Selected work",
+-    "eyebrow": "Work",
+-    "intro": "A selection of interfaces, identities and interactive experiences.",
++    "title": "Index",
++    "label": "Filter projects",
++    "filters": {
++      "projects": "Projects",
++      "explorations": "Explorations"
++    },
+     "back": "Back to selected work"
+   },
+   "about": {
+-    "title": "Design across disciplines.",
+-    "eyebrow": "About",
+-    "description": "I’m Ricardo Plata, a digital designer in Mexico working across UX/UI, brand identity, motion and interactive experiences.",
+-    "secondary": "My background in game design shapes how I think about systems, feedback and storytelling.",
+-    "photoAlt": "Portrait of Ricardo Plata."
++    "title": "About",
++    "photo": "Portrait forthcoming.",
++    "portraitAlt": "Portrait of {{name}}",
++    "biography": [
++      "I’m Ricardo, a multidisciplinary digital designer based in Mexico. My background began in Game Design and Art, where I became interested in interaction, 3D and designing experiences. Over time, I focused my work on UX/UI, product design, websites and visual identity.",
++      "I’m interested in how an experience works, not only how it looks. I combine research, visual systems, interface design, motion and 3D to turn complex ideas into solutions that feel clear, expressive and useful.",
++      "I’m currently collaborating on client projects and developing personal experiences while looking for opportunities in Product Design, UX/UI and digital design.",
++      "Outside client work, I explore 3D animation and visual storytelling through personal projects."
++    ],
++    "groups": {
++      "background": {
++        "title": "Background",
++        "items": [
++          "Game Design and Art",
++          "Google UX Design Certificate",
++          "Product and client project experience"
++        ]
++      },
++      "focus": {
++        "title": "Focus",
++        "items": [
++          "Product Design",
++          "UX/UI and Web Design",
++          "Brand Identity",
++          "Motion and 3D"
++        ]
++      },
++      "tools": {
++        "title": "Selected tools",
++        "items": [
++          "Figma",
++          "Adobe Creative Cloud",
++          "After Effects",
++          "Blender"
++        ]
++      }
++    }
+   },
+   "footer": {
+-    "title": "Let’s make something meaningful.",
+-    "eyebrow": "Contact",
+-    "description": "For projects, collaborations or opportunities, get in touch by email."
++    "location": "Mexico",
++    "backToTop": "Back to top"
+   },
+   "notFound": {
+     "title": "Page not found",
+@@ -57,5 +90,14 @@
+   },
+   "metadata": {
+     "title": "{{name}} | Digital Designer"
++  },
++  "contact": {
++    "label": "Contact",
++    "heading": "Have a project, role or collaboration in mind?",
++    "action": "Let’s talk",
++    "availability": "Based in Mexico. Open to product design, UX/UI and digital design opportunities.",
++    "location": "Based in Mexico",
++    "status": "Available for opportunities",
++    "email": "Email"
+   }
+ }
+diff --git a/src/locales/en/projects.json b/src/locales/en/projects.json
+index 9173bfb..8859364 100644
+--- a/src/locales/en/projects.json
++++ b/src/locales/en/projects.json
+@@ -1,30 +1,16 @@
+ {
+-  "empty": "Provisional: selected freestyle pieces pending.",
+-  "count_one": "{{count}} project shown.",
+-  "count_other": "{{count}} projects shown.",
+-  "cardPlaceholder": "Provisional: project content and media pending.",
++  "empty": "Explorations are being prepared.",
++  "openCaseStudy": "Open {{title}} case study",
++  "types": {
++    "digitalProduct": "Digital Product",
++    "brandIdentity": "Brand Identity",
++    "webDesignCollection": "Web Design Collection",
++    "automotiveInterface": "Automotive Interface",
++    "webDesign": "Web Design",
++    "healthcareWebsite": "Healthcare Website",
++    "gameInterface": "Game Interface"
++  },
+   "back": "Back to project index",
+   "detailPlaceholder": "Provisional: case study content and media pending approval.",
+-  "collectionTitle": "Projects in this collection",
+-  "open": "View the {{title}} case study",
+-  "aura-drive": {
+-    "category": "Automotive HMI · 3D",
+-    "description": "An interactive automotive interface and showroom prototype.",
+-    "alt": "AURA Drive interface displayed on an automotive dashboard."
+-  },
+-  "kokoro": {
+-    "category": "UX/UI · Brand",
+-    "description": "A bakery experience built around browsing and customizing desserts.",
+-    "alt": "Kokoro bakery app home screen."
+-  },
+-  "gu-qi": {
+-    "category": "Web design · Wellness",
+-    "description": "A digital experience for a holistic wellness practice.",
+-    "alt": "GU-QI website home page."
+-  },
+-  "beyond-the-shadows": {
+-    "category": "Game UI · Interaction",
+-    "description": "Interface design for an atmospheric game project.",
+-    "alt": "Beyond the Shadows game interface design."
+-  }
++  "collectionTitle": "Projects in this collection"
+ }
+diff --git a/src/locales/es/common.json b/src/locales/es/common.json
+index b663ab3..ec985e5 100644
+--- a/src/locales/es/common.json
++++ b/src/locales/es/common.json
+@@ -16,39 +16,72 @@
+     "label": "Tema",
+     "light": "Claro",
+     "dark": "Oscuro",
+-    "toggle": "Modo oscuro"
++    "switchToDark": "Cambiar al modo oscuro",
++    "switchToLight": "Cambiar al modo claro"
+   },
+   "skip": "Saltar al contenido",
+   "hero": {
+     "eyebrow": "Hola, soy {{name}}.",
+     "headline": "Diseñador digital creando marcas, interfaces y experiencias interactivas.",
+-    "description": "Combino UX/UI, identidad visual, motion y 3D para crear experiencias digitales claras, expresivas y funcionales.",
+-    "location": "Ubicado en México.",
+-    "availability": "Disponible para oportunidades.",
+-    "disciplines": "UX/UI · Marca · Motion · 3D",
++    "location": "México",
++    "availability": "Disponible",
+     "selectedWork": "Trabajo seleccionado",
+     "resume": "CV",
+     "linkedin": "LinkedIn",
+-    "linksLabel": "Explora mi trabajo y perfil",
+-    "pending": "Enlace pendiente"
++    "linksLabel": "Trabajo seleccionado",
++    "disciplines": "Diseño de producto · UX/UI · Identidad visual · Motion · 3D"
+   },
+   "projectIndex": {
+-    "title": "Proyectos seleccionados",
+-    "eyebrow": "Trabajo",
+-    "intro": "Una selección de interfaces, identidades y experiencias interactivas.",
++    "title": "Índice",
++    "label": "Filtrar proyectos",
++    "filters": {
++      "projects": "Proyectos",
++      "explorations": "Exploraciones"
++    },
+     "back": "Volver a proyectos"
+   },
+   "about": {
+-    "title": "Diseño entre disciplinas.",
+-    "eyebrow": "Sobre mí",
+-    "description": "Soy Ricardo Plata, diseñador digital en México. Trabajo en UX/UI, identidad de marca, motion y experiencias interactivas.",
+-    "secondary": "Mi formación en diseño de videojuegos influye en cómo pienso los sistemas, la retroalimentación y las historias.",
+-    "photoAlt": "Retrato de Ricardo Plata."
++    "title": "Sobre mí",
++    "photo": "Fotografía próximamente.",
++    "portraitAlt": "Retrato de {{name}}",
++    "biography": [
++      "Soy Ricardo, un diseñador digital multidisciplinario ubicado en México. Mi formación comenzó en Diseño y Arte para Videojuegos, donde me acerqué a la interacción, el 3D y la creación de experiencias. Con el tiempo enfoqué mi trabajo en UX/UI, diseño de producto, sitios web e identidad visual.",
++      "Me interesa comprender cómo funciona una experiencia, no solamente cómo se ve. Combino investigación, sistemas visuales, diseño de interfaces, motion y 3D para transformar ideas complejas en soluciones claras, expresivas y útiles.",
++      "Actualmente colaboro en proyectos para clientes y desarrollo experiencias personales mientras busco oportunidades en Product Design, UX/UI y diseño digital.",
++      "Fuera del trabajo con clientes, exploro la animación 3D y la narrativa visual a través de proyectos personales."
++    ],
++    "groups": {
++      "background": {
++        "title": "Formación",
++        "items": [
++          "Diseño y Arte para Videojuegos",
++          "Certificado de Diseño UX de Google",
++          "Experiencia en producto y proyectos para clientes"
++        ]
++      },
++      "focus": {
++        "title": "Enfoque",
++        "items": [
++          "Diseño de producto",
++          "UX/UI y diseño web",
++          "Identidad de marca",
++          "Motion y 3D"
++        ]
++      },
++      "tools": {
++        "title": "Herramientas",
++        "items": [
++          "Figma",
++          "Adobe Creative Cloud",
++          "After Effects",
++          "Blender"
++        ]
++      }
++    }
+   },
+   "footer": {
+-    "title": "Hagamos algo con sentido.",
+-    "eyebrow": "Contacto",
+-    "description": "Para proyectos, colaboraciones u oportunidades, escríbeme por correo."
++    "location": "México",
++    "backToTop": "Volver arriba"
+   },
+   "notFound": {
+     "title": "Página no encontrada",
+@@ -57,5 +90,14 @@
+   },
+   "metadata": {
+     "title": "{{name}} | Diseñador digital"
++  },
++  "contact": {
++    "label": "Contacto",
++    "heading": "¿Tienes un proyecto, una oportunidad o una colaboración en mente?",
++    "action": "Hablemos",
++    "availability": "Ubicado en México. Disponible para oportunidades en diseño de producto, UX/UI y diseño digital.",
++    "location": "Ubicado en México",
++    "status": "Disponible para oportunidades",
++    "email": "Correo"
+   }
+ }
+diff --git a/src/locales/es/projects.json b/src/locales/es/projects.json
+index e1b9556..552db40 100644
+--- a/src/locales/es/projects.json
++++ b/src/locales/es/projects.json
+@@ -1,30 +1,16 @@
+ {
+-  "empty": "Provisional: selección de exploraciones pendiente.",
+-  "count_one": "{{count}} proyecto mostrado.",
+-  "count_other": "{{count}} proyectos mostrados.",
+-  "cardPlaceholder": "Provisional: contenido y material visual del proyecto pendientes.",
++  "empty": "Las exploraciones están en preparación.",
++  "openCaseStudy": "Abrir el caso de estudio de {{title}}",
++  "types": {
++    "digitalProduct": "Producto digital",
++    "brandIdentity": "Identidad de marca",
++    "webDesignCollection": "Colección de diseño web",
++    "automotiveInterface": "Interfaz automotriz",
++    "webDesign": "Diseño web",
++    "healthcareWebsite": "Sitio web de salud",
++    "gameInterface": "Interfaz de videojuego"
++  },
+   "back": "Volver al índice de proyectos",
+   "detailPlaceholder": "Provisional: contenido y material visual del caso de estudio pendientes de aprobación.",
+-  "collectionTitle": "Proyectos de esta colección",
+-  "open": "Ver el caso de estudio de {{title}}",
+-  "aura-drive": {
+-    "category": "HMI automotriz · 3D",
+-    "description": "Prototipo interactivo de una interfaz y showroom automotriz.",
+-    "alt": "Interfaz AURA Drive mostrada en un tablero automotriz."
+-  },
+-  "kokoro": {
+-    "category": "UX/UI · Marca",
+-    "description": "Experiencia de repostería para explorar y personalizar postres.",
+-    "alt": "Pantalla de inicio de la aplicación de Kokoro."
+-  },
+-  "gu-qi": {
+-    "category": "Diseño web · Bienestar",
+-    "description": "Experiencia digital para un centro de bienestar integral.",
+-    "alt": "Página de inicio del sitio web de GU-QI."
+-  },
+-  "beyond-the-shadows": {
+-    "category": "UI de videojuegos · Interacción",
+-    "description": "Diseño de interfaz para un proyecto de juego atmosférico.",
+-    "alt": "Diseño de interfaz del juego Beyond the Shadows."
+-  }
++  "collectionTitle": "Proyectos de esta colección"
+ }
+diff --git a/src/pages/CaseStudy.jsx b/src/pages/CaseStudy.jsx
+index 04ade13..cc58454 100644
+--- a/src/pages/CaseStudy.jsx
++++ b/src/pages/CaseStudy.jsx
+@@ -37,7 +37,7 @@ export default function CaseStudy() {
+       <a className="skip-link" href="#case-content">{t('skip')}</a>
+       <Header />
+       <div className="case-back container">
+-        <Link to={`/${lang}#projects`}>{t('projectIndex.back')} <span aria-hidden="true">↗</span></Link>
++        <Link to={`/${lang}#work`}>{t('projectIndex.back')} <span aria-hidden="true">↗</span></Link>
+       </div>
+       <div id="case-content" tabIndex={-1}><Component /></div>
+       <Footer />
+diff --git a/src/pages/Home.jsx b/src/pages/Home.jsx
+index 662279d..2397b01 100644
+--- a/src/pages/Home.jsx
++++ b/src/pages/Home.jsx
+@@ -1,23 +1,42 @@
++import { useState } from 'react'
+ import Hero from '../components/Hero.jsx'
++import { useEffect } from 'react'
++import BubbleWipe from '../components/BubbleWipe.jsx'
++import useReducedMotion from '../hooks/useReducedMotion.js'
++import { bubbleDuration, entersExplorations } from '../hooks/projectFilter.js'
++import ProjectIndex from '../components/ProjectIndex.jsx'
+ import ProjectGrid from '../components/ProjectGrid.jsx'
+ import AboutPreview from '../components/AboutPreview.jsx'
+ import { professionalProjects } from '../data/projects.js'
+-import { useTranslation } from 'react-i18next'
++import { freestylePieces } from '../data/freestyle.js'
+ 
+ export default function Home() {
+-  const { t } = useTranslation()
++  const [filter, setFilter] = useState('projects')
++  const [wipe, setWipe] = useState(0)
++  const reducedMotion = useReducedMotion()
++  const changeFilter = (next) => {
++    if (next === filter) return
++    setWipe(entersExplorations(filter, next, reducedMotion) ? Date.now() : 0)
++    setFilter(next)
++  }
++  useEffect(() => {
++    if (!wipe) return
++    const timeout = window.setTimeout(() => setWipe(0), bubbleDuration)
++    return () => window.clearTimeout(timeout)
++  }, [wipe])
++  const projects = filter === 'explorations'
++    ? freestylePieces
++    : professionalProjects
++
+   return (
+     <>
+       <Hero />
+-      <section id="projects" className="work-section section" tabIndex={-1} aria-labelledby="projects-title">
+-        <div className="work-heading">
+-          <div>
+-            <p className="section-eyebrow">01 / {t('projectIndex.eyebrow')}</p>
+-            <h2 id="projects-title">{t('projectIndex.title')}</h2>
+-          </div>
+-          <p className="work-intro">{t('projectIndex.intro')}</p>
++      <section id="work" className="section project-index" tabIndex={-1} aria-labelledby="projects-title">
++        <ProjectIndex activeFilter={filter} onFilterChange={changeFilter} />
++        <div className="project-results-stage">
++          <ProjectGrid projects={projects} />
++          {wipe > 0 && !reducedMotion && <BubbleWipe key={wipe} />}
+         </div>
+-        <ProjectGrid projects={professionalProjects} />
+       </section>
+       <AboutPreview />
+     </>
+diff --git a/src/pages/NotFound.jsx b/src/pages/NotFound.jsx
+index 2b6bd3b..0e39f0e 100644
+--- a/src/pages/NotFound.jsx
++++ b/src/pages/NotFound.jsx
+@@ -1,4 +1,4 @@
+-﻿import { Link, useParams } from 'react-router-dom'
++import { Link, useParams } from 'react-router-dom'
+ import { useTranslation } from 'react-i18next'
+ 
+ export default function NotFound() {
+diff --git a/src/styles/base.css b/src/styles/base.css
+index 31532e6..1927db0 100644
+--- a/src/styles/base.css
++++ b/src/styles/base.css
+@@ -1,4 +1,4 @@
+-﻿body {
++body {
+   font-family: var(--font-body);
+   font-weight: 400;
+   line-height: 1.65;
+@@ -25,6 +25,11 @@ h1 { font-size: 2rem; }
+ h2 { font-size: 1.5rem; }
+ h3 { font-size: 1.125rem; }
+ .container { width: min(100% - 2 * var(--page-gutter), var(--content-width)); margin-inline: auto; }
++.content-frame {
++  --page-gutter: var(--page-gutter-desktop);
++  width: min(calc(100% - 2 * var(--page-gutter)), var(--content-max-width));
++  margin-inline: auto;
++}
+ [id] { scroll-margin-top: calc(var(--header-height) + var(--space-3)); }
+ .site-footer { padding-block: var(--space-3); border-top: 1px solid var(--color-border); }
+ .filter-controls { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+@@ -45,7 +50,11 @@ h3 { font-size: 1.125rem; }
+   transform: translateY(-150%);
+ }
+ .skip-link:focus { transform: translateY(0); }
++@media (max-width: 56rem) {
++  .content-frame { --page-gutter: var(--page-gutter-tablet); }
++}
+ @media (max-width: 40rem) {
++  .content-frame { --page-gutter: var(--page-gutter-mobile); }
+   .project-grid, .about-layout { grid-template-columns: 1fr; }
+   .section { padding-block: var(--space-4); }
+ }
+diff --git a/src/styles/case.css b/src/styles/case.css
+new file mode 100644
+index 0000000..9e7f722
+--- /dev/null
++++ b/src/styles/case.css
+@@ -0,0 +1,4 @@
++.case-back { padding-block: .75rem; font-size: .8rem; }
++.case-back a { color: var(--color-secondary); text-decoration: none; }
++.case-back a:hover { color: var(--color-text); text-decoration: underline; }
++.case-shell > .site-footer { background: var(--color-background); color: var(--color-text); }
+diff --git a/src/styles/home.css b/src/styles/home.css
+deleted file mode 100644
+index 9552ebe..0000000
+--- a/src/styles/home.css
++++ /dev/null
+@@ -1,41 +0,0 @@
+-.work-section { border-top: 1px solid var(--color-border); }
+-.section-eyebrow { font-size: .75rem; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--color-muted); }
+-.work-heading { display: flex; justify-content: space-between; gap: 3rem; align-items: end; margin-bottom: clamp(2.5rem,5vw,5rem); }
+-.work-heading h2,.about-preview h2,.site-footer h2 { font-size: clamp(2.5rem,5vw,5.5rem); line-height: 1.08; font-weight: 500; letter-spacing: -.055em; margin-top: 1rem; }
+-.work-intro { max-width: 23rem; color: var(--color-secondary); font-size: .95rem; }
+-.work-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: clamp(1.25rem,3vw,3rem); row-gap: clamp(3.5rem,7vw,7rem); }
+-.work-card { min-width: 0; }
+-.work-card-link { text-decoration: none; display: block; }
+-.work-card-media { aspect-ratio: 1.4; overflow: hidden; background: var(--color-surface); display: grid; place-items: center; }
+-.work-card-media img { display: block; height: 100%; width: 100%; object-fit: cover; transition: transform .45s ease; }
+-.work-card-link:hover .work-card-media img { transform: scale(1.025); }
+-.work-card-media-kokoro { background: #e9ded4; }
+-.work-card-media-kokoro img { object-fit: contain; width: auto; max-width: 75%; }
+-.work-card-media-gu-qi { background: #111d39; }
+-.work-card-media-gu-qi img { object-fit: contain; width: 90%; height: 90%; }
+-.work-card-meta { display: flex; gap: 1rem; align-items: baseline; padding: 1.1rem 0 .85rem; border-bottom: 1px solid var(--color-border); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--color-muted); }
+-.work-card-category { margin-left: auto; }
+-.work-card-bottom { display: flex; justify-content: space-between; align-items: start; gap: 1.5rem; padding-top: 1rem; }
+-.work-card h3 { font-size: clamp(1.6rem,2.6vw,2.75rem); font-weight: 500; letter-spacing: -.045em; }
+-.work-card p { margin-top: .4rem; max-width: 30rem; font-size: .92rem; color: var(--color-secondary); }
+-.work-card-arrow { font-size: 1.5rem; line-height: 1; transition: transform .25s ease; }
+-.work-card-link:hover .work-card-arrow { transform: translate(3px,-3px); }
+-.about-preview { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,.7fr); gap: clamp(2rem,7vw,8rem); align-items: center; border-top: 1px solid var(--color-border); margin-top: var(--space-7); }
+-.about-preview-copy { max-width: 42rem; }
+-.about-preview-copy > p:not(.section-eyebrow) { max-width: 37rem; margin-top: 1.5rem; color: var(--color-secondary); }
+-.about-preview-photo { max-width: 32rem; background: var(--color-surface); aspect-ratio: 4/5; overflow: hidden; }
+-.about-preview-photo img { width: 100%; height: 100%; object-fit: cover; }
+-.site-footer { padding-block: var(--space-5) var(--space-3); }
+-.footer-main { display: flex; justify-content: space-between; align-items: end; gap: 2rem; padding-bottom: var(--space-6); }
+-.footer-main p { max-width: 29rem; margin-top: 1rem; color: var(--color-secondary); }
+-.footer-email { font-size: clamp(1rem,1.6vw,1.4rem); overflow-wrap: anywhere; }
+-.footer-email span { display: inline-block; }
+-.footer-bottom { display: flex; justify-content: space-between; gap: 1rem; padding-top: var(--space-2); border-top: 1px solid var(--color-border); font-size: .8rem; color: var(--color-secondary); }
+-.footer-links { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+-@media (max-width: 50rem) { .work-heading,.footer-main { display: block; } .work-intro,.footer-email { display: inline-block; margin-top: 1.5rem; } .about-preview { grid-template-columns: 1fr; } .about-preview-photo { width: min(100%,30rem); } }
+-@media (max-width: 40rem) { .work-grid { grid-template-columns: 1fr; row-gap: 3.5rem; } .work-heading { margin-bottom: 2rem; } .footer-bottom { flex-direction: column; } .footer-links { gap: 1rem; } .about-preview { margin-top: var(--space-5); } }
+-@media (prefers-reduced-motion: reduce) { .work-card-media img,.work-card-arrow { transition: none; } }
+-.case-back { padding-block: .75rem; font-size: .8rem; }
+-.case-back a { color: var(--color-secondary); text-decoration: none; }
+-.case-back a:hover { color: var(--color-text); text-decoration: underline; }
+-.case-shell > .site-footer { background: var(--color-background); color: var(--color-text); }
+diff --git a/src/styles/reset.css b/src/styles/reset.css
+index 4574441..1373b5f 100644
+--- a/src/styles/reset.css
++++ b/src/styles/reset.css
+@@ -1,4 +1,4 @@
+-﻿*, *::before, *::after { box-sizing: border-box; }
++*, *::before, *::after { box-sizing: border-box; }
+ body { margin: 0; }
+ h1, h2, h3, p, figure { margin: 0; }
+ button, input, select, textarea { font: inherit; }
+diff --git a/src/styles/variables.css b/src/styles/variables.css
+index aa7f443..a42ca4b 100644
+--- a/src/styles/variables.css
++++ b/src/styles/variables.css
+@@ -1,16 +1,25 @@
+-﻿:root {
++:root {
+   color-scheme: light;
+-  --color-light-background: #f5f6f7;
++  --color-light-background: #f1f2ee;
+   --color-dark-background: #191b1e;
+   --color-background: var(--color-light-background);
+-  --color-surface: #eceef0;
+-  --color-elevated: #fafbfc;
+-  --color-text: #202327;
+-  --color-secondary: #4e545c;
+-  --color-muted: #666c74;
+-  --color-border: #d4d8dd;
+-  --color-control-border: #838b95;
+-  --color-focus: #303740;
++  --color-surface: #e6e8e2;
++  --color-elevated: #dcdfd8;
++  --color-text: #171a1d;
++  --color-secondary: #555c59;
++  --color-muted: #575e5a;
++  --color-border: #cfd3cc;
++  --color-control-border: #747c76;
++  --color-accent: #6854d9;
++  --color-accent-strong: #6854d9;
++  --color-focus: var(--color-accent);
++  --hero-ambient-core: rgba(104, 84, 217, 0.05);
++  --hero-ambient-mid: rgba(104, 84, 217, 0.025);
++  --color-cosmic-indigo: #6574cf;
++  --color-cosmic-cyan: #62b6c4;
++  --aurora-opacity: 0.05;
++  --contact-panel-background: #6854d9;
++  --contact-panel-text: #ffffff;
+   --font-body: 'Manrope Variable', system-ui, sans-serif;
+   --space-0: 0.25rem;
+   --space-1: 0.5rem;
+@@ -23,7 +32,12 @@
+   --radius-small: 0.25rem;
+   --radius-medium: 0.5rem;
+   --radius-large: 0.75rem;
+-  --content-width: 90rem;
++  --page-max-width: 90rem;
++  --content-max-width: 67.5rem;
++  --page-gutter-desktop: 3rem;
++  --page-gutter-tablet: 2rem;
++  --page-gutter-mobile: 1rem;
++  --content-width: var(--page-max-width);
+   --page-gutter: clamp(1.25rem, 4vw, 4rem);
+   --header-height: 5.5rem;
+   --motion-duration: 180ms;
+@@ -39,7 +53,13 @@
+   --color-muted: #a0a8b2;
+   --color-border: #383d44;
+   --color-control-border: #7d8794;
+-  --color-focus: #e4e9ef;
++  --color-accent: #a78bfa;
++  --color-focus: var(--color-accent);
++  --hero-ambient-core: rgba(167, 139, 250, 0.10);
++  --hero-ambient-mid: rgba(167, 139, 250, 0.04);
++  --aurora-opacity: 0.16;
++  --contact-panel-background: #a78bfa;
++  --contact-panel-text: #191b1e;
+ }
+ @media (max-width: 56rem) {
+   :root { --header-height: 4.5rem; }
+diff --git a/src/theme/theme.js b/src/theme/theme.js
+index 089f8ba..d136848 100644
+--- a/src/theme/theme.js
++++ b/src/theme/theme.js
+@@ -1,4 +1,4 @@
+-﻿export const themeStorageKey = 'ricardo-portfolio-theme'
++export const themeStorageKey = 'ricardo-portfolio-theme'
+ 
+ export function getInitialTheme() {
+   if (import.meta.env.DEV && typeof document !== 'undefined') {

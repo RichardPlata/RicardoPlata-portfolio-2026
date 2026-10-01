@@ -1,0 +1,568 @@
+diff --git a/src/components/Header.css b/src/components/Header.css
+index 26c108f..b840d39 100644
+--- a/src/components/Header.css
++++ b/src/components/Header.css
+@@ -84,12 +84,12 @@
+   text-underline-offset: 0.4em;
+   text-decoration-thickness: 1px;
+ }
+-.menu-toggle { display: none; }
+-
+-/* The home navigation floats over the aurora and stays legible while scrolling. */
+-.site-shell--home .site-header[data-scrolled='true'] { background: transparent; border-bottom-color: transparent; }
+-.site-shell--home .header-inner { margin-top: .75rem; min-height: calc(var(--header-height) - .4rem); padding-inline: clamp(1rem, 2.5vw, 2rem); border: 1px solid var(--color-border); border-radius: 999px; background: color-mix(in srgb, var(--color-background) 86%, transparent); backdrop-filter: blur(18px); }
+-@media (max-width: 56rem) { .site-shell--home .header-inner { border-radius: 1.3rem; } }
++.menu-toggle { display: none; }
++
++/* The home navigation floats over the aurora and stays legible while scrolling. */
++.site-shell--home .site-header[data-scrolled='true'] { background: transparent; border-bottom-color: transparent; }
++.site-shell--home .header-inner { margin-top: .75rem; min-height: calc(var(--header-height) - .4rem); padding-inline: clamp(1rem, 2.5vw, 2rem); border: 1px solid var(--color-border); border-radius: 999px; background: color-mix(in srgb, var(--color-background) 86%, transparent); backdrop-filter: blur(18px); }
++@media (max-width: 56rem) { .site-shell--home .header-inner { border-radius: 1.3rem; } }
+ 
+ @media (max-width: 56rem) {
+   .header-inner { gap: 0.5rem; }
+@@ -136,3 +136,29 @@
+   .header-controls { gap: 0.25rem; }
+   .language-control a { min-width: 2.25rem; font-size: 0.75rem; }
+ }
++
++/* Case studies use a compact floating control inspired by the visual language of the reference. */
++.site-header--case { position: fixed; inset: 0 0 auto; background: transparent; border: 0; pointer-events: none; }
++.site-header--case .case-header-shell { position: relative; min-height: 5.5rem; display: flex; align-items: center; justify-content: center; padding-inline: 1rem; }
++.case-back-button { position: fixed; inset-block-start: 1rem; inset-inline-start: 1rem; z-index: 2; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: color-mix(in srgb, var(--color-text) 84%, transparent); color: var(--color-background); text-decoration: none; font-size: 1.2rem; backdrop-filter: blur(14px); pointer-events: auto; transition: transform 200ms var(--motion-easing), background-color 200ms var(--motion-easing); }
++.case-back-button:hover { transform: translateX(-2px); background: var(--color-text); }
++.case-header-pill { display: flex; align-items: center; gap: .35rem; padding: .3rem .55rem .3rem .4rem; border: 1px solid color-mix(in srgb, var(--color-text) 18%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--color-background) 78%, transparent); box-shadow: 0 1rem 3rem color-mix(in srgb, #000 15%, transparent); backdrop-filter: blur(18px); pointer-events: auto; }
++.case-header-brand { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--color-text); color: var(--color-background); text-decoration: none; font-size: .62rem; font-weight: 700; letter-spacing: -.03em; }
++.site-header--case .header-navigation { display: flex; gap: .1rem; }
++.site-header--case .header-navigation a, .site-header--case .language-control a { min-height: 2rem; padding-inline: .65rem; border-radius: 999px; color: var(--color-secondary); font-size: .68rem; text-decoration: none; }
++.site-header--case .header-navigation a:hover, .site-header--case .language-control a:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-text) 7%, transparent); }
++.site-header--case .language-control { margin-left: .15rem; }
++.site-header--case .language-control span { font-size: .65rem; }
++.site-header--case .menu-toggle { display: none; }
++@media (max-width: 56rem) {
++  .site-header--case .case-header-shell { justify-content: flex-end; min-height: 4.5rem; }
++  .site-header--case .case-header-pill { padding-right: .35rem; }
++  .site-header--case .header-navigation { display: none; position: absolute; inset: calc(100% + .4rem) 0 auto; padding: .5rem; border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-background); box-shadow: 0 1rem 3rem color-mix(in srgb, #000 15%, transparent); }
++  .site-header--case[data-menu-open='true'] .header-navigation { display: grid; }
++  .site-header--case .header-navigation a { justify-content: flex-start; min-height: 2.75rem; }
++  .site-header--case .menu-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 2.35rem; height: 2.35rem; padding: 0; border: 0; background: transparent; }
++  .site-header--case .menu-line { display: block; width: 16px; height: 1px; background: currentColor; }
++  .site-header--case[data-menu-open='true'] .menu-line:first-child { transform: translateY(3px) rotate(45deg); }
++  .site-header--case[data-menu-open='true'] .menu-line:last-child { transform: translateY(-3px) rotate(-45deg); }
++}
++@media (prefers-reduced-motion: reduce) { .case-back-button { transition: none; } }
+diff --git a/src/components/Header.jsx b/src/components/Header.jsx
+index dbc46de..06ba8a9 100644
+--- a/src/components/Header.jsx
++++ b/src/components/Header.jsx
+@@ -18,6 +18,7 @@ export default function Header({ framed = false }) {
+   const { pathname, search, hash } = useLocation()
+   const locationKey = pathname + search + hash
+   const menuOpen = menuLocation === locationKey
++  const isCaseStudy = pathname.includes('/work/')
+ 
+   useEffect(() => {
+     const onScroll = () => setScrolled(window.scrollY > 16)
+@@ -50,37 +51,31 @@ export default function Header({ framed = false }) {
+     hash,
+   })
+ 
+-  return (
+-    <header ref={headerRef} className="site-header" data-scrolled={scrolled}
++  if (isCaseStudy) {
++    return <header ref={headerRef} className="site-header site-header--case" data-scrolled={scrolled}
+       data-menu-open={menuOpen}
+       onKeyDown={(event) => {
+         if (event.key === 'Escape' && menuOpen) {
+           setMenuLocation(null)
+           menuButtonRef.current?.focus()
+         }
+-      }}
+-      onBlur={(event) => {
+-        if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setMenuLocation(null)
+       }}>
+-      <div className={`header-inner ${framed ? 'content-frame' : 'container'}`}>
+-        <SectionLink className="wordmark" section="top">{siteConfig.name}</SectionLink>
+-        <div className="header-controls">
++      <div className="case-header-shell">
++        <Link className="case-back-button" to={`/${lang}`} aria-label={t('navigation.backHome')}>
++          <span aria-hidden="true">←</span>
++        </Link>
++        <div className="case-header-pill">
++          <SectionLink className="case-header-brand" section="top">RP</SectionLink>
+           <nav id="primary-navigation" className="header-navigation" aria-label={t('navigation.label')}>
+-            <SectionLink ref={firstLinkRef} section="work" onClick={() => setMenuLocation(null)}>{t('navigation.projects')}</SectionLink>
+-            <SectionLink section="about" onClick={() => setMenuLocation(null)}>{t('navigation.about')}</SectionLink>
+-            <SectionLink section="contact" onClick={() => setMenuLocation(null)}>{t('navigation.contact')}</SectionLink>
++            <Link ref={firstLinkRef} to={`/${lang}`} onClick={() => setMenuLocation(null)}>{t('navigation.home')}</Link>
++            <Link to={`/${lang}#work`} onClick={() => setMenuLocation(null)}>{t('navigation.projects')}</Link>
++            <a href={siteConfig.links.resume.href} target="_blank" rel="noopener noreferrer">{t('navigation.resume')}</a>
++            <Link to={`/${lang}#contact`} onClick={() => setMenuLocation(null)}>{t('navigation.sayHi')}</Link>
+           </nav>
+-          <button className="theme-toggle" type="button" role="switch"
+-            aria-checked={theme === 'dark'} aria-label={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}
+-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+-            <span className="theme-switch-track" aria-hidden="true"><span className="theme-switch-thumb" /></span>
+-          </button>
+           <nav className="language-control" aria-label={t('language.label')}>
+-            <Link to={languageTarget('es')} lang="es" hrefLang="es"
+-              aria-label={t('language.spanish')} aria-current={lang === 'es' ? 'page' : undefined}>ESP</Link>
++            <Link to={languageTarget('es')} lang="es" hrefLang="es" aria-label={t('language.spanish')} aria-current={lang === 'es' ? 'page' : undefined}>ESP</Link>
+             <span aria-hidden="true">/</span>
+-            <Link to={languageTarget('en')} lang="en" hrefLang="en"
+-              aria-label={t('language.english')} aria-current={lang === 'en' ? 'page' : undefined}>ENG</Link>
++            <Link to={languageTarget('en')} lang="en" hrefLang="en" aria-label={t('language.english')} aria-current={lang === 'en' ? 'page' : undefined}>ENG</Link>
+           </nav>
+           <button ref={menuButtonRef} className="menu-toggle" type="button"
+             aria-expanded={menuOpen} aria-controls="primary-navigation"
+@@ -92,5 +87,47 @@ export default function Header({ framed = false }) {
+         </div>
+       </div>
+     </header>
+-  )
++  }
++
++  return <header ref={headerRef} className="site-header" data-scrolled={scrolled}
++    data-menu-open={menuOpen}
++    onKeyDown={(event) => {
++      if (event.key === 'Escape' && menuOpen) {
++        setMenuLocation(null)
++        menuButtonRef.current?.focus()
++      }
++    }}
++    onBlur={(event) => {
++      if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setMenuLocation(null)
++    }}>
++    <div className={`header-inner ${framed ? 'content-frame' : 'container'}`}>
++      <SectionLink className="wordmark" section="top">{siteConfig.name}</SectionLink>
++      <div className="header-controls">
++        <nav id="primary-navigation" className="header-navigation" aria-label={t('navigation.label')}>
++          <SectionLink ref={firstLinkRef} section="work" onClick={() => setMenuLocation(null)}>{t('navigation.projects')}</SectionLink>
++          <SectionLink section="about" onClick={() => setMenuLocation(null)}>{t('navigation.about')}</SectionLink>
++          <SectionLink section="contact" onClick={() => setMenuLocation(null)}>{t('navigation.contact')}</SectionLink>
++        </nav>
++        <button className="theme-toggle" type="button" role="switch"
++          aria-checked={theme === 'dark'} aria-label={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}
++          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
++          <span className="theme-switch-track" aria-hidden="true"><span className="theme-switch-thumb" /></span>
++        </button>
++        <nav className="language-control" aria-label={t('language.label')}>
++          <Link to={languageTarget('es')} lang="es" hrefLang="es"
++            aria-label={t('language.spanish')} aria-current={lang === 'es' ? 'page' : undefined}>ESP</Link>
++          <span aria-hidden="true">/</span>
++          <Link to={languageTarget('en')} lang="en" hrefLang="en"
++            aria-label={t('language.english')} aria-current={lang === 'en' ? 'page' : undefined}>ENG</Link>
++        </nav>
++        <button ref={menuButtonRef} className="menu-toggle" type="button"
++          aria-expanded={menuOpen} aria-controls="primary-navigation"
++          aria-label={t(menuOpen ? 'navigation.closeMenu' : 'navigation.openMenu')}
++          onClick={() => setMenuLocation(menuOpen ? null : locationKey)}>
++          <span className="menu-line" aria-hidden="true" />
++          <span className="menu-line" aria-hidden="true" />
++        </button>
++      </div>
++    </div>
++  </header>
+ }
+diff --git a/src/components/Hero.css b/src/components/Hero.css
+index 50e0ab9..9695dd3 100644
+--- a/src/components/Hero.css
++++ b/src/components/Hero.css
+@@ -1,7 +1,10 @@
+-.cosmic-hero { position: relative; min-height: min(48rem, calc(100svh - var(--header-height))); display: grid; place-items: center; padding: clamp(5rem, 9vw, 8rem) 1.5rem 7rem; text-align: center; }
++.cosmic-hero { position: relative; min-height: min(52rem, calc(100svh - .5rem)); display: grid; place-items: center; padding: clamp(5rem, 9vw, 8rem) 1.5rem 7rem; text-align: center; }
+ .site-shell--home { position: relative; isolation: isolate; overflow-x: clip; --cosmic-purple: #9670dd99; --cosmic-pink: #d285bf88; --cosmic-blue: #718de080; }
+ :root[data-theme='dark'] .site-shell--home { --cosmic-purple: #7f53cb88; --cosmic-pink: #cb91d966; --cosmic-blue: #647bd455; }
+-.cosmic-hero-field { position: absolute; z-index: -1; top: calc(-1 * (var(--header-height) + 1rem)); bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); overflow: hidden; pointer-events: none; mask-image: linear-gradient(black 0% 75%, transparent); }
++.cosmic-hero-field { position: absolute; z-index: -1; top: calc(-1 * (var(--header-height) + 1rem)); bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); overflow: hidden; pointer-events: none; mask-image: linear-gradient(black 0% 78%, transparent); background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--cosmic-purple) 34%, transparent), transparent 45%); }
++.cosmic-hero-field::before, .cosmic-hero-field::after { content: ''; position: absolute; inset: -20%; border-radius: 50%; pointer-events: none; }
++.cosmic-hero-field::before { background: conic-gradient(from 205deg at 58% 48%, transparent 0deg, color-mix(in srgb, var(--cosmic-purple) 22%, transparent) 55deg, transparent 125deg, color-mix(in srgb, var(--cosmic-pink) 16%, transparent) 210deg, transparent 285deg); filter: blur(28px); animation: cosmic-veil 18s ease-in-out infinite alternate; }
++.cosmic-hero-field::after { background: radial-gradient(circle at 25% 30%, color-mix(in srgb, white 8%, transparent) 0 1px, transparent 1.5px), radial-gradient(circle at 70% 18%, color-mix(in srgb, white 9%, transparent) 0 1px, transparent 1.5px), radial-gradient(circle at 82% 68%, color-mix(in srgb, white 7%, transparent) 0 1px, transparent 1.5px); background-size: 180px 180px, 240px 240px, 210px 210px; opacity: .42; animation: cosmic-stars 22s linear infinite; }
+ .cosmic-hero-field span { position: absolute; inset: -35%; border-radius: 50%; filter: blur(42px); opacity: .85; }
+ .cosmic-hero-field span:nth-child(1) { background: radial-gradient(ellipse 36% 55% at 65% 45%, var(--cosmic-purple), transparent 75%); transform: rotate(-30deg); }
+ .cosmic-hero-field span:nth-child(2) { background: radial-gradient(ellipse 27% 60% at 60% 45%, var(--cosmic-pink), transparent 72%); transform: rotate(-35deg); }
+@@ -19,6 +22,8 @@
+ @media (prefers-reduced-motion: no-preference) { .cosmic-hero-word { animation: cosmic-word-arrive 500ms ease-out both; } .cosmic-hero-field span { animation: cosmic-flow 16s ease-in-out infinite alternate; }.cosmic-hero-field span:nth-child(2) { animation-duration: 21s; animation-delay: -8s; }.cosmic-hero-field span:nth-child(3) { animation-duration: 19s; animation-delay: -5s; } }
+ @keyframes cosmic-word-arrive { from { opacity: 0; transform: translateY(.2em); } to { opacity: 1; transform: translateY(0); } }
+ @keyframes cosmic-flow { from { opacity: .7; } to { translate: 3% -2%; scale: 1.06; opacity: .95; } }
++@keyframes cosmic-veil { from { transform: rotate(-7deg) translate3d(-2%, 1%, 0) scale(1); } to { transform: rotate(-3deg) translate3d(3%, -2%, 0) scale(1.08); } }
++@keyframes cosmic-stars { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-2%, 1%, 0); } }
+ @media (hover: hover) and (prefers-reduced-motion: no-preference) { .cosmic-hero-button:hover { transform: translateY(-3px); } }
+ @media (max-width: 40rem) { .cosmic-hero { min-height: 39rem; padding-inline: .5rem; } .cosmic-hero h1 { font-size: clamp(3rem, 13vw, 4.75rem); }.cosmic-hero-description { font-size: .94rem; } .cosmic-hero-role { font-size: 1.2rem; } }
+ @media (prefers-reduced-motion: reduce) { .cosmic-hero * { animation: none !important; transition: none !important; } }
+diff --git a/src/data/caseStudies.js b/src/data/caseStudies.js
+index 3e11d28..24abcb5 100644
+--- a/src/data/caseStudies.js
++++ b/src/data/caseStudies.js
+@@ -1,5 +1,4 @@
+-// Images are intentionally left unset until the final mockups are approved.
+-// Add an imported WebP to each media entry and to the matching project card later.
++// Final mockups are intentionally optional. Add imported images to cover/media when they are approved.
+ export const caseStudies = {
+   'gu-qi': {
+     title: 'GU-QI', role: 'UX/UI · Front-end', tools: 'Figma · React · Vite · CSS',
+@@ -25,31 +24,91 @@ export const caseStudies = {
+       closing: 'El sitio conecta la exploración de servicios con un siguiente paso claro. Una futura iteración deberá comprobar si las personas comprenden las terapias y encuentran fácilmente el contacto.',
+     },
+   },
++
+   kokoro: {
+-    title: 'Kokoro', role: 'UX/UI · Prototipo', tools: 'Figma',
++    title: 'Kokoro Bake Studio', role: 'UX/UI · Brand Design', roleDetail: 'UX/UI Designer · Brand Designer', tools: 'Illustrator · Photoshop · Framer', year: '2026', category: 'UX/UI · Brand Design',
+     en: {
+-      intro: 'A mobile app concept for discovering desserts and assembling a personalized cake.',
+-      context: 'The app began with a practical question: how can someone browse desserts and configure a cake without getting lost among too many choices? I mapped discovery, customization, and order review as a single journey. This case focuses on the app interface and prototype.',
++      intro: 'A mobile baking experience built around the small moments worth celebrating.',
++      context: 'Kokoro Bake Studio is a bakery brand for Latino and multicultural families in Michigan. Its proposition combines handcrafted products, familiar flavors and close attention for celebrations and special moments. I developed the visual identity for a real client and extended it into a conceptual mobile experience for discovery, cake customization, delivery and order tracking.',
+       sections: [
+-        { title: 'Let people explore first', body: 'I organized the home screen around product categories, featured desserts, and favorites. Browsing remains useful even for someone who is not ready to customize a cake.', media: 'Home, categories and favorites' },
+-        { title: 'Turn a complex order into small decisions', body: 'A custom cake can involve size, flavors, fillings, toppings, decoration, and delivery. I separated these into consecutive steps so each screen asks for one manageable choice.', media: 'Customization steps and cake builder' },
+-        { title: 'Bring every choice back together', body: 'The cart and final review summarize the selected options before the person continues. That gives them a chance to spot omissions or revisit an earlier decision.', media: 'Cart and order review' },
++        { title: 'A brand that feels emotional before commercial', body: 'The identity needed to communicate handcrafted baking, warmth and cultural connection without becoming childish or overly elegant. “Kokoro” means heart in Japanese, so the idea of care became the center of the visual direction.', media: 'Brand direction, wordmark and visual language', points: ['Contemporary rounded wordmark', 'Subtle heart language', 'Organic crafted symbol', 'Floral details inspired by Talavera'] },
++        { title: 'Translate the identity into a product', body: 'The research combined the client identity questionnaire, visual references, feedback throughout the process and a review of the previous app. The new product uses warmth, color and restrained cultural references to create a recognizable Kokoro experience.', media: 'Color system, typography and graphic motifs', points: ['Cherry Glaze · #C94F55', 'Vanilla Cream · #FFF4E8', 'Cocoa Ink · #382522', 'Talavera Blue · #315C72'] },
++        { title: 'Reduce the purchase journey to five moments', body: 'Instead of reproducing every feature from the previous app, the prototype focuses on Welcome → Home → Customize → Cart & Delivery → Order Tracking. Each stage has one clear purpose and keeps the customization process understandable.', media: 'Welcome, Home and product discovery' },
++        { title: 'Turn customization into manageable choices', body: 'Choosing a cake size, flavor and dedication should feel like a sequence of small decisions rather than a complex form. The active states use Cherry Glaze and the graphic system to communicate selection without adding unnecessary instructions.', media: 'Customize flow and cake builder' },
++        { title: 'Make delivery and tracking feel human', body: 'Cart & Delivery brings product, quantity, address, schedule and cost into one review. Order Tracking follows four emotional but clear states: Order confirmed, Baking your order, Final details and Ready for delivery.', media: 'Cart, delivery and order tracking' },
+       ],
+-      decision: { title: 'Make the cake builder feel manageable', before: 'A single screen with every option would make the custom order difficult to scan and review.', after: 'I arranged the choices as a guided sequence and brought them together in the cart. The prototype shows the intended flow; usability with customers has not yet been tested.' },
+-      closing: 'The prototype illustrates how a long customization flow can remain approachable. Ordering outcomes and usability still need to be validated with real customers.',
++      decision: { title: 'Culture through shared values, not literal symbols', before: 'The identity could have leaned heavily on explicit Japanese or Mexican imagery, or on decorative bakery clichés.', after: 'The final direction uses Japanese-inspired cleanliness and precision together with Mexican color, craft and Talavera-inspired details. The goal is a subtle meeting point built around care, detail, craft and emotion.' },
++      closing: 'The result is a high-fidelity five-screen mobile prototype and a reusable visual system. The application is a conceptual exploration rather than a published product. The main lesson was that personality comes from making photography, color, type, iconography, content and motion respond to the same intention.',
+     },
+     es: {
+-      intro: 'Un concepto de app móvil para descubrir postres y preparar un pastel personalizado.',
+-      context: 'La app partió de una pregunta práctica: ¿cómo explorar postres y configurar un pastel sin perderse entre tantas opciones? Organicé el descubrimiento, la personalización y la revisión del pedido como un solo recorrido. Este caso se centra en la interfaz y el prototipo de la app.',
++      intro: 'Una experiencia móvil de repostería construida alrededor de los pequeños momentos que vale la pena celebrar.',
++      context: 'Kokoro Bake Studio es una marca de repostería dirigida a familias latinas y multiculturales en Michigan. Su propuesta combina productos artesanales, sabores familiares y una atención cercana para acompañar celebraciones y momentos especiales. Desarrollé la identidad visual para un cliente real y la extendí hacia una experiencia móvil conceptual para descubrir productos, personalizar pasteles, organizar la entrega y consultar el estado de un pedido.',
+       sections: [
+-        { title: 'Permitir explorar primero', body: 'Organicé el inicio alrededor de categorías, postres destacados y favoritos. La exploración sigue siendo útil incluso para quien todavía no quiere personalizar un pastel.', media: 'Inicio, categorías y favoritos' },
+-        { title: 'Convertir un pedido complejo en decisiones pequeñas', body: 'Un pastel personalizado implica tamaño, sabores, rellenos, toppings, decoración y entrega. Separé esas elecciones en pasos consecutivos para que cada pantalla plantee una decisión manejable.', media: 'Pasos de personalización del pastel' },
+-        { title: 'Reunir todas las elecciones al final', body: 'El carrito y la revisión final resumen las opciones elegidas antes de continuar. Así la persona puede detectar lo que falta o regresar a una decisión anterior.', media: 'Carrito y revisión del pedido' },
++        { title: 'Una marca emocional antes que comercial', body: 'La identidad debía comunicar repostería artesanal, cercanía y conexión cultural sin sentirse infantil ni excesivamente elegante. “Kokoro” significa corazón en japonés, por lo que la idea del cuidado se convirtió en el centro de la dirección visual.', media: 'Dirección de marca, wordmark y lenguaje visual', points: ['Wordmark contemporáneo y redondeado', 'Lenguaje sutil de corazón', 'Isotipo orgánico de trazos artesanales', 'Detalles florales inspirados en Talavera'] },
++        { title: 'Llevar la identidad al producto digital', body: 'La investigación partió del cuestionario de identidad del cliente, referencias visuales, comentarios durante el proceso y una revisión de la aplicación anterior. El producto utiliza calidez, color y referencias culturales controladas para construir una experiencia reconocible como Kokoro.', media: 'Sistema de color, tipografía y motivos gráficos', points: ['Cherry Glaze · #C94F55', 'Vanilla Cream · #FFF4E8', 'Cocoa Ink · #382522', 'Talavera Blue · #315C72'] },
++        { title: 'Reducir el recorrido de compra a cinco momentos', body: 'En lugar de reproducir todas las funciones de la aplicación anterior, el prototipo se concentra en Welcome → Home → Customize → Cart & Delivery → Order Tracking. Cada etapa tiene un propósito claro y mantiene comprensible la personalización.', media: 'Welcome, Home y descubrimiento de productos' },
++        { title: 'Convertir la personalización en decisiones manejables', body: 'Elegir tamaño, sabor y dedicatoria debía sentirse como una secuencia de decisiones pequeñas y no como un formulario complejo. Los estados activos utilizan Cherry Glaze y el sistema gráfico para comunicar selección sin agregar instrucciones innecesarias.', media: 'Flujo de Customize y cake builder' },
++        { title: 'Hacer que entrega y seguimiento se sientan humanos', body: 'Cart & Delivery reúne producto, cantidad, dirección, horario y costos para revisar el pedido. Order Tracking utiliza cuatro estados claros y emocionales: Order confirmed, Baking your order, Final details y Ready for delivery.', media: 'Carrito, entrega y seguimiento del pedido' },
+       ],
+-      decision: { title: 'Hacer manejable el armado del pastel', before: 'Reunir todas las opciones en una sola pantalla dificultaría explorar y revisar un pedido personalizado.', after: 'Organicé las elecciones como una secuencia guiada y las reuní en el carrito. El prototipo muestra el recorrido previsto; aún falta probarlo con clientes.' },
+-      closing: 'El prototipo muestra cómo hacer más accesible un proceso largo de personalización. Los resultados de compra y la facilidad de uso aún requieren validación con clientes reales.',
++      decision: { title: 'Cultura mediante valores compartidos, no símbolos literales', before: 'La identidad podía apoyarse demasiado en símbolos explícitos de Japón o México, o en clichés decorativos de repostería.', after: 'La dirección final combina limpieza y precisión inspiradas en Japón con color, oficio y detalles inspirados en la Talavera mexicana. La intención es crear un punto de encuentro sutil basado en cuidado, detalle, oficio y emoción.' },
++      closing: 'El resultado es un prototipo móvil de alta fidelidad de cinco pantallas y un sistema visual reutilizable. La aplicación es una exploración conceptual y no un producto publicado. El principal aprendizaje fue que la personalidad aparece cuando fotografía, color, tipografía, iconografía, contenido y movimiento responden a una misma intención.',
+     },
+   },
++
++  'a-plus-hardwood': {
++    title: 'A+ Hardwood Flooring', role: 'UX/UI · Web Design', roleDetail: 'UX/UI Designer', tools: 'HTML · CSS · JavaScript · Framer · Codex', year: '2026', category: 'Web Design',
++    en: {
++      intro: 'A web experience that tells the transformation of a hardwood floor.',
++      context: 'I designed an English-language landing page for A+ Hardwood Flooring to present installation, sanding and refinishing, restoration and repair services. The project started from an HTML, CSS and JavaScript version and evolved into a Framer experience with a visual path through the services, the work and the contact step.',
++      sections: [
++        { title: 'Clarify the value of the work', body: 'The first version brought together services, business information, projects, differentiators, process, FAQs and contact. It was complete, but some ideas around preparation, care and finish repeated across the page. The goal was to keep the useful information while making the experience shorter and clearer.', media: 'Content structure and service hierarchy', points: ['Differentiate the three main services', 'Keep contact easy to find', 'Reduce repeated content', 'Explain the refinishing process visually'] },
++        { title: 'Research through the existing experience', body: 'I reviewed the existing HTML, CSS and JavaScript structure, available content, provisional photography, pending business information and the expected form behavior. I then evaluated the first Framer version for hierarchy, length and repetition.', media: 'Existing structure and first Framer iteration' },
++        { title: 'Build the journey around transformation', body: 'The experience was organized as Presentation → Need → Transformation → Result → Contact. Navigation keeps direct access to the main sections, while the narrative explains what happens to the floor instead of asking the visitor to read a long service description.', media: 'Information architecture and page flow' },
++        { title: 'From worn to renewed', body: 'The main storytelling section is divided into four chapters: Assess & prepare, Sand & restore, Finish & protect, and Enjoy the transformation. On desktop, a photographic panel can remain fixed while the active text and image change with the scroll. On mobile, the same story becomes a linear sequence.', media: 'Scrolling storytelling sequence' },
++        { title: 'Simplify everything around the story', body: 'About and Services were combined, craftsmanship messages were incorporated into the storytelling, and the gallery was reduced to a smaller selection of projects. The ending brings consultation steps, service areas, essential questions and contact together without competing with the main narrative.', media: 'Simplified supporting sections and contact' },
++      ],
++      decision: { title: 'Let the process explain the service', before: 'A traditional service page could list every benefit and process step, but that would repeat ideas and make the landing longer.', after: 'The refinishing process became the central narrative. The rest of the page supports it with concise information and direct navigation. No conversion metrics are available yet because publication and final contact integration are still pending.' },
++      closing: 'The project evolved from an information-heavy base into a narrative Framer landing. The transformation section was developed and approved during design review. Publication, definitive contact integration and replacement of provisional photography remain pending. The main learning was that a page can feel complete without animating every section: motion is most useful when it explains the service itself.',
++    },
++    es: {
++      intro: 'Una experiencia web que cuenta la transformación de un piso de madera.',
++      context: 'Diseñé una landing en inglés para presentar los servicios de instalación, lijado y refinishing, restauración y reparación de pisos de madera de A+ Hardwood Flooring. El proyecto partió de una versión en HTML, CSS y JavaScript y evolucionó hacia una experiencia en Framer con un recorrido visual por los servicios, el trabajo y el contacto.',
++      sections: [
++        { title: 'Comunicar con claridad el valor del trabajo', body: 'La primera versión reunía servicios, información del negocio, proyectos, diferenciadores, proceso, preguntas frecuentes y contacto. Era completa, pero algunas ideas sobre preparación, cuidado y acabado se repetían. El objetivo fue conservar la información útil haciendo la experiencia más breve y clara.', media: 'Estructura de contenido y jerarquía de servicios', points: ['Diferenciar los tres servicios principales', 'Mantener el contacto fácil de encontrar', 'Reducir contenido repetido', 'Explicar visualmente el refinishing'] },
++        { title: 'Investigar a partir de la experiencia existente', body: 'Revisé la estructura existente de HTML, CSS y JavaScript, el contenido disponible, la fotografía provisional, los datos pendientes del negocio y el funcionamiento previsto del formulario. Después evalué la primera versión en Framer para revisar jerarquía, longitud y repetición.', media: 'Estructura existente y primera iteración en Framer' },
++        { title: 'Construir el recorrido alrededor de la transformación', body: 'La experiencia se organizó como Presentación → Necesidad → Transformación → Resultado → Contacto. La navegación mantiene accesos directos a los apartados principales, mientras que la narrativa explica qué ocurre con el piso en lugar de depender de una descripción extensa del servicio.', media: 'Arquitectura de información y recorrido de la página' },
++        { title: 'From worn to renewed', body: 'La sección principal de storytelling se divide en cuatro capítulos: Assess & prepare, Sand & restore, Finish & protect y Enjoy the transformation. En escritorio, un panel fotográfico puede permanecer fijo mientras el texto y la imagen activa cambian con el scroll. En móvil, la misma historia se convierte en una secuencia lineal.', media: 'Secuencia de scrolling storytelling' },
++        { title: 'Simplificar todo lo que rodea la historia', body: 'About y Services se unieron, los mensajes de craftsmanship se incorporaron al storytelling y la galería se redujo a una selección menor de proyectos. El cierre reúne consulta, zonas de servicio, preguntas esenciales y contacto sin competir con la narrativa principal.', media: 'Secciones de apoyo simplificadas y contacto' },
++      ],
++      decision: { title: 'Dejar que el proceso explique el servicio', before: 'Una página tradicional puede enumerar cada beneficio y etapa, pero eso puede repetir ideas y hacer más larga la landing.', after: 'El proceso de refinishing se convirtió en la narrativa central. El resto de la página la acompaña con información breve y navegación directa. Todavía no hay métricas de conversión porque la publicación y la integración definitiva del contacto están pendientes.' },
++      closing: 'El proyecto evolucionó de una base informativa a una landing narrativa en Framer. La sección de transformación fue desarrollada y aprobada durante la revisión de diseño. La publicación, la conexión definitiva del contacto y el reemplazo de fotografías provisionales siguen pendientes. El principal aprendizaje fue que una página puede sentirse completa sin animar cada sección: el movimiento es más útil cuando explica el servicio.',
++    },
++  },
++
++  'shine-cleaning': {
++    title: 'Shine Cleaning', role: 'UX/UI · Web Design', roleDetail: 'UX/UI Designer', tools: 'Figma · Framer', category: 'Web Design',
++    en: {
++      intro: 'A landing page case study for Shine Cleaning.',
++      context: 'This case-study page is prepared as the visual structure for the Shine Cleaning landing project. The final project narrative, process notes and approved imagery will be inserted into the same scrolling format once those materials are available.',
++      sections: [
++        { title: 'The landing page', body: 'The case study is structured to explain the project from the first impression through the information hierarchy, service presentation and final contact action. Media slots are ready for the approved hero and section imagery.', media: 'Shine Cleaning hero · mockup pending' },
++        { title: 'Scroll storytelling', body: 'Each section enters progressively as the visitor scrolls. The layout keeps the written explanation anchored while the visual area becomes the focus, creating a presentation closer to an interactive case study than a static document.', media: 'Service presentation · mockup pending' },
++        { title: 'Final visual direction', body: 'The final approved photography, interface captures and supporting graphics can be added without changing the page structure. This keeps the case study flexible while the project assets are being prepared.', media: 'Final landing screens · mockup pending' },
++      ],
++      closing: 'The Shine Cleaning page is now part of the same case-study system as the other professional projects. The detailed project narrative and final visuals can be expanded later without changing the scrolling interaction.',
++    },
++    es: {
++      intro: 'Un caso de estudio para la landing de Shine Cleaning.',
++      context: 'Esta página funciona como la estructura visual del caso de estudio del proyecto Shine Cleaning. La narrativa final, las notas de proceso y las imágenes aprobadas se incorporarán en este mismo formato de scroll cuando estén disponibles.',
++      sections: [
++        { title: 'La landing page', body: 'El caso está estructurado para explicar el proyecto desde la primera impresión hasta la jerarquía de información, la presentación de servicios y la acción final de contacto. Los espacios visuales ya están preparados para recibir el hero y las imágenes aprobadas.', media: 'Hero de Shine Cleaning · mockup pendiente' },
++        { title: 'Scroll storytelling', body: 'Cada sección aparece progresivamente mientras la persona hace scroll. El texto permanece anclado mientras el área visual se convierte en el foco, creando una presentación más cercana a un caso de estudio interactivo que a un documento estático.', media: 'Presentación de servicios · mockup pendiente' },
++        { title: 'Dirección visual final', body: 'La fotografía final, las capturas de interfaz y los gráficos de apoyo pueden añadirse sin cambiar la estructura de la página. Así el caso se mantiene flexible mientras se preparan los assets del proyecto.', media: 'Pantallas finales de la landing · mockup pendiente' },
++      ],
++      closing: 'La página de Shine Cleaning ya forma parte del mismo sistema de case studies que el resto de los proyectos profesionales. La narrativa detallada y los visuales finales podrán ampliarse después sin cambiar la interacción de scroll.',
++    },
++  },
++
+   'aura-drive': {
+     title: 'AURA Drive', role: 'UX/UI · Experiencia interactiva', tools: 'React · Three.js · React Three Fiber · CSS',
+     link: 'https://aura-drive-showroom.vercel.app/',
+diff --git a/src/data/projects.js b/src/data/projects.js
+index 6d0710c..d1129b5 100644
+--- a/src/data/projects.js
++++ b/src/data/projects.js
+@@ -1,8 +1,8 @@
+ // Display order for the home. Landing cards reserve their place until their case studies are ready.
+ export const professionalProjects = [
+   { slug: 'gu-qi', title: 'GU-QI', typeKey: 'types.webDesign', layoutVariant: 'lead', order: 1 },
+-  { slug: 'kokoro', title: 'Kokoro', typeKey: 'types.digitalProduct', layoutVariant: 'support', order: 2 },
+-  { slug: 'a-plus-hardwood', title: 'A+ Hardwood Flooring', typeKey: 'types.webDesign', layoutVariant: 'support', order: 3, upcoming: true },
+-  { slug: 'shine-cleaning', title: 'Shine Cleaning', typeKey: 'types.webDesign', layoutVariant: 'closing', order: 4, upcoming: true },
++  { slug: 'kokoro', title: 'Kokoro Bake Studio', typeKey: 'types.digitalProduct', layoutVariant: 'support', order: 2 },
++  { slug: 'a-plus-hardwood', title: 'A+ Hardwood Flooring', typeKey: 'types.webDesign', layoutVariant: 'support', order: 3 },
++  { slug: 'shine-cleaning', title: 'Shine Cleaning', typeKey: 'types.webDesign', layoutVariant: 'closing', order: 4 },
+   { slug: 'aura-drive', title: 'AURA Drive', typeKey: 'types.automotiveInterface', layoutVariant: 'wide', order: 5 },
+ ]
+diff --git a/src/locales/en/common.json b/src/locales/en/common.json
+index 7a11a37..3f35f57 100644
+--- a/src/locales/en/common.json
++++ b/src/locales/en/common.json
+@@ -5,7 +5,11 @@
+     "about": "About",
+     "contact": "Contact",
+     "openMenu": "Open navigation menu",
+-    "closeMenu": "Close navigation menu"
++    "closeMenu": "Close navigation menu",
++    "home": "Home",
++    "resume": "Resume",
++    "sayHi": "Say hi",
++    "backHome": "Back to home"
+   },
+   "language": {
+     "label": "Language",
+diff --git a/src/locales/es/common.json b/src/locales/es/common.json
+index 9ecd633..f239269 100644
+--- a/src/locales/es/common.json
++++ b/src/locales/es/common.json
+@@ -5,7 +5,11 @@
+     "about": "Sobre mí",
+     "contact": "Contacto",
+     "openMenu": "Abrir menú de navegación",
+-    "closeMenu": "Cerrar menú de navegación"
++    "closeMenu": "Cerrar menú de navegación",
++    "home": "Inicio",
++    "resume": "CV",
++    "sayHi": "Hola",
++    "backHome": "Volver al inicio"
+   },
+   "language": {
+     "label": "Idioma",
+diff --git a/src/pages/CaseStudy.jsx b/src/pages/CaseStudy.jsx
+index 998d157..ffa1774 100644
+--- a/src/pages/CaseStudy.jsx
++++ b/src/pages/CaseStudy.jsx
+@@ -7,8 +7,10 @@ import NotFound from './NotFound.jsx'
+ import { caseStudies } from '../data/caseStudies.js'
+ 
+ function MediaSlot({ label, image }) {
+-  return <figure className={`case-media ${image ? 'case-media--filled' : ''}`}>
+-    {image ? <img src={image} alt={label} loading="lazy" decoding="async" /> : <div className="case-media-empty" role="img" aria-label={label}><span>{label}</span></div>}
++  return <figure className={`case-media ${image ? 'case-media--filled' : 'case-media--pending'}`} data-case-media>
++    <div className="case-media-frame">
++      {image ? <img src={image} alt={label} loading="lazy" decoding="async" /> : <div className="case-media-empty" role="img" aria-label={label}><span>{label}</span></div>}
++    </div>
+     <figcaption>{label}</figcaption>
+   </figure>
+ }
+@@ -38,7 +40,7 @@ export default function CaseStudy() {
+         entry.target.dataset.revealed = 'true'
+         observer.unobserve(entry.target)
+       }
+-    }, { threshold: 0.08 })
++    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
+     root.querySelectorAll('[data-case-reveal]').forEach((section) => {
+       delete section.dataset.revealed
+       observer.observe(section)
+@@ -50,33 +52,58 @@ export default function CaseStudy() {
+   if (!study) return <div className="case-shell"><Header /><main className="container"><NotFound /></main><Footer /></div>
+   if (i18n.resolvedLanguage !== lang) return null
+ 
+-  return <div className="case-shell">
++  return <div className={`case-shell case-shell--${slug}`}>
+     <a className="skip-link" href="#case-content">{t('skip')}</a>
+     <Header />
+     <main ref={contentRef} id="case-content" className="case-article content-frame" tabIndex={-1}>
+-      <Link className="case-return" to={`/${lang}#work`}>{t('projectIndex.back')} ↗</Link>
+-      <header className="case-intro">
++      <header className="case-hero" data-case-reveal>
+         <p className="case-eyebrow">{study.role} · {study.tools}</p>
+         <h1>{study.title}</h1>
+         <p className="case-lead">{copy.intro}</p>
++        <div className="case-meta" aria-label={lang === 'es' ? 'Información del proyecto' : 'Project information'}>
++          {study.year && <span><strong>{lang === 'es' ? 'Año' : 'Year'}</strong>{study.year}</span>}
++          {study.category && <span><strong>{lang === 'es' ? 'Categoría' : 'Category'}</strong>{study.category}</span>}
++          {study.roleDetail && <span><strong>{lang === 'es' ? 'Rol' : 'Role'}</strong>{study.roleDetail}</span>}
++        </div>
+         {study.link && <a className="case-external" href={study.link} target="_blank" rel="noopener noreferrer">{lang === 'es' ? 'Explorar proyecto' : 'Explore project'} ↗</a>}
+       </header>
++
+       <MediaSlot label={lang === 'es' ? 'Portada del proyecto · mockup pendiente' : 'Project cover · mockup pending'} image={study.cover} />
+-      <div className="case-story" data-case-reveal><p>{copy.context}</p></div>
+-      {copy.sections.map((section, index) => <section className="case-chapter" data-case-reveal key={section.title}>
+-        <div className="case-story"><span className="case-number">0{index + 1}</span><div><h2>{section.title}</h2><p>{section.body}</p></div></div>
+-        <MediaSlot label={section.media} image={study.media?.[index]} />
+-      </section>)}
++
++      <section className="case-context" data-case-reveal>
++        <p className="case-kicker">{lang === 'es' ? 'Contexto' : 'Context'}</p>
++        <p>{copy.context}</p>
++      </section>
++
++      <div className="case-storyline">
++        {copy.sections.map((section, index) => <section className="case-chapter" data-case-reveal key={section.title}>
++          <div className="case-chapter-copy">
++            <span className="case-number">{String(index + 1).padStart(2, '0')}</span>
++            <div>
++              <h2>{section.title}</h2>
++              <p>{section.body}</p>
++              {section.points?.length > 0 && <ul>{section.points.map((point) => <li key={point}>{point}</li>)}</ul>}
++            </div>
++          </div>
++          <MediaSlot label={section.media} image={study.media?.[index]} />
++        </section>)}
++      </div>
++
+       {copy.decision && <aside className="case-decision" data-case-reveal aria-label={lang === 'es' ? 'Decisión de diseño' : 'Design decision'}>
+         <p className="case-decision-label">{lang === 'es' ? 'Decisión de diseño' : 'Design decision'}</p>
+         <h2>{copy.decision.title}</h2>
+-        <h3>{lang === 'es' ? 'El punto de partida' : 'Starting point'}</h3>
+-        <p>{copy.decision.before}</p>
+-        <h3>{lang === 'es' ? 'Lo que cambié' : 'What I changed'}</h3>
+-        <p>{copy.decision.after}</p>
++        <div className="case-decision-grid">
++          <div><h3>{lang === 'es' ? 'El punto de partida' : 'Starting point'}</h3><p>{copy.decision.before}</p></div>
++          <div><h3>{lang === 'es' ? 'Lo que cambié' : 'What I changed'}</h3><p>{copy.decision.after}</p></div>
++        </div>
+       </aside>}
+-      <div className="case-ending" data-case-reveal><h2>{lang === 'es' ? 'Lo que sigue' : 'What comes next'}</h2><p>{copy.closing}</p></div>
+-      <Link className="case-return" to={`/${lang}#work`}>{t('projectIndex.back')} ↗</Link>
++
++      <div className="case-ending" data-case-reveal>
++        <p className="case-kicker">{lang === 'es' ? 'Resultado y aprendizaje' : 'Outcome & reflection'}</p>
++        <h2>{lang === 'es' ? 'Lo que sigue' : 'What comes next'}</h2>
++        <p>{copy.closing}</p>
++      </div>
++      <Link className="case-return" to={`/${lang}#work`}>← {t('projectIndex.back')}</Link>
+     </main>
+     <Footer />
+   </div>
+diff --git a/src/styles/case.css b/src/styles/case.css
+index 0fd5a9f..f3414f3 100644
+--- a/src/styles/case.css
++++ b/src/styles/case.css
+@@ -1,45 +1,62 @@
+-.case-article { padding-top: clamp(2rem, 6vw, 5rem); padding-bottom: clamp(4rem, 9vw, 9rem); }
+-.case-return, .case-external { display: inline-block; font-size: .875rem; text-underline-offset: .3em; }
+-.case-return:hover, .case-external:hover { color: var(--color-accent); }
+-.case-intro { max-width: 52rem; margin: clamp(3rem, 7vw, 6rem) 0 clamp(2rem, 5vw, 4rem); }
+-.case-eyebrow, .case-number { font-size: .8125rem; color: var(--color-secondary); }
+-.case-intro h1 { font-size: clamp(3rem, 8vw, 7.5rem); line-height: 1.05; letter-spacing: -.065em; margin: .75rem 0 1.5rem; }
+-.case-lead { font-size: clamp(1.375rem, 3vw, 2rem); line-height: 1.35; max-width: 38ch; }
+-.case-external { margin-top: 2rem; }
+-.case-media { margin: 0; }
+-.case-media img, .case-media-empty { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-large); }
+-.case-media-empty { display: grid; place-items: center; padding: 2rem; border: 1px dashed var(--color-border); background: var(--color-surface); color: var(--color-secondary); text-align: center; }
+-.case-media-empty span { max-width: 24ch; }
+-.case-media figcaption { margin-top: .75rem; font-size: .8125rem; color: var(--color-secondary); }
+-.case-story { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: 2rem; max-width: 58rem; margin: clamp(3.5rem, 8vw, 7rem) auto; }
+-.case-story > p, .case-story div > p, .case-ending p { font-size: clamp(1rem, 1.5vw, 1.125rem); line-height: 1.7; max-width: 58ch; }
+-.case-chapter h2, .case-ending h2 { font-size: clamp(1.75rem, 3vw, 2.75rem); letter-spacing: -.045em; line-height: 1.2; margin-bottom: 1rem; }
+-.case-ending { max-width: 42rem; margin: clamp(4rem, 9vw, 8rem) auto; }
++.case-article { padding-top: clamp(6rem, 10vw, 9rem); padding-bottom: clamp(4rem, 9vw, 9rem); }
++.case-hero { max-width: 62rem; margin: clamp(2rem, 6vw, 5rem) auto clamp(3rem, 7vw, 6rem); text-align: center; }
++.case-eyebrow, .case-number, .case-kicker { font-size: .72rem; color: var(--color-secondary); text-transform: uppercase; letter-spacing: .16em; }
++.case-hero h1 { margin: .8rem 0 1.25rem; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(3.2rem, 8vw, 7rem); font-weight: 400; font-style: italic; line-height: 1.02; letter-spacing: -.06em; }
++.case-lead { max-width: 42rem; margin-inline: auto; font-size: clamp(1.25rem, 2.5vw, 1.8rem); line-height: 1.45; color: var(--color-secondary); }
++.case-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.25rem 2rem; margin-top: 2rem; }
++.case-meta span { display: grid; gap: .2rem; color: var(--color-secondary); font-size: .78rem; }
++.case-meta strong { color: var(--color-text); font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; }
++.case-external { display: inline-block; margin-top: 1.8rem; font-size: .82rem; text-underline-offset: .3em; }
++.case-external:hover, .case-return:hover { color: var(--color-accent); }
++.case-media { width: min(100%, 64rem); margin: 0 auto; }
++.case-media-frame { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface); }
++.case-media img, .case-media-empty { width: 100%; display: block; aspect-ratio: 16 / 10; object-fit: cover; }
++.case-media-empty { display: grid; place-items: center; padding: 2rem; color: var(--color-secondary); text-align: center; background: radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 35%), var(--color-surface); }
++.case-media-empty span { max-width: 28ch; }
++.case-media figcaption { margin-top: .7rem; font-size: .76rem; color: var(--color-secondary); }
++.case-context { width: min(100%, 48rem); margin: clamp(4rem, 10vw, 9rem) auto; }
++.case-context p:last-child { margin-top: .8rem; max-width: 58ch; font-size: clamp(1.05rem, 1.7vw, 1.2rem); line-height: 1.8; }
++.case-storyline { width: min(100%, 68rem); margin-inline: auto; }
++.case-chapter { display: grid; grid-template-columns: minmax(14rem, .75fr) minmax(0, 1.45fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; min-height: 76vh; padding-block: clamp(4rem, 10vw, 9rem); border-top: 1px solid var(--color-border); }
++.case-chapter-copy { position: sticky; top: calc(var(--header-height) + 4rem); display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 1.2rem; padding-top: 1rem; }
++.case-chapter h2, .case-ending h2 { margin-bottom: 1rem; font-size: clamp(1.65rem, 3vw, 2.8rem); line-height: 1.12; letter-spacing: -.045em; }
++.case-chapter p, .case-chapter li, .case-ending p { font-size: 1rem; line-height: 1.8; color: var(--color-secondary); }
++.case-chapter ul { margin: 1.2rem 0 0; padding-left: 1.2rem; }
++.case-chapter .case-media { width: 100%; align-self: center; }
++.case-decision { width: min(100%, 62rem); margin: clamp(5rem, 12vw, 10rem) auto; padding: clamp(1.5rem, 5vw, 3.5rem); border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface); }
++.case-decision-label { margin-bottom: .75rem; }
++.case-decision h2 { max-width: 30ch; margin-bottom: 2rem; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.15; letter-spacing: -.04em; }
++.case-decision-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
++.case-decision h3 { font-size: .82rem; text-transform: uppercase; letter-spacing: .08em; }
++.case-decision p { margin-top: .5rem; color: var(--color-secondary); line-height: 1.7; }
++.case-ending { width: min(100%, 46rem); margin: clamp(4rem, 10vw, 9rem) auto; text-align: center; }
++.case-ending .case-kicker { margin-bottom: .8rem; }
++.case-ending p:last-child { max-width: 58ch; margin-inline: auto; }
++.case-return { display: block; width: fit-content; margin: 0 auto; font-size: .82rem; text-underline-offset: .3em; }
+ .case-shell > .site-footer { background: var(--color-background); color: var(--color-text); }
+-@media (max-width: 40rem) { .case-story { grid-template-columns: 1fr; gap: 1rem; } .case-media img, .case-media-empty { aspect-ratio: 4 / 3; } }
+ 
+-.case-story > p { grid-column: 2; }
+-@media (max-width: 40rem) { .case-story > p { grid-column: 1; } }
++@media (prefers-reduced-motion: no-preference) {
++  [data-case-reveal] { opacity: .001; transform: translateY(34px); }
++  [data-case-reveal][data-revealed='true'] { animation: case-reveal 850ms cubic-bezier(.22,1,.36,1) both; }
++  [data-case-reveal][data-revealed='true'] .case-media-frame { animation: case-media-reveal 1000ms cubic-bezier(.22,1,.36,1) 90ms both; }
++  [data-case-reveal][data-revealed='true'] .case-media img { animation: case-image-settle 1200ms cubic-bezier(.22,1,.36,1) 90ms both; }
++}
++@keyframes case-reveal { from { opacity: .001; transform: translateY(34px); } to { opacity: 1; transform: translateY(0); } }
++@keyframes case-media-reveal { from { clip-path: inset(12% 7% 12% 7% round var(--radius-large)); transform: scale(.96); } to { clip-path: inset(0 round var(--radius-large)); transform: scale(1); } }
++@keyframes case-image-settle { from { transform: scale(1.045); } to { transform: scale(1); } }
+ 
+-/* Center the reading column and keep future mockups at editorial scale. */
+-.case-intro { margin-inline: auto; }
+-.case-article > .case-media, .case-chapter > .case-media { width: min(100%, 49rem); margin-inline: auto; }
+-.case-media img, .case-media-empty { max-height: 32rem; }
+-.case-story { max-width: 49rem; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 1.5rem; }
+-.case-ending { max-width: 49rem; padding-left: 4rem; }
+-@media (max-width: 40rem) { .case-ending { padding-left: 0; } }
+-
+-/* A restrained editorial rhythm leaves room for screenshots without stretching the copy. */
+-.case-intro { max-width: 38rem; }
+-.case-intro h1 { font-size: clamp(2.75rem, 5vw, 4.5rem); }
+-.case-lead { font-size: clamp(1.25rem, 2vw, 1.55rem); }
+-.case-article > .case-media, .case-chapter > .case-media { width: min(100%, 42rem); }
+-.case-story { max-width: 38rem; margin-block: clamp(3rem, 6vw, 5rem); }
+-.case-story > p, .case-story div > p, .case-ending p { font-size: 1rem; line-height: 1.8; }
+-.case-chapter h2, .case-ending h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); }
+-.case-ending { max-width: 38rem; }
+-.case-decision { width: min(100%, 38rem); margin: clamp(4rem, 8vw, 7rem) auto; padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: var(--radius-large); background: var(--color-surface); }
+-.case-decision-label { color: var(--color-secondary); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+-.case-decision h2 { margin: .75rem 0 1.75rem; font-size: 1.4rem; line-height: 1.3; letter-spacing: -.025em; }
+-.case-decision h3 { margin-top: 1.6rem; font-size: 1rem; }
+-.case-decision p:not(.case-decision-label) { margin-top: .5rem; color: var(--color-secondary); font-size: 1rem; line-height: 1.7; }
++@media (max-width: 48rem) {
++  .case-article { padding-top: 5rem; }
++  .case-chapter { grid-template-columns: 1fr; min-height: auto; gap: 2rem; padding-block: 4rem; }
++  .case-chapter-copy { position: static; grid-template-columns: 2rem minmax(0, 1fr); }
++  .case-chapter .case-media { order: 2; }
++  .case-decision-grid { grid-template-columns: 1fr; }
++}
++@media (max-width: 40rem) {
++  .case-hero h1 { font-size: clamp(3rem, 15vw, 5rem); }
++  .case-meta { justify-content: flex-start; text-align: left; }
++  .case-media img, .case-media-empty { aspect-ratio: 4 / 3; }
++}
++@media (prefers-reduced-motion: reduce) {
++  [data-case-reveal] { opacity: 1; transform: none; }
++}

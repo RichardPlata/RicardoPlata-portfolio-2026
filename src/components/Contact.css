@@ -1,0 +1,37 @@
+.home-closing { border-top: 0; }
+.contact-metadata { display: flex; justify-content: space-between; gap: var(--space-3); font-size: 0.8125rem; color: var(--color-secondary); }
+.contact-orbits { display: block; width: min(100%, 45rem); height: auto; margin: var(--space-3) auto -3rem; position: relative; color: var(--color-accent); pointer-events: none; }
+.orbital-paths { opacity: 0.45; }
+.orbital-indigo { color: var(--color-cosmic-indigo); }
+.orbital-cyan { color: var(--color-cosmic-cyan); }
+.contact-panel { position: relative; border-radius: 2rem; background: var(--contact-panel-background); color: var(--contact-panel-text); padding: clamp(1.5rem, 4vw, 3rem); }
+.contact-panel-top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
+.contact-panel-top h2 { font-size: 0.9375rem; font-weight: 500; }
+.contact-panel-links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
+.contact-panel-links a, .contact-panel-links button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.5rem 0; border: 0; background: transparent; color: inherit; font-size: 0.8125rem; font-weight: 550; text-decoration: none; }
+.contact-panel-links a:hover, .contact-panel-links button:hover { color: inherit; text-decoration: underline; text-underline-offset: 0.25em; }
+/* Match ProfileLink's more specific global hover rule and underline its label. */
+.contact-panel-links a.editorial-link:hover { color: inherit; }
+.contact-panel-links a.editorial-link > span:first-of-type { border-bottom: 0; }
+.contact-panel-links a.editorial-link:hover > span:first-of-type { text-decoration: underline; text-underline-offset: 0.25em; }
+.contact-panel :focus-visible { outline-color: var(--contact-panel-text); }
+.contact-icon { width: 1.125rem; height: 1.125rem; flex: 0 0 auto; }
+.contact-wordmark { margin-top: clamp(4rem, 9vw, 8rem); font-size: clamp(2.75rem, 10.2vw, 9rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.065em; white-space: nowrap; }
+.contact-copyright { margin-top: var(--space-3); font-size: 0.75rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .contact-orbits[data-entered='true'] .orbital-paths { animation: orbit-path-arrive 600ms ease-out backwards; }
+  .contact-orbits[data-entered='true'] .orbital-bodies { animation: orbit-body-arrive 650ms var(--motion-easing) 70ms backwards; }
+  .contact-orbits[data-entered='true'] .orbital-stars { animation: orbit-path-arrive 500ms ease-out 140ms backwards; }
+}
+@keyframes orbit-path-arrive { from { opacity: 0; } }
+@keyframes orbit-body-arrive { from { opacity: 0; transform: translateY(8px); } }
+@media (max-width: 56rem) {
+  .contact-panel-top { flex-direction: column; gap: var(--space-2); }
+  .contact-orbits { margin-bottom: -2rem; }
+}
+@media (max-width: 40rem) {
+  .contact-metadata { flex-direction: column; gap: var(--space-1); }
+  .contact-panel { border-radius: 1.25rem; }
+  .contact-orbits { margin-bottom: -1rem; }
+  .contact-wordmark { font-size: clamp(2rem, 10.2vw, 4rem); }
+}

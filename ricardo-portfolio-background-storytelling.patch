@@ -1,0 +1,309 @@
+diff --git a/src/components/Hero.css b/src/components/Hero.css
+index 74c91c4..1f89538 100644
+--- a/src/components/Hero.css
++++ b/src/components/Hero.css
+@@ -1,10 +1,11 @@
+-.cosmic-hero { position: relative; isolation: isolate; min-height: min(48rem, calc(100svh - var(--header-height))); display: grid; place-items: center; padding: clamp(5rem, 9vw, 8rem) 1.5rem 7rem; text-align: center; }
+-.cosmic-hero-field { position: absolute; z-index: -1; inset: -5rem calc(-1 * var(--page-gutter)) 0; overflow: hidden; pointer-events: none; mask-image: linear-gradient(black 0% 75%, transparent); }
+-.cosmic-hero-field span { position: absolute; inset: -35%; border-radius: 50%; filter: blur(42px); opacity: .55; }
+-.cosmic-hero-field span:nth-child(1) { background: radial-gradient(ellipse 28% 55% at 65% 45%, #7f53cb88, transparent 75%); transform: rotate(-30deg); }
+-.cosmic-hero-field span:nth-child(2) { background: radial-gradient(ellipse 17% 60% at 60% 45%, #cb91d966, transparent 72%); transform: rotate(-35deg); }
+-.cosmic-hero-field span:nth-child(3) { background: radial-gradient(ellipse 23% 46% at 28% 55%, #647bd455, transparent 72%); transform: rotate(-30deg); }
+-:root[data-theme='dark'] .cosmic-hero-field span { opacity: .8; }
++.cosmic-hero { position: relative; min-height: min(48rem, calc(100svh - var(--header-height))); display: grid; place-items: center; padding: clamp(5rem, 9vw, 8rem) 1.5rem 7rem; text-align: center; }
++.site-shell--home { position: relative; isolation: isolate; overflow-x: clip; --cosmic-purple: #9670dd99; --cosmic-pink: #d285bf88; --cosmic-blue: #718de080; }
++:root[data-theme='dark'] .site-shell--home { --cosmic-purple: #7f53cb88; --cosmic-pink: #cb91d966; --cosmic-blue: #647bd455; }
++.cosmic-hero-field { position: absolute; z-index: -1; top: calc(-1 * (var(--header-height) + 1rem)); bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); overflow: hidden; pointer-events: none; mask-image: linear-gradient(black 0% 75%, transparent); }
++.cosmic-hero-field span { position: absolute; inset: -35%; border-radius: 50%; filter: blur(42px); opacity: .85; }
++.cosmic-hero-field span:nth-child(1) { background: radial-gradient(ellipse 36% 55% at 65% 45%, var(--cosmic-purple), transparent 75%); transform: rotate(-30deg); }
++.cosmic-hero-field span:nth-child(2) { background: radial-gradient(ellipse 27% 60% at 60% 45%, var(--cosmic-pink), transparent 72%); transform: rotate(-35deg); }
++.cosmic-hero-field span:nth-child(3) { background: radial-gradient(ellipse 33% 46% at 28% 55%, var(--cosmic-blue), transparent 72%); transform: rotate(-30deg); }
+ .cosmic-hero-content { max-width: 45rem; }
+ .cosmic-hero-eyebrow { margin-bottom: 1.75rem; color: var(--color-secondary); text-transform: uppercase; letter-spacing: .18em; font-size: .7rem; }
+ .cosmic-hero h1 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-style: italic; font-size: clamp(3.4rem, 8vw, 7rem); line-height: 1.06; letter-spacing: -.055em; }
+@@ -17,7 +18,7 @@
+ .cosmic-hero-scroll { position: absolute; bottom: 2rem; display: flex; flex-direction: column; align-items: center; gap: .5rem; color: var(--color-secondary); text-decoration: none; font-size: .65rem; text-transform: uppercase; letter-spacing: .16em; }
+ @media (prefers-reduced-motion: no-preference) { .cosmic-hero-word { animation: cosmic-word-arrive 500ms ease-out both; } .cosmic-hero-field span { animation: cosmic-flow 16s ease-in-out infinite alternate; }.cosmic-hero-field span:nth-child(2) { animation-duration: 21s; animation-delay: -8s; }.cosmic-hero-field span:nth-child(3) { animation-duration: 19s; animation-delay: -5s; } }
+ @keyframes cosmic-word-arrive { from { opacity: 0; transform: translateY(.2em); } to { opacity: 1; transform: translateY(0); } }
+-@keyframes cosmic-flow { to { translate: 3% -2%; scale: 1.06; } }
++@keyframes cosmic-flow { from { opacity: .7; } to { translate: 3% -2%; scale: 1.06; opacity: .95; } }
+ @media (hover: hover) and (prefers-reduced-motion: no-preference) { .cosmic-hero-button:hover { transform: translateY(-3px); } }
+ @media (max-width: 40rem) { .cosmic-hero { min-height: 39rem; padding-inline: .5rem; } .cosmic-hero h1 { font-size: clamp(3rem, 13vw, 4.75rem); }.cosmic-hero-description { font-size: .94rem; } .cosmic-hero-role { font-size: 1.2rem; } }
+ @media (prefers-reduced-motion: reduce) { .cosmic-hero * { animation: none !important; transition: none !important; } }
+diff --git a/src/components/SiteLayout.jsx b/src/components/SiteLayout.jsx
+index cb84cc3..d5c52a5 100644
+--- a/src/components/SiteLayout.jsx
++++ b/src/components/SiteLayout.jsx
+@@ -1,26 +1,22 @@
+-import { useTranslation } from 'react-i18next'
+-import { Outlet, useLocation, useParams } from 'react-router-dom'
+-import useSectionNavigation from '../hooks/useSectionNavigation.js'
+-import Header from './Header.jsx'
+-import Footer from './Footer.jsx'
+-import HomeAurora from './HomeAurora.jsx'
+-import useAuroraPointer from '../hooks/useAuroraPointer.js'
+-
+-export default function SiteLayout() {
+-  const { t } = useTranslation()
+-  const { pathname } = useLocation()
+-  const { lang } = useParams()
+-  const isHome = pathname.replace(/\/$/, '') === `/${lang}`
+-  const shellRef = useAuroraPointer(isHome)
+-  useSectionNavigation()
+-
+-  return (
+-    <div className={isHome ? 'site-shell site-shell--home' : 'site-shell'} ref={shellRef}>
+-      {isHome && <HomeAurora />}
+-      <a className="skip-link" href="#main-content">{t('skip')}</a>
+-      <Header framed={isHome} />
+-      <main id="main-content" className={isHome ? 'content-frame' : 'container'} tabIndex={-1}><Outlet /></main>
+-      <Footer showContact={isHome} />
+-    </div>
+-  )
+-}
++import { useTranslation } from 'react-i18next'
++import { Outlet, useLocation, useParams } from 'react-router-dom'
++import useSectionNavigation from '../hooks/useSectionNavigation.js'
++import Header from './Header.jsx'
++import Footer from './Footer.jsx'
++
++export default function SiteLayout() {
++  const { t } = useTranslation()
++  const { pathname } = useLocation()
++  const { lang } = useParams()
++  const isHome = pathname.replace(/\/$/, '') === `/${lang}`
++  useSectionNavigation()
++
++  return (
++    <div className={isHome ? 'site-shell site-shell--home' : 'site-shell'}>
++      <a className="skip-link" href="#main-content">{t('skip')}</a>
++      <Header framed={isHome} />
++      <main id="main-content" className={isHome ? 'content-frame' : 'container'} tabIndex={-1}><Outlet /></main>
++      <Footer showContact={isHome} />
++    </div>
++  )
++}
+diff --git a/src/pages/CaseStudy.jsx b/src/pages/CaseStudy.jsx
+index 3172fe0..ed4a34b 100644
+--- a/src/pages/CaseStudy.jsx
++++ b/src/pages/CaseStudy.jsx
+@@ -1,4 +1,4 @@
+-import { useEffect } from 'react'
++import { useEffect, useRef } from 'react'
+ import { Link, Navigate, useParams } from 'react-router-dom'
+ import { useTranslation } from 'react-i18next'
+ import Header from '../components/Header.jsx'
+@@ -14,6 +14,7 @@ function MediaSlot({ label, image }) {
+ }
+ 
+ export default function CaseStudy() {
++  const contentRef = useRef(null)
+   const { lang, slug } = useParams()
+   const { i18n, t } = useTranslation()
+   const study = caseStudies[slug]
+@@ -28,6 +29,23 @@ export default function CaseStudy() {
+     window.scrollTo(0, 0)
+   }, [lang, slug, i18n, study, supported])
+ 
++  useEffect(() => {
++    const root = contentRef.current
++    if (!root || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
++    const observer = new IntersectionObserver((entries) => {
++      for (const entry of entries) {
++        if (!entry.isIntersecting) continue
++        entry.target.dataset.revealed = 'true'
++        observer.unobserve(entry.target)
++      }
++    }, { threshold: 0.08 })
++    root.querySelectorAll('[data-case-reveal]').forEach((section) => {
++      delete section.dataset.revealed
++      observer.observe(section)
++    })
++    return () => observer.disconnect()
++  }, [lang, slug, i18n.resolvedLanguage])
++
+   if (!supported) return <Navigate to="/en" replace />
+   if (!study) return <div className="case-shell"><Header /><main className="container"><NotFound /></main><Footer /></div>
+   if (i18n.resolvedLanguage !== lang) return null
+@@ -35,7 +53,7 @@ export default function CaseStudy() {
+   return <div className="case-shell">
+     <a className="skip-link" href="#case-content">{t('skip')}</a>
+     <Header />
+-    <main id="case-content" className="case-article content-frame" tabIndex={-1}>
++    <main ref={contentRef} id="case-content" className="case-article content-frame" tabIndex={-1}>
+       <Link className="case-return" to={`/${lang}#work`}>{t('projectIndex.back')} ↗</Link>
+       <header className="case-intro">
+         <p className="case-eyebrow">{study.role} · {study.tools}</p>
+@@ -44,12 +62,12 @@ export default function CaseStudy() {
+         {study.link && <a className="case-external" href={study.link} target="_blank" rel="noopener noreferrer">{lang === 'es' ? 'Explorar proyecto' : 'Explore project'} ↗</a>}
+       </header>
+       <MediaSlot label={lang === 'es' ? 'Portada del proyecto · mockup pendiente' : 'Project cover · mockup pending'} image={study.cover} />
+-      <div className="case-story"><p>{copy.context}</p></div>
+-      {copy.sections.map((section, index) => <section className="case-chapter" key={section.title}>
++      <div className="case-story" data-case-reveal><p>{copy.context}</p></div>
++      {copy.sections.map((section, index) => <section className="case-chapter" data-case-reveal key={section.title}>
+         <div className="case-story"><span className="case-number">0{index + 1}</span><div><h2>{section.title}</h2><p>{section.body}</p></div></div>
+         <MediaSlot label={section.media} image={study.media?.[index]} />
+       </section>)}
+-      {copy.decision && <aside className="case-decision" aria-label={lang === 'es' ? 'Decisión de diseño' : 'Design decision'}>
++      {copy.decision && <aside className="case-decision" data-case-reveal aria-label={lang === 'es' ? 'Decisión de diseño' : 'Design decision'}>
+         <p className="case-decision-label">{lang === 'es' ? 'Decisión de diseño' : 'Design decision'}</p>
+         <h2>{copy.decision.title}</h2>
+         <h3>{lang === 'es' ? 'El punto de partida' : 'Starting point'}</h3>
+@@ -57,7 +75,7 @@ export default function CaseStudy() {
+         <h3>{lang === 'es' ? 'Lo que cambié' : 'What I changed'}</h3>
+         <p>{copy.decision.after}</p>
+       </aside>}
+-      <div className="case-ending"><h2>{lang === 'es' ? 'Lo que sigue' : 'What comes next'}</h2><p>{copy.closing}</p></div>
++      <div className="case-ending" data-case-reveal><h2>{lang === 'es' ? 'Lo que sigue' : 'What comes next'}</h2><p>{copy.closing}</p></div>
+       <Link className="case-return" to={`/${lang}#work`}>{t('projectIndex.back')} ↗</Link>
+     </main>
+     <Footer />
+diff --git a/src/styles/base.css b/src/styles/base.css
+index edebacb..612b93f 100644
+--- a/src/styles/base.css
++++ b/src/styles/base.css
+@@ -1,69 +1,77 @@
+-body {
+-  font-family: var(--font-body);
+-  font-weight: 400;
+-  line-height: 1.65;
+-  background: var(--color-background);
+-  color: var(--color-text);
+-  overflow-wrap: anywhere;
+-  transition: color var(--motion-duration) var(--motion-easing),
+-    background-color var(--motion-duration) var(--motion-easing);
+-}
+-#root { min-height: 100svh; }
+-a { color: inherit; text-underline-offset: 0.2em; }
+-button, select {
+-  color: inherit;
+-  background: var(--color-surface);
+-  border: 1px solid var(--color-control-border);
+-  padding: var(--space-1) var(--space-2);
+-  min-height: 2.75rem;
+-}
+-button { cursor: pointer; }
+-button[aria-pressed='true'] { color: var(--color-background); background: var(--color-text); }
++body {
++  font-family: var(--font-body);
++  font-weight: 400;
++  line-height: 1.65;
++  background: var(--color-background);
++  color: var(--color-text);
++  overflow-wrap: anywhere;
++  transition: color var(--motion-duration) var(--motion-easing),
++    background-color var(--motion-duration) var(--motion-easing);
++}
++#root { min-height: 100svh; }
++a { color: inherit; text-underline-offset: 0.2em; }
++button, select {
++  color: inherit;
++  background: var(--color-surface);
++  border: 1px solid var(--color-control-border);
++  padding: var(--space-1) var(--space-2);
++  min-height: 2.75rem;
++}
++button { cursor: pointer; }
++button[aria-pressed='true'] { color: var(--color-background); background: var(--color-text); }
+ :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
+ /* The programmatically focused page is not a control; keep focus rings on links and buttons. */
+ [tabindex='-1']:focus { outline: none; }
+-h1, h2, h3 { line-height: 1.25; }
+-h1 { font-size: 2rem; }
+-h2 { font-size: 1.5rem; }
+-h3 { font-size: 1.125rem; }
+-.container { width: min(100% - 2 * var(--page-gutter), var(--content-width)); margin-inline: auto; }
+-.content-frame {
+-  --page-gutter: var(--page-gutter-desktop);
+-  width: min(calc(100% - 2 * var(--page-gutter)), var(--content-max-width));
+-  margin-inline: auto;
+-}
+-[id] { scroll-margin-top: calc(var(--header-height) + var(--space-3)); }
+-.site-footer { padding-block: var(--space-3); border-top: 1px solid var(--color-border); }
+-.filter-controls { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+-.section { padding-block: var(--space-5); }
+-.stack > * + * { margin-top: var(--space-2); }
+-.provisional { color: var(--color-muted); }
+-.project-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+-.project-grid > li { min-width: 0; }
+-.about-layout { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-4); align-items: start; }
+-.media-placeholder { padding: var(--space-3); border: 1px dashed var(--color-border); }
+-.skip-link {
+-  position: absolute;
+-  z-index: 30;
+-  top: 0;
+-  left: var(--page-gutter);
+-  padding: var(--space-2);
+-  background: var(--color-background);
+-  transform: translateY(-150%);
+-}
+-.skip-link:focus { transform: translateY(0); }
+-@media (max-width: 56rem) {
+-  .content-frame { --page-gutter: var(--page-gutter-tablet); }
+-}
+-@media (max-width: 40rem) {
+-  .content-frame { --page-gutter: var(--page-gutter-mobile); }
+-  .project-grid, .about-layout { grid-template-columns: 1fr; }
+-  .section { padding-block: var(--space-4); }
+-}
+-@media (prefers-reduced-motion: reduce) {
+-  *, *::before, *::after {
+-    transition-duration: 0ms !important;
+-    animation-duration: 0ms !important;
+-    scroll-behavior: auto !important;
+-  }
+-}
++h1, h2, h3 { line-height: 1.25; }
++h1 { font-size: 2rem; }
++h2 { font-size: 1.5rem; }
++h3 { font-size: 1.125rem; }
++.container { width: min(100% - 2 * var(--page-gutter), var(--content-width)); margin-inline: auto; }
++.content-frame {
++  --page-gutter: var(--page-gutter-desktop);
++  width: min(calc(100% - 2 * var(--page-gutter)), var(--content-max-width));
++  margin-inline: auto;
++}
++[id] { scroll-margin-top: calc(var(--header-height) + var(--space-3)); }
++.site-footer { padding-block: var(--space-3); border-top: 1px solid var(--color-border); }
++.filter-controls { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
++.section { padding-block: var(--space-5); }
++.stack > * + * { margin-top: var(--space-2); }
++.provisional { color: var(--color-muted); }
++.project-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
++.project-grid > li { min-width: 0; }
++.about-layout { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-4); align-items: start; }
++.media-placeholder { padding: var(--space-3); border: 1px dashed var(--color-border); }
++.skip-link {
++  position: absolute;
++  z-index: 30;
++  top: 0;
++  left: var(--page-gutter);
++  padding: var(--space-2);
++  background: var(--color-background);
++  transform: translateY(-150%);
++}
++.skip-link:focus { transform: translateY(0); }
++@media (max-width: 56rem) {
++  .content-frame { --page-gutter: var(--page-gutter-tablet); }
++}
++@media (max-width: 40rem) {
++  .content-frame { --page-gutter: var(--page-gutter-mobile); }
++  .project-grid, .about-layout { grid-template-columns: 1fr; }
++  .section { padding-block: var(--space-4); }
++}
++@media (prefers-reduced-motion: reduce) {
++  *, *::before, *::after {
++    transition-duration: 0ms !important;
++    animation-duration: 0ms !important;
++    scroll-behavior: auto !important;
++  }
++}
++
++@media (prefers-reduced-motion: no-preference) {
++  [data-case-reveal][data-revealed='true'] { animation: case-reveal 650ms ease-out both; }
++}
++@keyframes case-reveal {
++  from { opacity: .45; transform: translateY(12px); }
++  to { opacity: 1; transform: translateY(0); }
++}
