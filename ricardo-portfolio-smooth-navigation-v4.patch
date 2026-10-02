@@ -1,0 +1,44 @@
+--- a/src/components/SiteLayout.jsx
++++ b/src/components/SiteLayout.jsx
+@@ -3,6 +3,7 @@
+ import useSectionNavigation from '../hooks/useSectionNavigation.js'
+ import Header from './Header.jsx'
+ import Footer from './Footer.jsx'
++import './PageTransition.css'
+ 
+ export default function SiteLayout() {
+   const { t } = useTranslation()
+@@ -15,7 +16,7 @@
+     <div className={isHome ? 'site-shell site-shell--home' : 'site-shell'}>
+       <a className="skip-link" href="#main-content">{t('skip')}</a>
+       <Header framed={isHome} />
+-      <main id="main-content" className={isHome ? 'content-frame' : 'container'} tabIndex={-1}><Outlet /></main>
++      <main key={pathname} id="main-content" className={`page-transition ${isHome ? 'content-frame' : 'container'}`} tabIndex={-1}><Outlet /></main>
+       <Footer showContact={isHome} />
+     </div>
+   )
+diff --git a/src/components/PageTransition.css b/src/components/PageTransition.css
+new file mode 100644
+--- /dev/null
++++ b/src/components/PageTransition.css
+@@ -0,0 +1,16 @@
++.page-transition {
++  animation: page-transition-enter 360ms ease-out both;
++}
++
++@keyframes page-transition-enter {
++  from {
++    opacity: 0;
++    transform: translateY(6px);
++  }
++  to {
++    opacity: 1;
++    transform: translateY(0);
++  }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .page-transition {
++    animation: none;
++  }
++}
