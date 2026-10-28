@@ -1,0 +1,471 @@
+diff --git a/index.html b/index.html
+index 5f0b949..ca8a5e5 100644
+--- a/index.html
++++ b/index.html
+@@ -1,10 +1,17 @@
+ <!doctype html>
+-<html lang="en">
++<html lang="en" translate="no">
+   <head>
+     <meta charset="UTF-8" />
+     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-    <title>%SITE_NAME% | Digital Designer</title>
++    <meta name="google" content="notranslate" />
++    <meta name="description" content="Ricardo Plata is a Digital Designer focused on UX/UI and Product Design, with experience in enterprise software, responsive websites and interactive experiences." />
++    <meta name="theme-color" content="#111111" />
++    <meta property="og:type" content="website" />
++    <meta property="og:title" content="Ricardo Plata | Product Designer · UX/UI & Digital Design" />
++    <meta property="og:description" content="Selected work in product design, UX/UI, responsive websites and interactive experiences." />
++    <meta property="og:url" content="https://ricardo-plata-portfolio-2026.vercel.app/en" />
++    <title>Ricardo Plata | Product Designer · UX/UI & Digital Design</title>
+   </head>
+   <body>
+     <div id="root"></div>
+diff --git a/src/components/Hero.jsx b/src/components/Hero.jsx
+index 38949f0..2145afa 100644
+--- a/src/components/Hero.jsx
++++ b/src/components/Hero.jsx
+@@ -22,7 +22,7 @@ export default function Hero() {
+       <p className="cosmic-hero-eyebrow">{t('hero.location')} · {t('hero.availability')}</p>
+       <h1 id="intro-title">{siteConfig.name}</h1>
+       <p className="cosmic-hero-role" aria-label={t('hero.roleDescription')}>
+-        <span aria-hidden="true">{t('hero.rolePrefix')} </span>
++        {t('hero.rolePrefix') && <span aria-hidden="true">{t('hero.rolePrefix')} </span>}
+         <span key={`${t('language.label')}-${reducedMotion ? 0 : index}`} className="cosmic-hero-word" aria-hidden="true">{words[reducedMotion ? 0 : index]}</span>
+       </p>
+       <p className="cosmic-hero-description">{t('hero.cosmicDescription')}</p>
+diff --git a/src/components/LanguageLayout.jsx b/src/components/LanguageLayout.jsx
+index 573dba1..41144a8 100644
+--- a/src/components/LanguageLayout.jsx
++++ b/src/components/LanguageLayout.jsx
+@@ -13,7 +13,13 @@ export default function LanguageLayout() {
+     if (!supported) return
+     i18n.changeLanguage(lang)
+     document.documentElement.lang = lang
+-    document.title = i18n.t('metadata.title', { lng: lang, name: siteConfig.name })
++    const title = i18n.t('metadata.title', { lng: lang, name: siteConfig.name })
++    const description = i18n.t('metadata.description', { lng: lang })
++    document.title = title
++    document.querySelector('meta[name="description"]')?.setAttribute('content', description)
++    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
++    document.querySelector('meta[property="og:description"]')?.setAttribute('content', description)
++    document.querySelector('meta[property="og:url"]')?.setAttribute('content', window.location.href)
+     try {
+       localStorage.setItem('ricardo-portfolio-language', lang)
+     } catch {
+diff --git a/src/components/ProfileLink.jsx b/src/components/ProfileLink.jsx
+index f291ceb..3affb69 100644
+--- a/src/components/ProfileLink.jsx
++++ b/src/components/ProfileLink.jsx
+@@ -1,14 +1,17 @@
+ import { useTranslation } from 'react-i18next'
++import { useParams } from 'react-router-dom'
+ import { siteConfig } from '../config/siteConfig.js'
+ import { validProfileUrl } from '../config/contactLinks.js'
+ import ContactIcon from './ContactIcon.jsx'
+ 
+ export default function ProfileLink({ name, className = '', withIcon = false }) {
+   const { t } = useTranslation()
++  const { lang } = useParams()
+   const link = siteConfig.links[name]
++  const href = name === 'resume' ? (link?.hrefByLanguage?.[lang] || link?.href) : link?.href
+   const label = t(`hero.${name}`)
+-  if (validProfileUrl(link?.href) && link.status === 'ready') {
+-    return <a className={`editorial-link ${className}`} href={link.href} target="_blank" rel="noopener noreferrer">
++  if (validProfileUrl(href) && link.status === 'ready') {
++    return <a className={`editorial-link ${className}`} href={href} target="_blank" rel="noopener noreferrer">
+       {withIcon && <ContactIcon name={name} />}<span>{label}</span>{!withIcon && <span aria-hidden="true">↗</span>}
+     </a>
+   }
+diff --git a/src/config/siteConfig.js b/src/config/siteConfig.js
+index 7c7971b..b0401e4 100644
+--- a/src/config/siteConfig.js
++++ b/src/config/siteConfig.js
+@@ -1,5 +1,6 @@
+ import portrait from '../assets/images/About-Picture.png'
+-import resume from '../assets/files/Resume-RicardoPlata-2026.pdf'
++import resumeEn from '../assets/files/Resume-RicardoPlata-2026.pdf'
++import resumeEs from '../assets/files/CV-RicardoPlata-2026.pdf'
+ 
+ export const siteConfig = {
+   name: 'Ricardo Plata',
+@@ -10,7 +11,7 @@ export const siteConfig = {
+   },
+   links: {
+     // Supply approved destinations and set status to ready; missing actions stay hidden.
+-    resume: { href: resume, status: 'ready' },
++    resume: { href: resumeEn, hrefByLanguage: { en: resumeEn, es: resumeEs }, status: 'ready' },
+     linkedin: { href: 'https://www.linkedin.com/in/ricardo-guadarrama-plata-976a8b209', status: 'ready' },
+   },
+   contact: { email: 'g2ricardogplata@gmail.com' },
+diff --git a/src/data/caseStudies.js b/src/data/caseStudies.js
+index 3864161..9a8797d 100644
+--- a/src/data/caseStudies.js
++++ b/src/data/caseStudies.js
+@@ -8,7 +8,7 @@ import {
+ 
+ export const caseStudies = {
+   'gu-qi': {
+-    title: 'GU-QI', role: 'UX/UI · Front-end', tools: 'Figma · React · Vite · CSS',
++    title: 'GU-QI', role: 'UX/UI · Front-end', roleByLanguage: { en: 'UX/UI · Front-end', es: 'UX/UI · Desarrollo front-end' }, tools: 'Figma · React · Vite · CSS',
+     link: 'https://guqi-website.vercel.app/',
+     cover: { type: 'image', src: guqi1 },
+     media: [
+@@ -30,7 +30,7 @@ export const caseStudies = {
+       context: 'GU-QI ofrece terapias integrativas y cursos. Diseñé y desarrollé un sitio responsivo en español, organizado alrededor de las preguntas que una persona necesita resolver antes de contactar al centro.',
+       sections: [
+         { title: 'Hacer comprensibles los servicios', body: 'El contenido necesitaba un orden claro. Di prioridad a las terapias, reservé espacio para explicar cada servicio y separé los cursos y la filosofía del centro para facilitar la exploración.', media: 'Estructura del sitio y páginas de terapias' },
+-        { title: 'Un camino directo a la conversación', body: 'WhatsApp se convirtió en la acción principal de contacto. Después de explorar un servicio, la persona puede resolver dudas con el centro sin completar un formulario innecesario.', media: 'Mockups de escritorio y móvil' },
++        { title: 'Un camino directo a la conversación', body: 'WhatsApp se convirtió en la acción principal de contacto. Después de explorar un servicio, la persona puede resolver dudas con el centro sin completar un formulario innecesario.', media: 'Maquetas de escritorio y móvil' },
+       ],
+       decision: { title: 'Primero el servicio, después el contacto', before: 'Antes de preguntar, la persona necesitaba entender qué ofrece cada terapia.', after: 'La nueva estructura permite explorar las terapias y sus detalles antes de continuar la conversación por WhatsApp. Aún falta validar si esto facilita las reservas.' },
+       closing: 'El sitio conecta la exploración de servicios con un siguiente paso claro. Una futura iteración deberá comprobar si las personas comprenden las terapias y encuentran fácilmente el contacto.',
+@@ -38,7 +38,7 @@ export const caseStudies = {
+   },
+ 
+   kokoro: {
+-    title: 'Kokoro Bake Studio', role: 'UX/UI', roleDetail: 'UX/UI Designer', tools: 'Figma', year: '2026', category: 'UX/UI',
++    title: 'Kokoro Bake Studio', role: 'UX/UI', roleByLanguage: { en: 'UX/UI Design', es: 'Diseño UX/UI' }, roleDetail: 'UX/UI Designer', roleDetailByLanguage: { en: 'UX/UI Designer', es: 'Diseñador UX/UI' }, tools: 'Figma', year: '2026', category: 'UX/UI', categoryByLanguage: { en: 'UX/UI', es: 'Diseño UX/UI' },
+     cover: { type: 'image', src: kokoro1 },
+     media: [
+       { type: 'image', src: kokoro2 },
+@@ -59,7 +59,7 @@ export const caseStudies = {
+       intro: 'Una experiencia móvil de repostería construida alrededor de los pequeños momentos que vale la pena celebrar.',
+       context: 'Kokoro Bake Studio es una experiencia de repostería dirigida a familias latinas y multiculturales en Michigan. Este proyecto se enfocó en la aplicación móvil y no en desarrollar un sistema de identidad de marca. El concepto final está compuesto por cinco pantallas que permiten descubrir el menú, personalizar un pastel, revisar el pedido y consultar su estado mientras se hornea.',
+       sections: [
+-        { title: 'Home y menú', body: 'La primera parte del flujo presenta la aplicación y hace que el menú sea fácil de explorar. El descubrimiento se mantiene inmediato, con categorías y productos populares visibles sin agregar pasos innecesarios.', media: 'Home y menú de Kokoro' },
++        { title: 'Inicio y menú', body: 'La primera parte del flujo presenta la aplicación y hace que el menú sea fácil de explorar. El descubrimiento se mantiene inmediato, con categorías y productos populares visibles sin agregar pasos innecesarios.', media: 'Home y menú de Kokoro' },
+         { title: 'Personalizar el pastel', body: 'La personalización convierte el pedido en un conjunto de decisiones concretas. La persona puede elegir tamaño, sabor y dedicatoria antes de revisar la solicitud final.', media: 'Personalización del pastel en Kokoro' },
+         { title: 'Revisar, pedir y ver el horneado', body: 'La parte final reúne el producto seleccionado y los datos de entrega, y después comunica que el pedido se está preparando. El flujo de cinco pantallas termina con un estado claro sin añadir una experiencia de tracking innecesariamente compleja.', media: 'Pedido y estado de horneado de Kokoro' },
+       ],
+@@ -69,7 +69,8 @@ export const caseStudies = {
+   },
+ 
+   'a-plus-hardwood': {
+-    title: 'A+ Hardwood Flooring', role: 'UX/UI · Web Design', roleDetail: 'UX/UI Designer', tools: 'HTML · CSS · JavaScript · Framer · Codex', year: '2026', category: 'Web Design',
++    title: 'A+ Hardwood Flooring', role: 'UX/UI · Web Design', roleByLanguage: { en: 'UX/UI · Web Design', es: 'UX/UI · Diseño web' }, roleDetail: 'UX/UI Designer', roleDetailByLanguage: { en: 'UX/UI Designer', es: 'Diseñador UX/UI' }, tools: 'HTML · CSS · JavaScript · Framer · AI-assisted development', toolsByLanguage: { en: 'HTML · CSS · JavaScript · Framer · AI-assisted development', es: 'HTML · CSS · JavaScript · Framer · Desarrollo asistido por IA' }, year: '2026', category: 'Web Design', categoryByLanguage: { en: 'Web Design', es: 'Diseño web' },
++    link: 'https://aplushardwoodfloors.com/',
+     cover: { type: 'image', src: hardwood1 },
+     media: [
+       { type: 'image', src: hardwood2 },
+@@ -77,62 +78,65 @@ export const caseStudies = {
+     ],
+     projectVideo: undefined,
+     en: {
+-      intro: 'A web experience that tells the transformation of a hardwood floor.',
+-      context: 'I designed an English-language landing page for A+ Hardwood Flooring to present installation, sanding and refinishing, restoration and repair services. The project started from an HTML, CSS and JavaScript version and evolved into a Framer experience with a visual path through the services, the work and the contact step.',
++      intro: 'A service website that makes floor installation and restoration easier to understand and explore.',
++      context: 'I designed and implemented an English-language website for A+ Hardwood Flooring, presenting flooring installation, sanding and refinishing, restoration and repair. The live experience brings the services, project gallery, restoration process, FAQs and quote request into one clear journey.',
+       sections: [
+         { title: 'Communicate the value of the work clearly', body: 'The first version gathered services, business information, projects, differentiators, process, FAQs and contact. It was complete, but ideas about preparation, care and finish were repeated. The goal was to keep useful information while making the experience shorter and clearer.', media: 'Content structure and service hierarchy' },
+         { title: 'Build the journey around the transformation', body: 'The experience was organized as Presentation → Need → Transformation → Result → Contact. Navigation keeps direct access to the main sections while the narrative explains the work visually.', media: 'Information architecture and page flow' },
+         { title: 'From worn to renewed', body: 'The main storytelling section is divided into Assess & prepare, Sand & restore, Finish & protect, and Enjoy the transformation. On desktop, the photographic panel can remain fixed while the active text and image change with the scroll. On mobile, the same story becomes a linear sequence.', media: 'Scrolling storytelling sequence' },
+         { title: 'Simplify everything around the story', body: 'About and Services were combined, craftsmanship messages were incorporated into the storytelling, and the gallery was reduced to a smaller selection of projects. The ending brings consultation, service areas, essential questions and contact together without competing with the narrative.', media: 'Simplified supporting sections and contact' },
+       ],
+-      decision: { title: 'Let the process explain the service', before: 'A traditional service page could list every benefit and process step, but that would repeat ideas and make the landing longer.', after: 'The refinishing process became the central narrative. The rest of the page supports it with concise information and direct navigation. No conversion metrics are available yet because publication and final contact integration are still pending.' },
+-      closing: 'The project evolved from an information-heavy base into a narrative Framer landing. The transformation section was developed and approved during design review. Publication, definitive contact integration and replacement of provisional photography remain pending. The main learning was that motion is most useful when it explains the service itself.',
++      decision: { title: 'Let the process explain the service', before: 'A traditional service page could list every benefit and process step, but that would repeat ideas and make the landing longer.', after: 'The restoration process became the central narrative, supported by a before-and-after comparison, selected project gallery, FAQs and a direct quote-request flow. The website is published; conversion impact has not been measured.' },
++      closing: 'The result is a published service website that combines clear service information with visual proof of the work and a direct path to request an estimate. A next iteration could evaluate whether visitors understand the service options and complete the contact flow; no conversion results are claimed without analytics.',
+     },
+     es: {
+-      intro: 'Una experiencia web que cuenta la transformación de un piso de madera.',
+-      context: 'Diseñé una landing en inglés para presentar los servicios de instalación, lijado y refinishing, restauración y reparación de pisos de madera de A+ Hardwood Flooring. El proyecto partió de una versión en HTML, CSS y JavaScript y evolucionó hacia una experiencia en Framer con un recorrido visual por los servicios, el trabajo y el contacto.',
++      intro: 'Un sitio de servicios que facilita comprender y explorar la instalación y restauración de pisos de madera.',
++      context: 'Diseñé e implementé un sitio en inglés para A+ Hardwood Flooring, con servicios de instalación, lijado y renovación, restauración y reparación. La experiencia publicada reúne servicios, galería de proyectos, proceso de restauración, preguntas frecuentes y solicitud de cotización en un recorrido claro.',
+       sections: [
+         { title: 'Comunicar con claridad el valor del trabajo', body: 'La primera versión reunía servicios, información del negocio, proyectos, diferenciadores, proceso, preguntas frecuentes y contacto. Era completa, pero algunas ideas sobre preparación, cuidado y acabado se repetían. El objetivo fue conservar la información útil haciendo la experiencia más breve y clara.', media: 'Estructura de contenido y jerarquía de servicios' },
+         { title: 'Construir el recorrido alrededor de la transformación', body: 'La experiencia se organizó como Presentación → Necesidad → Transformación → Resultado → Contacto. La navegación mantiene accesos directos a los apartados principales mientras la narrativa explica visualmente el trabajo.', media: 'Arquitectura de información y recorrido de la página' },
+-        { title: 'From worn to renewed', body: 'La sección principal de storytelling se divide en Assess & prepare, Sand & restore, Finish & protect y Enjoy the transformation. En escritorio, el panel fotográfico puede permanecer fijo mientras el texto y la imagen activa cambian con el scroll. En móvil, la misma historia se convierte en una secuencia lineal.', media: 'Secuencia de scrolling storytelling' },
+-        { title: 'Simplificar todo lo que rodea la historia', body: 'About y Services se unieron, los mensajes de craftsmanship se incorporaron al storytelling y la galería se redujo a una selección menor de proyectos. El cierre reúne consulta, zonas de servicio, preguntas esenciales y contacto sin competir con la narrativa principal.', media: 'Secciones de apoyo simplificadas y contacto' },
++        { title: 'De un piso desgastado a uno renovado', body: 'La sección principal de narrativa visual se divide en evaluar y preparar, lijar y restaurar, aplicar el acabado y proteger, y disfrutar la transformación. En escritorio, el panel fotográfico puede permanecer fijo mientras el texto y la imagen activa cambian al desplazarse. En móvil, la misma historia se convierte en una secuencia lineal.', media: 'Secuencia narrativa durante el desplazamiento' },
++        { title: 'Simplificar todo lo que rodea la historia', body: 'Las secciones Sobre el negocio y Servicios se unieron, los mensajes sobre el cuidado del oficio se incorporaron a la narrativa visual y la galería se redujo a una selección menor de proyectos. El cierre reúne consulta, zonas de servicio, preguntas esenciales y contacto sin competir con la narrativa principal.', media: 'Secciones de apoyo simplificadas y contacto' },
+       ],
+-      decision: { title: 'Dejar que el proceso explique el servicio', before: 'Una página tradicional puede enumerar cada beneficio y etapa, pero eso puede repetir ideas y hacer más larga la landing.', after: 'El proceso de refinishing se convirtió en la narrativa central. El resto de la página la acompaña con información breve y navegación directa. Todavía no hay métricas de conversión porque la publicación y la integración definitiva del contacto están pendientes.' },
+-      closing: 'El proyecto evolucionó de una base informativa a una landing narrativa en Framer. La sección de transformación fue desarrollada y aprobada durante la revisión de diseño. La publicación, la conexión definitiva del contacto y el reemplazo de fotografías provisionales siguen pendientes. El principal aprendizaje fue que el movimiento es más útil cuando explica el servicio.',
++      decision: { title: 'Dejar que el proceso explique el servicio', before: 'Una página tradicional puede enumerar cada beneficio y etapa, pero eso puede repetir ideas y hacer más larga la landing.', after: 'El proceso de restauración se convirtió en la narrativa central, acompañado por un comparador de antes y después, una galería seleccionada, preguntas frecuentes y una vía directa para solicitar cotización. El sitio está publicado; su impacto en conversiones todavía no se ha medido.' },
++      closing: 'El resultado es un sitio de servicios publicado que combina información clara con evidencia visual del trabajo y una vía directa para solicitar una cotización. Una siguiente iteración podría evaluar si las personas comprenden los servicios y completan el flujo de contacto; no se atribuyen resultados de conversión sin analítica.',
+     },
+   },
+ 
+   'shine-cleaning': {
+-    title: 'Shine Cleaning', role: 'UX/UI · Web Design', roleDetail: 'UX/UI Designer', tools: 'Figma · Framer', category: 'Web Design',
++    title: 'Shine Cleaning', role: 'UX/UI · Web Design', roleByLanguage: { en: 'UX/UI · Web Design', es: 'UX/UI · Diseño web' }, roleDetail: 'UX/UI Designer', roleDetailByLanguage: { en: 'UX/UI Designer', es: 'Diseñador UX/UI' }, tools: 'Figma · HTML · CSS · JavaScript · AI-assisted development', toolsByLanguage: { en: 'Figma · HTML · CSS · JavaScript · AI-assisted development', es: 'Figma · HTML · CSS · JavaScript · Desarrollo asistido por IA' }, year: '2026', category: 'Web Design', categoryByLanguage: { en: 'Web Design', es: 'Diseño web' },
++    link: 'https://shinecleaningnc.com/',
+     cover: { type: 'image', src: shine1 },
+     media: [
+       { type: 'image', src: shine2 },
+       { type: 'image', src: shine3 },
+     ],
+     en: {
+-      intro: 'A landing page case study for Shine Cleaning.',
+-      context: 'The case study presents the Shine Cleaning landing through the same visual system used across the portfolio: a clear introduction, focused project chapters, progressive scroll reveals and a concise closing reflection.',
++      intro: 'A cleaning service website that turns service discovery into a clear path to request an estimate.',
++      context: 'I designed and implemented a responsive English-language website for Shine Cleaning. The page introduces the service, separates cleaning options, explains the service area around Asheville, North Carolina, and guides visitors to request an estimate by text message.',
+       sections: [
+-        { title: 'The landing page', body: 'The first chapter introduces the landing and its visual direction, keeping the project presentation focused on the product rather than on decorative elements.', media: 'Shine Cleaning landing' },
+-        { title: 'Organize the service experience', body: 'The case study uses the same structured rhythm for explaining the landing, its content hierarchy and the path toward contact.', media: 'Shine Cleaning service presentation' },
+-        { title: 'Let the visuals carry the story', body: 'The approved mockups can move into the visual area without changing the case-study structure. Each image enters with the same restrained reveal used by the other projects.', media: 'Shine Cleaning final screens' },
++        { title: 'Make the services easy to compare', body: 'Standard, deep, move-out and vacation-rental cleaning are presented as distinct options. Additional services are listed separately so visitors can understand the main offer without losing sight of the details.', media: 'Service categories and additional options' },
++        { title: 'Set clear expectations before contact', body: 'The page explains the service area and makes the next step explicit: visitors can prepare a text request and coordinate the estimate and date directly with the business. The interface does not imply that sending a message automatically confirms an appointment.', media: 'Service area and text-request flow' },
++        { title: 'Build a responsive, direct contact path', body: 'The page brings service information, trust-building content and contact actions into one responsive landing. The live SMS action opens the visitor’s messaging app with a prepared request that can be reviewed before sending.', media: 'Responsive landing and SMS action' },
+       ],
+-      closing: 'The Shine Cleaning case study is ready for its final visual assets. The structure, motion and media slots are shared with the rest of the portfolio so the remaining work is primarily asset placement.',
++      decision: { title: 'A direct message instead of a fake booking flow', before: 'A traditional booking form can imply that an appointment is confirmed, even when the business still needs to discuss the estimate and schedule.', after: 'I used a prepared SMS request as the first contact step and clarified that the details are coordinated directly. The site is published; lead and conversion performance has not yet been measured.' },
++      closing: 'The result is a live website with clear service categories, a defined service area and a working text-message contact path. A next step would be to review inquiry quality and completion rates with the client, if analytics or lead records become available.'
+     },
+     es: {
+-      intro: 'Un caso de estudio para la landing de Shine Cleaning.',
+-      context: 'El caso de estudio presenta la landing de Shine Cleaning utilizando el mismo sistema visual del portafolio: una introducción clara, capítulos enfocados, revelados progresivos durante el scroll y un cierre breve.',
++      intro: 'Un sitio de limpieza que convierte la exploración de servicios en un camino claro para solicitar cotización.',
++      context: 'Diseñé e implementé un sitio responsivo en inglés para Shine Cleaning. La página presenta el servicio, separa las opciones de limpieza, explica la zona de atención alrededor de Asheville, Carolina del Norte, y guía a las personas para solicitar una cotización por mensaje de texto.',
+       sections: [
+-        { title: 'La landing page', body: 'El primer capítulo presenta la landing y su dirección visual, manteniendo el foco en el producto en lugar de agregar elementos decorativos innecesarios.', media: 'Landing de Shine Cleaning' },
+-        { title: 'Organizar la experiencia del servicio', body: 'El caso utiliza el mismo ritmo estructurado para explicar la landing, su jerarquía de contenido y el recorrido hacia el contacto.', media: 'Presentación de servicios de Shine Cleaning' },
+-        { title: 'Dejar que los visuales cuenten la historia', body: 'Los mockups aprobados pueden ocupar el área visual sin cambiar la estructura del caso. Cada imagen aparece con el mismo reveal contenido que utiliza el resto del portafolio.', media: 'Pantallas finales de Shine Cleaning' },
++        { title: 'Facilitar la comparación de servicios', body: 'La limpieza estándar, profunda, de mudanza y de alojamientos vacacionales se presentan como opciones distintas. Los servicios adicionales aparecen por separado para explicar la oferta principal sin perder los detalles.', media: 'Categorías de servicio y opciones adicionales' },
++        { title: 'Aclarar qué sucede antes del contacto', body: 'La página explica la zona de atención y hace explícito el siguiente paso: la persona puede preparar una solicitud por mensaje y coordinar la cotización y la fecha directamente con el negocio. La interfaz no da a entender que enviar el mensaje confirma automáticamente una cita.', media: 'Zona de servicio y flujo de solicitud por mensaje' },
++        { title: 'Crear un contacto directo y adaptable', body: 'La página reúne información de servicios, contenido que genera confianza y acciones de contacto en una landing responsiva. El botón de SMS abre la aplicación de mensajes con una solicitud preparada que la persona puede revisar antes de enviarla.', media: 'Landing responsiva y acción de SMS' },
+       ],
+-      closing: 'El caso de Shine Cleaning está listo para recibir sus assets visuales finales. La estructura, el movimiento y los espacios multimedia son compartidos con el resto del portafolio, por lo que el trabajo restante se concentra principalmente en colocar los assets.',
++      decision: { title: 'Un mensaje directo en lugar de una reserva ficticia', before: 'Un formulario de reservas tradicional puede dar a entender que la cita está confirmada, aunque el negocio todavía deba conversar sobre la cotización y la agenda.', after: 'Utilicé una solicitud de SMS preparada como primer paso de contacto y aclaré que los detalles se coordinan directamente. El sitio está publicado; todavía no se han medido los contactos ni las conversiones.' },
++      closing: 'El resultado es un sitio publicado con categorías de servicio claras, una zona de atención definida y un flujo funcional de contacto por mensaje de texto. El siguiente paso sería revisar con el cliente la calidad de las consultas y la tasa de finalización, si se dispone de analítica o registros de contactos.'
+     },
+   },
+ 
+   'aura-drive': {
+-    title: 'AURA Drive', role: 'UX/UI · Experiencia interactiva', tools: 'React · Three.js · React Three Fiber · CSS',
++    title: 'AURA Drive', role: 'UX/UI · Interactive Experience', roleByLanguage: { en: 'UX/UI · Interactive Experience', es: 'UX/UI · Experiencia interactiva' }, tools: 'React · Three.js · React Three Fiber · CSS',
+     link: 'https://aura-drive-showroom.vercel.app/',
+     cover: { type: 'video', src: auraProjectsVideo },
+     media: [
+diff --git a/src/data/projects.js b/src/data/projects.js
+index 87b0a81..c0b7309 100644
+--- a/src/data/projects.js
++++ b/src/data/projects.js
+@@ -2,9 +2,9 @@
+ import { auraProjectsVideo, guqiProjectsVideo, hardwoodProjectsVideo, kokoroProjects, shineProjectsVideo } from './mediaAssets.js'
+ 
+ export const professionalProjects = [
+-  { slug: 'gu-qi', title: 'GU-QI', typeKey: 'types.webDesign', layoutVariant: 'lead', order: 1, video: guqiProjectsVideo },
+-  { slug: 'kokoro', title: 'Kokoro Bake Studio', typeKey: 'types.digitalProduct', layoutVariant: 'support', order: 2, image: kokoroProjects },
+-  { slug: 'a-plus-hardwood', title: 'A+ Hardwood Flooring', typeKey: 'types.webDesign', layoutVariant: 'support', order: 3, video: hardwoodProjectsVideo },
+-  { slug: 'shine-cleaning', title: 'Shine Cleaning', typeKey: 'types.webDesign', layoutVariant: 'closing', order: 4, video: shineProjectsVideo },
++  { slug: 'kokoro', title: 'Kokoro Bake Studio', typeKey: 'types.digitalProduct', layoutVariant: 'lead', order: 1, image: kokoroProjects },
++  { slug: 'gu-qi', title: 'GU-QI', typeKey: 'types.webDesign', layoutVariant: 'support', order: 2, video: guqiProjectsVideo },
++  { slug: 'shine-cleaning', title: 'Shine Cleaning', typeKey: 'types.webDesign', layoutVariant: 'support', order: 3, video: shineProjectsVideo },
++  { slug: 'a-plus-hardwood', title: 'A+ Hardwood Flooring', typeKey: 'types.webDesign', layoutVariant: 'closing', order: 4, video: hardwoodProjectsVideo },
+   { slug: 'aura-drive', title: 'AURA Drive', typeKey: 'types.automotiveInterface', layoutVariant: 'wide', order: 5, video: auraProjectsVideo },
+ ]
+diff --git a/src/locales/en/common.json b/src/locales/en/common.json
+index 3f35f57..ac18075 100644
+--- a/src/locales/en/common.json
++++ b/src/locales/en/common.json
+@@ -40,13 +40,13 @@
+     "linksLabel": "Selected work",
+     "disciplines": "Product Design · UX/UI · Brand Identity · Motion · 3D",
+     "roles": [
+-      "creative mind",
+-      "digital designer",
+-      "curious explorer"
++      "Product Designer",
++      "UX/UI Designer",
++      "Digital Designer"
+     ],
+-    "rolePrefix": "A",
+-    "roleDescription": "Creative digital designer and explorer",
+-    "cosmicDescription": "I shape interfaces and interactive experiences through design, motion and 3D.",
++    "rolePrefix": "",
++    "roleDescription": "Product Designer focused on UX/UI and digital experiences",
++    "cosmicDescription": "I design digital products, interfaces and responsive websites, combining user-centered thinking with visual craft and interactive technology.",
+     "scroll": "Scroll to explore"
+   },
+   "projectIndex": {
+@@ -63,15 +63,16 @@
+     "photo": "Portrait forthcoming.",
+     "portraitAlt": "Portrait of {{name}}",
+     "biography": [
+-      "I’m Ricardo, a multidisciplinary digital designer based in Mexico. My background began in Game Design and Art, where I became interested in interaction, 3D and designing experiences. Over time, I focused my work on UX/UI, product design, websites and visual identity.",
+-      "I’m interested in how an experience works, not only how it looks. I combine research, visual systems, interface design, motion and 3D to turn complex ideas into solutions that feel clear, expressive and useful.",
+-      "I’m currently collaborating on client projects and developing personal experiences while looking for opportunities in Product Design, UX/UI and digital design.",
+-      "Outside client work, I explore 3D animation and visual storytelling through personal projects."
++      "I’m Ricardo, a digital designer focused on UX/UI and Product Design. I design digital products, interfaces and responsive websites, combining user-centered thinking, prototyping and visual design to turn complex needs into clear experiences.",
++      "My experience includes enterprise software, collaboration with developers and published websites for independent clients. I also bring front-end development, brand identity, motion and 3D skills when they support the project.",
++      "I’m looking for opportunities where I can contribute to product and interface design, work closely with cross-functional teams, and keep growing through real user and business challenges."
+     ],
+     "groups": {
+       "background": {
+-        "title": "Background",
++        "title": "Background & Education",
+         "items": [
++          "Implemental Systems · Product Design",
++          "Independent client projects",
+           "Game Design and Art",
+           "Google UX Design Certificate",
+           "Google Digital Marketing & E-commerce",
+@@ -82,9 +83,9 @@
+         "title": "Focus",
+         "items": [
+           "Product Design",
+-          "UX/UI and Web Design",
+-          "Brand Identity",
+-          "Motion and 3D"
++          "UX/UI Design",
++          "Responsive Web Design",
++          "Interactive Experiences"
+         ]
+       },
+       "tools": {
+@@ -92,8 +93,9 @@
+         "items": [
+           "Figma",
+           "Adobe Creative Cloud",
+-          "React and Three.js",
+-          "Blender"
++          "React · HTML · CSS · JavaScript",
++          "Blender · Three.js · React Three Fiber",
++          "Framer · Git · GitHub"
+         ]
+       }
+     }
+@@ -108,7 +110,8 @@
+     "home": "Return home"
+   },
+   "metadata": {
+-    "title": "{{name}} | Digital Designer"
++    "title": "{{name}} | Product Designer · UX/UI & Digital Design",
++    "description": "Ricardo Plata is a Digital Designer focused on UX/UI and Product Design, with experience in enterprise software, responsive websites and interactive experiences."
+   },
+   "contact": {
+     "label": "Contact",
+diff --git a/src/locales/es/common.json b/src/locales/es/common.json
+index f239269..c3bfabd 100644
+--- a/src/locales/es/common.json
++++ b/src/locales/es/common.json
+@@ -40,13 +40,13 @@
+     "linksLabel": "Trabajo seleccionado",
+     "disciplines": "Diseño de producto · UX/UI · Identidad visual · Motion · 3D",
+     "roles": [
+-      "creativo",
+-      "diseñador",
+-      "explorador"
++      "Diseñador de Producto",
++      "Diseñador UX/UI",
++      "Diseñador Digital"
+     ],
+-    "rolePrefix": "Soy",
+-    "roleDescription": "Diseñador digital, creativo y explorador",
+-    "cosmicDescription": "Doy forma a interfaces y experiencias interactivas a través del diseño, el movimiento y el 3D.",
++    "rolePrefix": "",
++    "roleDescription": "Diseñador de producto enfocado en UX/UI y experiencias digitales",
++    "cosmicDescription": "Diseño productos digitales, interfaces y sitios responsivos, combinando pensamiento centrado en las personas, criterio visual y tecnología interactiva.",
+     "scroll": "Explora mi trabajo"
+   },
+   "projectIndex": {
+@@ -63,28 +63,29 @@
+     "photo": "Fotografía próximamente.",
+     "portraitAlt": "Retrato de {{name}}",
+     "biography": [
+-      "Soy Ricardo, un diseñador digital multidisciplinario ubicado en México. Mi formación comenzó en Diseño y Arte para Videojuegos, donde me acerqué a la interacción, el 3D y la creación de experiencias. Con el tiempo enfoqué mi trabajo en UX/UI, diseño de producto, sitios web e identidad visual.",
+-      "Me interesa comprender cómo funciona una experiencia, no solamente cómo se ve. Combino investigación, sistemas visuales, diseño de interfaces, motion y 3D para transformar ideas complejas en soluciones claras, expresivas y útiles.",
+-      "Actualmente colaboro en proyectos para clientes y desarrollo experiencias personales mientras busco oportunidades en Product Design, UX/UI y diseño digital.",
+-      "Fuera del trabajo con clientes, exploro la animación 3D y la narrativa visual a través de proyectos personales."
++      "Soy Ricardo, diseñador digital enfocado en UX/UI y Diseño de Producto. Diseño productos digitales, interfaces y sitios web responsivos, combinando pensamiento centrado en las personas, prototipado y diseño visual para convertir necesidades complejas en experiencias claras.",
++      "Mi experiencia incluye software empresarial, colaboración con desarrolladores y sitios web publicados para clientes independientes. También integro desarrollo front-end, identidad visual, motion y 3D cuando aportan valor al proyecto.",
++      "Busco oportunidades donde pueda contribuir al diseño de productos e interfaces, colaborar con equipos multidisciplinarios y seguir creciendo a partir de retos reales de usuarios y negocio."
+     ],
+     "groups": {
+       "background": {
+-        "title": "Formación",
++        "title": "Trayectoria y formación",
+         "items": [
++          "Implemental Systems · Diseño de Producto",
++          "Proyectos para clientes",
+           "Diseño y Arte para Videojuegos",
+           "Certificado de Diseño UX de Google",
+-          "Google Marketing Digital y E-Commerce",
++          "Google Marketing Digital y E-commerce",
+           "IBM Generative AI for UI/UX Design"
+         ]
+       },
+       "focus": {
+         "title": "Enfoque",
+         "items": [
+-          "Diseño de producto",
+-          "UX/UI y diseño web",
+-          "Identidad de marca",
+-          "Motion y 3D"
++          "Diseño de Producto",
++          "Diseño UX/UI",
++          "Diseño web responsivo",
++          "Experiencias interactivas"
+         ]
+       },
+       "tools": {
+@@ -92,8 +93,9 @@
+         "items": [
+           "Figma",
+           "Adobe Creative Cloud",
+-          "React y Three.js",
+-          "Blender"
++          "React · HTML · CSS · JavaScript",
++          "Blender · Three.js · React Three Fiber",
++          "Framer · Git · GitHub"
+         ]
+       }
+     }
+@@ -108,7 +110,8 @@
+     "home": "Volver al inicio"
+   },
+   "metadata": {
+-    "title": "{{name}} | Diseñador digital"
++    "title": "{{name}} | Diseño de Producto · UX/UI y Diseño Digital",
++    "description": "Ricardo Plata es diseñador digital enfocado en UX/UI y Diseño de Producto, con experiencia en software empresarial, sitios web responsivos y experiencias interactivas."
+   },
+   "contact": {
+     "label": "Contacto",
+diff --git a/src/pages/CaseStudy.jsx b/src/pages/CaseStudy.jsx
+index 99eb55f..627bf07 100644
+--- a/src/pages/CaseStudy.jsx
++++ b/src/pages/CaseStudy.jsx
+@@ -27,12 +27,22 @@ export default function CaseStudy() {
+   const study = caseStudies[slug]
+   const supported = lang === 'en' || lang === 'es'
+   const copy = study?.[lang]
++  const role = study?.roleByLanguage?.[lang] || study?.role
++  const tools = study?.toolsByLanguage?.[lang] || study?.tools
++  const category = study?.categoryByLanguage?.[lang] || study?.category
++  const roleDetail = study?.roleDetailByLanguage?.[lang] || study?.roleDetail
+ 
+   useEffect(() => {
+     if (!supported || !study) return
+     i18n.changeLanguage(lang)
+     document.documentElement.lang = lang
+-    document.title = `${study.title} | Ricardo Plata`
++    const title = `${study.title} | Ricardo Plata`
++    const description = copy.intro
++    document.title = title
++    document.querySelector('meta[name="description"]')?.setAttribute('content', description)
++    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
++    document.querySelector('meta[property="og:description"]')?.setAttribute('content', description)
++    document.querySelector('meta[property="og:url"]')?.setAttribute('content', window.location.href)
+     const preserveKey = 'ricardo-portfolio-scroll-restore'
+     let restored = false
+     try {
+@@ -75,13 +85,13 @@ export default function CaseStudy() {
+     <Header framed />
+     <main ref={contentRef} id="case-content" className="case-article content-frame" tabIndex={-1}>
+       <header className="case-hero" data-case-reveal>
+-        <p className="case-eyebrow">{study.role} · {study.tools}</p>
++        <p className="case-eyebrow">{role} · {tools}</p>
+         <h1>{study.title}</h1>
+         <p className="case-lead">{copy.intro}</p>
+         <div className="case-meta" aria-label={lang === 'es' ? 'Información del proyecto' : 'Project information'}>
+           {study.year && <span><strong>{lang === 'es' ? 'Año' : 'Year'}</strong>{study.year}</span>}
+-          {study.category && <span><strong>{lang === 'es' ? 'Categoría' : 'Category'}</strong>{study.category}</span>}
+-          {study.roleDetail && <span><strong>{lang === 'es' ? 'Rol' : 'Role'}</strong>{study.roleDetail}</span>}
++          {category && <span><strong>{lang === 'es' ? 'Categoría' : 'Category'}</strong>{category}</span>}
++          {roleDetail && <span><strong>{lang === 'es' ? 'Rol' : 'Role'}</strong>{roleDetail}</span>}
+         </div>
+         {study.link && <a className="case-external" href={study.link} target="_blank" rel="noopener noreferrer">{lang === 'es' ? 'Explorar proyecto' : 'Explore project'} ↗</a>}
+       </header>

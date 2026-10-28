@@ -28,7 +28,8 @@
 .case-chapter ul { margin: 1.2rem 0 0; padding-left: 1.2rem; }
 .case-chapter .case-media { width: 100%; align-self: center; }
 .case-chapter--text-only .case-chapter-copy { grid-column: 1 / -1; max-width: 48rem; }
-.case-chapter--text-only { min-height: auto; }
+.case-chapter--text-only { min-height: 0; padding-block: clamp(2rem, 4vw, 3.5rem); }
+.case-chapter--text-only + .case-chapter--text-only { border-top: 0; padding-top: 1rem; }
 .case-decision { width: min(100%, 62rem); margin: clamp(5rem, 12vw, 10rem) auto; padding: clamp(1.5rem, 5vw, 3.5rem); border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface); }
 .case-decision-label { margin-bottom: .75rem; }
 .case-decision h2 { max-width: 30ch; margin-bottom: 2rem; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.15; letter-spacing: -.04em; }
