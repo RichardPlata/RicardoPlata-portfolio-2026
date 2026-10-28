@@ -1,0 +1,100 @@
+diff --git a/src/data/caseStudies.js b/src/data/caseStudies.js
+index 3864161..92386c7 100644
+--- a/src/data/caseStudies.js
++++ b/src/data/caseStudies.js
+@@ -70,6 +70,7 @@ export const caseStudies = {
+ 
+   'a-plus-hardwood': {
+     title: 'A+ Hardwood Flooring', role: 'UX/UI · Web Design', roleDetail: 'UX/UI Designer', tools: 'HTML · CSS · JavaScript · Framer · Codex', year: '2026', category: 'Web Design',
++    link: 'https://aplushardwoodfloors.com/',
+     cover: { type: 'image', src: hardwood1 },
+     media: [
+       { type: 'image', src: hardwood2 },
+@@ -82,11 +83,11 @@ export const caseStudies = {
+       sections: [
+         { title: 'Communicate the value of the work clearly', body: 'The first version gathered services, business information, projects, differentiators, process, FAQs and contact. It was complete, but ideas about preparation, care and finish were repeated. The goal was to keep useful information while making the experience shorter and clearer.', media: 'Content structure and service hierarchy' },
+         { title: 'Build the journey around the transformation', body: 'The experience was organized as Presentation → Need → Transformation → Result → Contact. Navigation keeps direct access to the main sections while the narrative explains the work visually.', media: 'Information architecture and page flow' },
+-        { title: 'From worn to renewed', body: 'The main storytelling section is divided into Assess & prepare, Sand & restore, Finish & protect, and Enjoy the transformation. On desktop, the photographic panel can remain fixed while the active text and image change with the scroll. On mobile, the same story becomes a linear sequence.', media: 'Scrolling storytelling sequence' },
++        { title: 'From worn to renewed', body: 'The restoration process becomes the main story: assess and prepare the floor, sand and restore it, then finish and protect the surface. This sequence helps visitors understand the work behind the transformation instead of seeing a list of services alone.', media: 'Scrolling storytelling sequence' },
+         { title: 'Simplify everything around the story', body: 'About and Services were combined, craftsmanship messages were incorporated into the storytelling, and the gallery was reduced to a smaller selection of projects. The ending brings consultation, service areas, essential questions and contact together without competing with the narrative.', media: 'Simplified supporting sections and contact' },
+       ],
+-      decision: { title: 'Let the process explain the service', before: 'A traditional service page could list every benefit and process step, but that would repeat ideas and make the landing longer.', after: 'The refinishing process became the central narrative. The rest of the page supports it with concise information and direct navigation. No conversion metrics are available yet because publication and final contact integration are still pending.' },
+-      closing: 'The project evolved from an information-heavy base into a narrative Framer landing. The transformation section was developed and approved during design review. Publication, definitive contact integration and replacement of provisional photography remain pending. The main learning was that motion is most useful when it explains the service itself.',
++      decision: { title: 'Let the process explain the service', before: 'A traditional service page could list every benefit and process step, but that would repeat ideas and make the landing longer.', after: 'The refinishing process became the central narrative. The rest of the page supports it with concise information and direct navigation. The site is now published, but conversion performance has not been measured.' },
++      closing: 'The published site brings service information, project examples, the restoration process and a direct quote-request path into one experience. The next step is to measure whether visitors understand the services and successfully contact the business. The main learning was that motion is most useful when it explains the service itself.',
+     },
+     es: {
+       intro: 'Una experiencia web que cuenta la transformación de un piso de madera.',
+@@ -94,40 +95,43 @@ export const caseStudies = {
+       sections: [
+         { title: 'Comunicar con claridad el valor del trabajo', body: 'La primera versión reunía servicios, información del negocio, proyectos, diferenciadores, proceso, preguntas frecuentes y contacto. Era completa, pero algunas ideas sobre preparación, cuidado y acabado se repetían. El objetivo fue conservar la información útil haciendo la experiencia más breve y clara.', media: 'Estructura de contenido y jerarquía de servicios' },
+         { title: 'Construir el recorrido alrededor de la transformación', body: 'La experiencia se organizó como Presentación → Necesidad → Transformación → Resultado → Contacto. La navegación mantiene accesos directos a los apartados principales mientras la narrativa explica visualmente el trabajo.', media: 'Arquitectura de información y recorrido de la página' },
+-        { title: 'From worn to renewed', body: 'La sección principal de storytelling se divide en Assess & prepare, Sand & restore, Finish & protect y Enjoy the transformation. En escritorio, el panel fotográfico puede permanecer fijo mientras el texto y la imagen activa cambian con el scroll. En móvil, la misma historia se convierte en una secuencia lineal.', media: 'Secuencia de scrolling storytelling' },
++        { title: 'De desgastado a renovado', body: 'El proceso de restauración se convierte en la historia principal: evaluar y preparar el piso, lijar y restaurar, y después aplicar el acabado protector. Esta secuencia ayuda a comprender el trabajo detrás de la transformación, en lugar de presentar solo una lista de servicios.', media: 'Secuencia visual del proceso de restauración' },
+         { title: 'Simplificar todo lo que rodea la historia', body: 'About y Services se unieron, los mensajes de craftsmanship se incorporaron al storytelling y la galería se redujo a una selección menor de proyectos. El cierre reúne consulta, zonas de servicio, preguntas esenciales y contacto sin competir con la narrativa principal.', media: 'Secciones de apoyo simplificadas y contacto' },
+       ],
+-      decision: { title: 'Dejar que el proceso explique el servicio', before: 'Una página tradicional puede enumerar cada beneficio y etapa, pero eso puede repetir ideas y hacer más larga la landing.', after: 'El proceso de refinishing se convirtió en la narrativa central. El resto de la página la acompaña con información breve y navegación directa. Todavía no hay métricas de conversión porque la publicación y la integración definitiva del contacto están pendientes.' },
+-      closing: 'El proyecto evolucionó de una base informativa a una landing narrativa en Framer. La sección de transformación fue desarrollada y aprobada durante la revisión de diseño. La publicación, la conexión definitiva del contacto y el reemplazo de fotografías provisionales siguen pendientes. El principal aprendizaje fue que el movimiento es más útil cuando explica el servicio.',
++      decision: { title: 'Dejar que el proceso explique el servicio', before: 'Una página tradicional puede enumerar cada beneficio y etapa, pero eso puede repetir ideas y hacer más larga la landing.', after: 'El proceso de restauración se convirtió en la narrativa central. El resto de la página lo acompaña con información breve y navegación directa. El sitio ya está publicado, aunque todavía no se han medido resultados de conversión.' },
++      closing: 'El sitio publicado reúne los servicios, ejemplos de trabajos, el proceso de restauración y una vía directa para solicitar una cotización. El siguiente paso sería medir si las personas comprenden los servicios y logran contactar al negocio. El principal aprendizaje fue que el movimiento aporta más cuando ayuda a explicar el servicio.',
+     },
+   },
+ 
+   'shine-cleaning': {
+     title: 'Shine Cleaning', role: 'UX/UI · Web Design', roleDetail: 'UX/UI Designer', tools: 'Figma · Framer', category: 'Web Design',
++    link: 'https://shinecleaningnc.com/',
+     cover: { type: 'image', src: shine1 },
+     media: [
+       { type: 'image', src: shine2 },
+       { type: 'image', src: shine3 },
+     ],
+     en: {
+-      intro: 'A landing page case study for Shine Cleaning.',
+-      context: 'The case study presents the Shine Cleaning landing through the same visual system used across the portfolio: a clear introduction, focused project chapters, progressive scroll reveals and a concise closing reflection.',
++      intro: 'A service website designed to make cleaning options and the quote process easy to understand.',
++      context: 'Shine Cleaning needed a clear online presence for customers around Asheville, North Carolina. I designed and built a responsive landing page that explains the available cleaning services, clarifies the service area, and guides visitors toward requesting a quote by text.',
+       sections: [
+-        { title: 'The landing page', body: 'The first chapter introduces the landing and its visual direction, keeping the project presentation focused on the product rather than on decorative elements.', media: 'Shine Cleaning landing' },
+-        { title: 'Organize the service experience', body: 'The case study uses the same structured rhythm for explaining the landing, its content hierarchy and the path toward contact.', media: 'Shine Cleaning service presentation' },
+-        { title: 'Let the visuals carry the story', body: 'The approved mockups can move into the visual area without changing the case-study structure. Each image enters with the same restrained reveal used by the other projects.', media: 'Shine Cleaning final screens' },
++        { title: 'Make the services easy to compare', body: 'Standard, deep, move-out, and vacation-rental cleaning are presented as distinct options. Supporting details help visitors identify the service that fits their needs before getting in touch.', media: 'Shine Cleaning landing page' },
++        { title: 'Make the next step clear', body: 'Instead of suggesting that a booking is confirmed immediately, the page prepares a text message so customers can describe what they need and coordinate the estimate and schedule directly with the business.', media: 'Service details and text quote flow' },
++        { title: 'Design for a local service business', body: 'The page brings together service areas, additional cleaning options, and contact information in a responsive layout. The live site can now be explored to review the experience in context.', media: 'Responsive layout and local service information' },
+       ],
+-      closing: 'The Shine Cleaning case study is ready for its final visual assets. The structure, motion and media slots are shared with the rest of the portfolio so the remaining work is primarily asset placement.',
++      decision: { title: 'A clear quote request, not a false booking confirmation', before: 'A generic booking button could imply that a cleaning appointment is confirmed as soon as someone taps it.', after: 'The contact flow explains that customers send a request by text and coordinate the estimate and schedule directly. The website is live; conversion results have not been measured.' },
++      closing: 'The published site gives Shine Cleaning a clear service presentation and a direct way to start a quote conversation. A future iteration could review inquiry quality and measure how many visitors proceed to contact the business.',
+     },
+     es: {
+-      intro: 'Un caso de estudio para la landing de Shine Cleaning.',
+-      context: 'El caso de estudio presenta la landing de Shine Cleaning utilizando el mismo sistema visual del portafolio: una introducción clara, capítulos enfocados, revelados progresivos durante el scroll y un cierre breve.',
++      intro: 'Un sitio de servicios diseñado para explicar las opciones de limpieza y facilitar la solicitud de cotización.',
++      context: 'Shine Cleaning necesitaba una presencia digital clara para clientes de Asheville, Carolina del Norte, y sus alrededores. Diseñé y desarrollé una landing responsiva que explica los servicios disponibles, delimita la zona de atención y guía a las personas para solicitar una cotización por mensaje de texto.',
+       sections: [
+-        { title: 'La landing page', body: 'El primer capítulo presenta la landing y su dirección visual, manteniendo el foco en el producto en lugar de agregar elementos decorativos innecesarios.', media: 'Landing de Shine Cleaning' },
+-        { title: 'Organizar la experiencia del servicio', body: 'El caso utiliza el mismo ritmo estructurado para explicar la landing, su jerarquía de contenido y el recorrido hacia el contacto.', media: 'Presentación de servicios de Shine Cleaning' },
+-        { title: 'Dejar que los visuales cuenten la historia', body: 'Los mockups aprobados pueden ocupar el área visual sin cambiar la estructura del caso. Cada imagen aparece con el mismo reveal contenido que utiliza el resto del portafolio.', media: 'Pantallas finales de Shine Cleaning' },
++        { title: 'Facilitar la comparación de servicios', body: 'La limpieza estándar, profunda, de mudanza y para alojamientos vacacionales se presenta como opciones diferenciadas. La información complementaria ayuda a identificar qué servicio puede responder a cada necesidad antes de contactar al negocio.', media: 'Landing de Shine Cleaning' },
++        { title: 'Aclarar el siguiente paso', body: 'En lugar de sugerir que una cita queda confirmada al instante, la página prepara un mensaje de texto para que la persona explique lo que necesita y coordine directamente con el negocio la cotización y el horario.', media: 'Detalles de servicios y flujo de cotización por SMS' },
++        { title: 'Diseñar para un negocio local', body: 'La página reúne las zonas de atención, los servicios adicionales y la información de contacto en una experiencia responsiva. El sitio publicado permite explorar el recorrido completo en su contexto real.', media: 'Diseño responsivo e información de servicio local' },
+       ],
+-      closing: 'El caso de Shine Cleaning está listo para recibir sus assets visuales finales. La estructura, el movimiento y los espacios multimedia son compartidos con el resto del portafolio, por lo que el trabajo restante se concentra principalmente en colocar los assets.',
++      decision: { title: 'Una solicitud de cotización clara, no una falsa confirmación', before: 'Un botón de reserva genérico podría dar a entender que la cita queda confirmada al tocarlo.', after: 'El flujo explica que la persona envía una solicitud por mensaje y coordina directamente la cotización y el horario. El sitio ya está publicado; todavía no se han medido resultados de conversión.' },
++      closing: 'El sitio publicado ofrece a Shine Cleaning una presentación clara de sus servicios y una vía directa para iniciar una conversación sobre la cotización. En una siguiente iteración se podría revisar la calidad de las consultas y medir cuántas personas llegan al contacto.',
+     },
+   },
+ 
+diff --git a/src/styles/case.css b/src/styles/case.css
+index b259e1f..f3b6816 100644
+--- a/src/styles/case.css
++++ b/src/styles/case.css
+@@ -28,7 +28,8 @@
+ .case-chapter ul { margin: 1.2rem 0 0; padding-left: 1.2rem; }
+ .case-chapter .case-media { width: 100%; align-self: center; }
+ .case-chapter--text-only .case-chapter-copy { grid-column: 1 / -1; max-width: 48rem; }
+-.case-chapter--text-only { min-height: auto; }
++.case-chapter--text-only { min-height: 0; padding-block: clamp(2rem, 4vw, 3.5rem); }
++.case-chapter--text-only + .case-chapter--text-only { border-top: 0; padding-top: 1rem; }
+ .case-decision { width: min(100%, 62rem); margin: clamp(5rem, 12vw, 10rem) auto; padding: clamp(1.5rem, 5vw, 3.5rem); border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface); }
+ .case-decision-label { margin-bottom: .75rem; }
+ .case-decision h2 { max-width: 30ch; margin-bottom: 2rem; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.15; letter-spacing: -.04em; }
