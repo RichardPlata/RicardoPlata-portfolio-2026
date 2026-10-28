@@ -14,3 +14,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+  }
+}
